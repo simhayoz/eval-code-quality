@@ -1,1 +1,3 @@
-# eval-code-quality
+# Evaluating code quality
+
+> Work in progress
