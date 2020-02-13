@@ -50,11 +50,8 @@ public class App {
 
     public static CompilationUnit getASTFromContent(char[] content) {
       ASTParser parser = ASTParser.newParser(AST.JLS13);
-      // parser.setSource(IClassFile(file_path));
       parser.setSource(content);
-      //parser.setSource("/*abc*/".toCharArray());
       parser.setKind(ASTParser.K_COMPILATION_UNIT);
-      // print(parser.createAST(null));
       return (CompilationUnit) parser.createAST(null);
     }
 
@@ -69,9 +66,9 @@ public class App {
       return s.toCharArray();
   	}
 
-    public static boolean hasMultipleBlankLine(String file_path) throws FileNotFoundException {
+    public static List<Range> hasMultipleBlankLine(String file_path) throws FileNotFoundException {
       Scanner scanner = new Scanner(new File(file_path));
-      // boolean is_curr_empty = scanner.nextLine().trim().isEmpty();
+      List<Range> ranges = new ArrayList<>();
       int count_empty_line = scanner.nextLine().trim().isEmpty() ? 1 : 0;
       int line = 1;
       boolean has_m_blank_line = false;
@@ -81,8 +78,10 @@ public class App {
           ++count_empty_line;
         } else {
           if(count_empty_line > 1) {
-            System.out.println("There is "+count_empty_line+" empty lines from line "+(line-count_empty_line+1)+" to "+line);
+            int start_pos = line-count_empty_line+1;
+            System.out.println("There is "+count_empty_line+" empty lines from line "+start_pos+" to "+line);
             has_m_blank_line = true;
+            ranges.add(new Range(new Position(start_pos, 0), new Position(line, 0)));
           }
           count_empty_line = 0;
         }
@@ -93,37 +92,6 @@ public class App {
       }
       System.out.println("............. Test for multiple empty line Ended   .............");
       scanner.close();
-      return has_m_blank_line;
+      return ranges;
   	}
-
-    public static void print(ASTNode node) {
-      List properties = node.structuralPropertiesForType();
-      for (Iterator iterator = properties.iterator(); iterator.hasNext();) {
-          Object descriptor = iterator.next();
-          if (descriptor instanceof SimplePropertyDescriptor) {
-              SimplePropertyDescriptor simple = (SimplePropertyDescriptor) descriptor;
-              Object value = node.getStructuralProperty(simple);
-              System.out.println(simple.getId() + " (" + value.toString() + ")");
-          } else if (descriptor instanceof ChildPropertyDescriptor) {
-              ChildPropertyDescriptor child = (ChildPropertyDescriptor) descriptor;
-              ASTNode childNode = (ASTNode) node.getStructuralProperty(child);
-              if (childNode != null) {
-                  System.out.println("Child (" + child.getId() + ") {");
-                  print(childNode);
-                  System.out.println("}");
-              }
-          } else {
-              ChildListPropertyDescriptor list = (ChildListPropertyDescriptor) descriptor;
-              System.out.println("List (" + list.getId() + "){");
-              print((List) node.getStructuralProperty(list));
-              System.out.println("}");
-          }
-      }
-    }
-
-    public static void print(List nodes) {
-        for (Iterator iterator = nodes.iterator(); iterator.hasNext();) {
-            print((ASTNode) iterator.next());
-        }
-    }
 }

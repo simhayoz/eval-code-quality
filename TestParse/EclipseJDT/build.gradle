@@ -25,7 +25,7 @@ dependencies {
     implementation 'com.google.guava:guava:28.1-jre'
 
     // org Eclipse for AST.
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile group: 'org.eclipse.jdt', name: 'org.eclipse.jdt.core', version: '3.20.0'
 
     // Use JUnit Jupiter API for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'

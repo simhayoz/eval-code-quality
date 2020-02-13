@@ -1,14 +1,19 @@
-.gradle
-/build/
+TestParse/EclipseJDT/.gradle
+TestParse/EclipseJDT/build/
+TestParse/EclipseJDT/bin/
+TestParse/EclipseJDT/.vscode
 
-# Ignore Gradle GUI config
-gradle-app.setting
+TestParse/Javac/.gradle
+TestParse/Javac/build/
+TestParse/Javac/bin/
+TestParse/Javac/.vscode
 
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
+TestParse/JavaParser/.gradle
+TestParse/JavaParser/build/
+TestParse/JavaParser/bin/
+TestParse/JavaParser/.vscode
 
-# Cache of project
-.gradletasknamecache
-
-# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
-# gradle/wrapper/gradle-wrapper.properties
+codeEval/.gradle
+codeEval/build/
+codeEval/bin/
+codeEval/.vscode
