@@ -1,4 +1,4 @@
-package eval.code.quality;
+package Tools;
 
 public class Range {
     public final Position begin;

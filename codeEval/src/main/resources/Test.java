@@ -76,8 +76,12 @@ public final class GameBoy {
      * @return the GameBoy bus
      */
     public Bus bus() {
+        if(true)
+            testCall();
         return bus;
     }
+
+    
 
     /**
      * Get the {@code Cpu} of the GameBoy
