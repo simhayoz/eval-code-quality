@@ -12,6 +12,8 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application.
     id 'application'
+
+    id 'jacoco'
 }
 
 repositories {
@@ -32,14 +34,40 @@ dependencies {
 
     // Use JUnit Jupiter Engine for testing.
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
+
+    testImplementation 'org.hamcrest:hamcrest-library:2.1'
 }
 
 application {
     // Define the main class for the application.
-    mainClassName = 'eval.code.quality.App'
+    mainClassName = 'eval.code.App'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        reports.html.destination file("${buildDir}/reports/coverage")
+    }
+}
+
+build {
+    dependsOn jacocoTestReport
 }
 
 test {
     // Use junit platform for unit tests
     useJUnitPlatform()
+
+    // Show stdout/stderr, helps for debugging
+    testLogging.showStandardStreams true
+    // Do not fail builds because of failing tests
+    ignoreFailures true
+
+    testLogging {
+        // Always show all tests, even passed ones
+        events 'passed', 'skipped', 'failed'
+        // Always run all tests
+        outputs.upToDateWhen { false }
+    }
 }
