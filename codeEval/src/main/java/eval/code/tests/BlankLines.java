@@ -1,4 +1,4 @@
-package Tests;
+package eval.code.tests;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -6,10 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import Tools.Position;
-import Tools.Range;
-import Tools.SFile;
+import eval.code.tools.pos.Position;
+import eval.code.tools.pos.SinglePosition;
+import eval.code.tools.SFile;
 
+/**
+ * Check for multiple blank line in a row a file
+ * 
+ * @author Simon Hayoz
+ */
 public class BlankLines extends Test {
 
     private final String content;
@@ -28,9 +33,9 @@ public class BlankLines extends Test {
     }
 
     @Override
-    List<Range> t() {
+    protected List<Position> test() {
         Scanner scanner = new Scanner(content);
-        List<Range> ranges = new ArrayList<>();
+        List<Position> positions = new ArrayList<>();
         int count_empty_line = scanner.nextLine().trim().isEmpty() ? 1 : 0;
         int line = 1;
         boolean has_m_blank_line = false;
@@ -39,20 +44,23 @@ public class BlankLines extends Test {
                 ++count_empty_line;
             } else {
                 if(count_empty_line > 1) {
-                    int start_pos = line-count_empty_line+1;
-                    printLine(count_empty_line + " empty lines from line " + start_pos + " to " + line);
+                    int start_pos = line - count_empty_line + 1;
+                    SinglePosition start = Position.setPos(start_pos, 0);
+                    SinglePosition end = Position.setPos(line, 0);
+                    Position range = Position.setRangeOrSinglePos(start, end);
+                    printError(count_empty_line + " empty lines at " + range);
                     has_m_blank_line = true;
-                    ranges.add(new Range(new Position(start_pos, 0), new Position(line, 0)));
+                    positions.add(range);
                 }
                 count_empty_line = 0;
             }
             ++line;
         }
         if(!has_m_blank_line) {
-            printLine("There is no multiple empty line back to back");
+            printSuccess();
         }
         scanner.close();
-        return ranges;
+        return positions;
     }
 
 }
