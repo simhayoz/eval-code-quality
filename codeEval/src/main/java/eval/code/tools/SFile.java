@@ -13,6 +13,7 @@ public class SFile {
 
     /**
      * Get the content as a String of the file from its path
+     * 
      * @param file_path path to the file
      * @return the content of the file
      * @throws FileNotFoundException
@@ -23,17 +24,18 @@ public class SFile {
 
     /**
      * Get the content as a String of the file
+     * 
      * @param file the file
      * @return the content of the file
      * @throws FileNotFoundException
      */
     public static String stringFromFile(File file) throws FileNotFoundException {
-        if(file == null) {
+        if (file == null) {
             throw new NullPointerException("File is null");
         }
         StringBuilder s = new StringBuilder();
         Scanner scanner = new Scanner(file);
-        if(scanner.hasNextLine()) {
+        if (scanner.hasNextLine()) {
             s.append(scanner.nextLine());
         } else {
             scanner.close();

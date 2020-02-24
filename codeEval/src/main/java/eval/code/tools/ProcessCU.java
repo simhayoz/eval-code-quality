@@ -6,8 +6,10 @@ import java.io.FileNotFoundException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+
 /**
- * Represent a CompilationUnit with more tools<p>
+ * Represent a CompilationUnit with more tools
+ * <p>
  * Act somehow as a Decorator Pattern (but not exactly)
  * 
  * @author Simon Hayoz
@@ -22,6 +24,7 @@ public class ProcessCU {
 
     /**
      * Get the CompilationUnit for the current instance
+     * 
      * @return the CompilationUnit
      */
     public CompilationUnit getCU() {
@@ -29,7 +32,9 @@ public class ProcessCU {
     }
 
     /**
-     * Create a new ProcessCU with a constructed CompilationUnit from the specified file
+     * Create a new ProcessCU with a constructed CompilationUnit from the specified
+     * file
+     * 
      * @param file_path path to the file
      * @return the newly created ProcessCU
      * @throws FileNotFoundException
@@ -39,7 +44,9 @@ public class ProcessCU {
     }
 
     /**
-     * Create a new ProcessCU with a constructed CompilationUnit from the specified file content
+     * Create a new ProcessCU with a constructed CompilationUnit from the specified
+     * file content
+     * 
      * @param f file
      * @return the newly created ProcessCU
      * @throws FileNotFoundException
@@ -49,7 +56,9 @@ public class ProcessCU {
     }
 
     /**
-     * Create a new ProcessCU with a constructed CompilationUnit from the specified string
+     * Create a new ProcessCU with a constructed CompilationUnit from the specified
+     * string
+     * 
      * @param s String of the content
      * @return the newly created ProcessCU
      */

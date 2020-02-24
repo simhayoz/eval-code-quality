@@ -40,10 +40,10 @@ public class BlankLines extends Test {
         int line = 1;
         boolean has_m_blank_line = false;
         while (scanner.hasNextLine()) {
-            if(scanner.nextLine().trim().isEmpty()) {
+            if (scanner.nextLine().trim().isEmpty()) {
                 ++count_empty_line;
             } else {
-                if(count_empty_line > 1) {
+                if (count_empty_line > 1) {
                     int start_pos = line - count_empty_line + 1;
                     SinglePosition start = Position.setPos(start_pos, 0);
                     SinglePosition end = Position.setPos(line, 0);
@@ -56,7 +56,7 @@ public class BlankLines extends Test {
             }
             ++line;
         }
-        if(!has_m_blank_line) {
+        if (!has_m_blank_line) {
             printSuccess();
         }
         scanner.close();
