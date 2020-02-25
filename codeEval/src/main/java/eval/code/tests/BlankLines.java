@@ -1,14 +1,11 @@
 package eval.code.tests;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import eval.code.tools.pos.Position;
 import eval.code.tools.pos.SinglePosition;
-import eval.code.tools.SFile;
 
 /**
  * Check for multiple blank line in a row a file
@@ -19,23 +16,20 @@ public class BlankLines extends Test {
 
     private final String content;
 
-    private BlankLines(String content) {
+    public BlankLines(String content) {
         this.content = content;
         NAME = "blank lines";
-    }
-
-    public static BlankLines fromFile(File f) throws FileNotFoundException {
-        return new BlankLines(SFile.stringFromFile(f));
-    }
-
-    public static BlankLines fromString(String s) {
-        return new BlankLines(s);
     }
 
     @Override
     protected List<Position> test() {
         Scanner scanner = new Scanner(content);
         List<Position> positions = new ArrayList<>();
+        if(!scanner.hasNextLine()) {
+            printSuccess();
+            scanner.close();
+            return positions;
+        }
         int count_empty_line = scanner.nextLine().trim().isEmpty() ? 1 : 0;
         int line = 1;
         boolean has_m_blank_line = false;
