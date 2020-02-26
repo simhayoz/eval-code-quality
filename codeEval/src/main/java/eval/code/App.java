@@ -10,12 +10,13 @@ import eval.code.tests.BlankLines;
 import eval.code.tests.CUBasedTest;
 import eval.code.tests.Indentation;
 import eval.code.tools.ProcessCU;
+import eval.code.tools.SFile;
 
 public class App {
 
     public static void main(String[] args) {
       try {
-        System.out.println("Test for blank lines result: " + BlankLines.fromFile(new File(args[0])).runTest(true));
+        System.out.println("Test for blank lines result: " + new BlankLines(SFile.stringFromFile(new File(args[0]))).runTest(true));
         ProcessCU pcu = ProcessCU.fromFile(new File(args[0]));
         CUBasedTest t = new Indentation(pcu.getCU());
         System.out.println("Test for indentation result: " + t.runTest(true));

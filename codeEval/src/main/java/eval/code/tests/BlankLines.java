@@ -25,7 +25,7 @@ public class BlankLines extends Test {
     protected List<Position> test() {
         Scanner scanner = new Scanner(content);
         List<Position> positions = new ArrayList<>();
-        if(!scanner.hasNextLine()) {
+        if (!scanner.hasNextLine()) {
             printSuccess();
             scanner.close();
             return positions;
