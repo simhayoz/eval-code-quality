@@ -22,7 +22,7 @@ import org.eclipse.jdt.core.dom.LabeledStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
-import org.eclipse.jdt.core.dom.SwitchExpression;
+// import org.eclipse.jdt.core.dom.SwitchExpression;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.SynchronizedStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -59,9 +59,9 @@ public class Indentation extends CUBasedTest {
         getCU().accept(v);
         Map<Integer, Long> occur_map = block_tab_diff.values().stream()
                 .collect(Collectors.groupingBy(k -> k, Collectors.counting()));
-        int max_occur = occur_map.entrySet().stream().max((e1, e2) -> e1.getValue() > e2.getValue() ? 1 : -1).get()
-                .getKey();
-        if (occur_map.size() > 1) {
+        int max_occur = occur_map.entrySet().stream().max((e1, e2) -> e1.getValue() > e2.getValue() ? 1 : -1)
+                .map(e -> e.getKey()).orElse(-1);
+        if (max_occur != -1 && occur_map.size() > 1) {
             block_tab_diff.forEach((l_child, t) -> {
                 if (t != max_occur) {
                     SinglePosition start = Position.setPos(getLine(l_child.get(0)), getCol(l_child.get(0)));
@@ -88,40 +88,65 @@ public class Indentation extends CUBasedTest {
         for (ASTNode n : l) {
             switch (n.getNodeType()) {
                 case ASTNode.WHILE_STATEMENT:
-                    itBlockOrStatement(n, ((WhileStatement) n).getBody());
+                    iterateBlockOrStatement(n, ((WhileStatement) n).getBody());
                     break;
                 case ASTNode.FOR_STATEMENT:
-                    itBlockOrStatement(n, ((ForStatement) n).getBody());
+                    iterateBlockOrStatement(n, ((ForStatement) n).getBody());
                     break;
                 case ASTNode.ENHANCED_FOR_STATEMENT:
-                    itBlockOrStatement(n, ((EnhancedForStatement) n).getBody());
+                    iterateBlockOrStatement(n, ((EnhancedForStatement) n).getBody());
                     break;
                 case ASTNode.IF_STATEMENT:
-                    itBlockOrStatement(n, ((IfStatement) n).getThenStatement());
-                    itBlockOrStatement(n, ((IfStatement) n).getElseStatement());
+                    iterateBlockOrStatement(n, ((IfStatement) n).getThenStatement());
+                    iterateBlockOrStatement(n, ((IfStatement) n).getElseStatement());
                     break;
                 case ASTNode.BLOCK:
                     visitBlock(n, ((Block) n).statements());
                     break;
-                case ASTNode.SWITCH_EXPRESSION:
-                    visitBlock(n, ((SwitchExpression) n).statements());
-                    break;
                 case ASTNode.SWITCH_STATEMENT:
-                    visitBlock(n, ((SwitchStatement) n).statements());
+                    ASTNode prev_case = null;
+                    List<ASTNode> case_children = new ArrayList<>();
+                    for (Statement t : (List<Statement>) ((SwitchStatement) n).statements()) {
+                        if (t.getNodeType() == ASTNode.SWITCH_CASE) {
+                            if (prev_case != null) {
+                                visitBlock(prev_case, case_children);
+                            }
+                            prev_case = t;
+                            case_children.clear();
+                        } else {
+                            case_children.add(t);
+                        }
+                    }
                     break;
+                // case ASTNode.SWITCH_EXPRESSION: // TODO is this useful?
+                // visitBlock(n, ((SwitchExpression) n).statements());
+                // break;
                 case ASTNode.DO_STATEMENT:
-                    itBlockOrStatement(n, ((DoStatement) n).getBody());
+                    iterateBlockOrStatement(n, ((DoStatement) n).getBody());
                     break;
                 case ASTNode.LABELED_STATEMENT:
-                    itBlockOrStatement(n, ((LabeledStatement) n).getBody());
+                    iterateBlockOrStatement(n, ((LabeledStatement) n).getBody());
                     break;
                 case ASTNode.SYNCHRONIZED_STATEMENT:
-                    itBlockOrStatement(n, ((SynchronizedStatement) n).getBody());
+                    iterateBlockOrStatement(n, ((SynchronizedStatement) n).getBody());
                     break;
                 case ASTNode.TRY_STATEMENT:
-                    itBlockOrStatement(n, ((TryStatement) n).getBody());
-                    visitBlock(n, ((TryStatement) n).catchClauses());
-                    itBlockOrStatement(n, ((TryStatement) n).getFinally());
+                    Statement try_body = ((TryStatement) n).getBody();
+                    iterateBlockOrStatement(n, try_body);
+                    List<ASTNode> catch_child = ((TryStatement) n).catchClauses();
+                    int end_pos_last_block = try_body.getStartPosition() + try_body.getLength() - 1;
+                    if (catch_child != null && !catch_child.isEmpty()) {
+                        for (ASTNode c : catch_child) {
+                            if (getLine(c) != getLine(end_pos_last_block) && getCol(c) != getCol(n)) {
+                                Position p = Position.setPos(getLine(c), getCol(c));
+                                printError(p, getCol(c), getCol(n));
+                                error_range.add(p);
+                            }
+                            end_pos_last_block = c.getStartPosition() + c.getLength() - 1;
+                        }
+                    }
+                    visitChildren(catch_child);
+                    iterateBlockOrStatement(n, ((TryStatement) n).getFinally());
                     break;
                 case ASTNode.ENUM_DECLARATION:
                     visitBlock(n, ((EnumDeclaration) n).enumConstants());
@@ -130,7 +155,7 @@ public class Indentation extends CUBasedTest {
         }
     }
 
-    private void itBlockOrStatement(ASTNode parent, Statement s) {
+    private void iterateBlockOrStatement(ASTNode parent, Statement s) {
         if (s != null) {
             if (s.getNodeType() == ASTNode.BLOCK) {
                 visitBlock(parent, ((Block) s).statements());
@@ -167,12 +192,15 @@ public class Indentation extends CUBasedTest {
                 printError(p, max_occurence_tab, "greater than " + getCol(parent));
                 error_range.add(p);
             } else {
-                block_tab_diff.put(child_statments, max_occurence_tab - getCol(parent));
+                if (child_statments.size() != 1
+                        || getLine(parent.getStartPosition() + parent.getLength() - 1) != getLine(parent)) {
+                    block_tab_diff.put(child_statments, max_occurence_tab - getCol(parent));
+                }
             }
         }
         int b_position = parent.getStartPosition() + parent.getLength() - 1;
         SinglePosition brakets_position = Position.setPos(getLine(b_position), getCol(b_position));
-        if(brakets_position.line != getLine(parent) && brakets_position.column != getCol(parent)) {
+        if (brakets_position.line != getLine(parent) && brakets_position.column != getCol(parent)) {
             printError(brakets_position, getCol(b_position), getCol(parent));
             error_range.add(brakets_position);
         }
