@@ -2,7 +2,7 @@ package ch.epfl.gameboj;
 
 import static java.util.Objects.requireNonNull;
 
-import ch.epfl.gameboj.component.Joypad;
+  import ch.epfl.gameboj.component.Joypad;
 import ch.epfl.gameboj.component.Timer;
 import ch.epfl.gameboj.component.cartridge.Cartridge;
 import ch.epfl.gameboj.component.cpu.Cpu;
@@ -54,11 +54,11 @@ public final class GameBoy {
         ram = new Ram(AddressMap.WORK_RAM_SIZE);
 
         cpu.attachTo(bus);
-        lcd.attachTo(bus);
+         lcd.attachTo(bus);
         // RAM
         bus.attach(new RamController(ram, AddressMap.WORK_RAM_START,
                 AddressMap.WORK_RAM_END));
-        bus.attach(new RamController(ram, AddressMap.ECHO_RAM_START,
+     bus.attach(new RamController(ram, AddressMap.ECHO_RAM_START,
                 AddressMap.ECHO_RAM_END));
         // Cartridge
         BootRomController bootRomController = new BootRomController(
@@ -76,8 +76,16 @@ public final class GameBoy {
      * @return the GameBoy bus
      */
     public Bus bus() {
+        if(true)
+     testCall();
+        while(true)
+                    testCall();
+        if(true)
+            test();            
         return bus;
     }
+
+    
 
     /**
      * Get the {@code Cpu} of the GameBoy
@@ -87,6 +95,8 @@ public final class GameBoy {
     public Cpu cpu() {
         return cpu;
     }
+
+    public void doNothing() {}
 
     /**
      * Run the GameBoy from current cycle until ({@code cycle - 1})
@@ -101,8 +111,17 @@ public final class GameBoy {
         while (cycle < c) {
             timer.cycle(cycle);
             cpu.cycle(cycle);
-            lcd.cycle(cycle);
+                lcd.cycle(cycle);
             ++cycle;
+        }
+          // Test
+        while(true) {
+              test12345();
+            
+        }
+
+        {
+            testCallBla();
         }
     }
 
@@ -112,7 +131,12 @@ public final class GameBoy {
      * @return the number of simulated cycle
      */
     public long cycles() {
-        return cycle;
+                    if(true){}
+                    return cycle;
+    }
+
+    public long test() {
+return 0;
     }
 
     /**
@@ -139,7 +163,14 @@ public final class GameBoy {
      * @return the joypad
      */
     public Joypad joypad() {
-        return joypad;
+                     return joypad;
     }
 
+}
+
+public class TEST {
+        public static void test() {
+            if(true)
+                getTrue();
+        }
 }
