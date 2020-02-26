@@ -31,7 +31,7 @@ class IndentationTest {
                 "int i = 0;\nswitch (i) {\n    case 0:\n        return true;\n        break;\n    case 1:\n        return false;\n        break;\n    default:\n        return false;\n        break;\n}" };
         for (String s : blocks_to_test) {
             String wrapper = wrap(s);
-            assertThat(wrapper, new Indentation(ProcessCU.fromString(wrapper).getCU()).runTest(true), is(empty()));
+            assertThat(wrapper, new Indentation(ProcessCU.fromString(wrapper).getCU()).test(), is(empty()));
         }
     }
 
