@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>TestEclipse</name>
-	<comment>Project TestEclipse created by Buildship.</comment>
+	<name>eval-code-quality</name>
+	<comment>Project codeEval created by Buildship.</comment>
 	<projects>
 	</projects>
 	<buildSpec>
