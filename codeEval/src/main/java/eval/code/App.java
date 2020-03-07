@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import eval.code.tests.BlankLines;
 import eval.code.tests.CUBasedTest;
 import eval.code.tests.Indentation;
+import eval.code.tests.Naming;
 import eval.code.tools.ProcessCU;
 import eval.code.tools.SFile;
 
@@ -20,6 +21,8 @@ public class App {
         ProcessCU pcu = ProcessCU.fromFile(new File(args[0]));
         CUBasedTest t = new Indentation(pcu.getCU());
         System.out.println("Test for indentation result: " + t.runTest(true));
+        CUBasedTest naming = new Naming(pcu.getCU());
+        System.out.println("Test for namig result: " + naming.runTest(true));
       } catch(FileNotFoundException e) {
 
       }
