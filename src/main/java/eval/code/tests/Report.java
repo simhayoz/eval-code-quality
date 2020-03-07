@@ -5,6 +5,9 @@ import java.util.List;
 
 import eval.code.tools.pos.ReportPosition;
 
+/**
+ * Report containing the different errors and warnings
+ */
 public class Report {
 
     private final List<ReportPosition> errors = new ArrayList<>();

@@ -1,5 +1,8 @@
 package eval.code.tools.pos;
 
+/**
+ * Represents a position for error and warning
+ */
 public class ReportPosition {
 
     public final Position position;
