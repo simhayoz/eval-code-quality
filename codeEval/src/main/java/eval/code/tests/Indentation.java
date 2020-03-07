@@ -47,14 +47,13 @@ import eval.code.tools.pos.SinglePosition;
 public class Indentation extends CUBasedTest {
 
     private final Map<List<ASTNode>, Integer> block_tab_diff = new HashMap<>();
-    private final List<Position> error_range = new ArrayList<>();
 
     public Indentation(CompilationUnit cu) {
         super(cu);
         NAME = "indentation";
     }
 
-    protected List<Position> test() {
+    protected void test() {
         BlockVisitor v = new BlockVisitor();
         getCU().accept(v);
         Map<Integer, Long> occur_map = block_tab_diff.values().stream()
@@ -68,15 +67,11 @@ public class Indentation extends CUBasedTest {
                     SinglePosition end = Position.setPos(getLine(l_child.get(l_child.size() - 1)),
                             getCol(l_child.get(l_child.size() - 1)));
                     Position range = Position.setRangeOrSinglePos(start, end);
-                    error_range.add(range);
-                    printError(range, "a difference of " + t, "a difference of " + max_occur);
+                    addError(range, "a difference of " + max_occur, "a difference of " + t);
                 }
             });
         }
-        List<Position> p = new ArrayList<>(error_range);
-        error_range.clear();
         block_tab_diff.clear();
-        return p;
     }
 
     private void visitBlock(ASTNode parent, List<ASTNode> l) {
@@ -139,8 +134,7 @@ public class Indentation extends CUBasedTest {
                         for (ASTNode c : catch_child) {
                             if (getLine(c) != getLine(end_pos_last_block) && getCol(c) != getCol(n)) {
                                 Position p = Position.setPos(getLine(c), getCol(c));
-                                printError(p, getCol(c), getCol(n));
-                                error_range.add(p);
+                                addError(p, getCol(n), getCol(c));
                             }
                             end_pos_last_block = c.getStartPosition() + c.getLength() - 1;
                         }
@@ -180,8 +174,7 @@ public class Indentation extends CUBasedTest {
                         .max((e1, e2) -> e1.getValue() > e2.getValue() ? 1 : -1).get().getKey();
                 pos.forEach(p -> {
                     if (p.column != max_occurence_tab) {
-                        error_range.add(p);
-                        printError(p, p.column, max_occurence_tab);
+                        addError(p, max_occurence_tab, p.column);
                     }
                 });
             } else {
@@ -189,8 +182,7 @@ public class Indentation extends CUBasedTest {
             }
             if (max_occurence_tab <= getCol(parent)) {
                 Position p = Position.setRangeOrSinglePos(pos.get(0), pos.get(pos.size() - 1));
-                printError(p, max_occurence_tab, "greater than " + getCol(parent));
-                error_range.add(p);
+                addError(p, "greater than " + getCol(parent), max_occurence_tab);
             } else {
                 if (child_statments.size() != 1
                         || getLine(parent.getStartPosition() + parent.getLength() - 1) != getLine(parent)) {
@@ -201,16 +193,14 @@ public class Indentation extends CUBasedTest {
         int b_position = parent.getStartPosition() + parent.getLength() - 1;
         SinglePosition brakets_position = Position.setPos(getLine(b_position), getCol(b_position));
         if (brakets_position.line != getLine(parent) && brakets_position.column != getCol(parent)) {
-            printError(brakets_position, getCol(b_position), getCol(parent));
-            error_range.add(brakets_position);
+            addError(brakets_position, getCol(parent), getCol(b_position));
         }
     }
 
     private void testForCurrNodeExpr(ASTNode parent, ASTNode child) {
         if (getCol(child) <= getCol(parent)) {
             SinglePosition p = Position.setPos(getLine(child), getCol(child));
-            printError(p, getCol(child), "greater than " + getCol(parent));
-            error_range.add(p);
+            addError(p, "greater than " + getCol(parent), getCol(child));
         } else {
             block_tab_diff.put(Collections.singletonList(child), getCol(child) - getCol(parent));
         }
@@ -222,8 +212,7 @@ public class Indentation extends CUBasedTest {
         public boolean visit(ImportDeclaration n) {
             if (getCol(n) != 0) {
                 SinglePosition p = Position.setPos(getLine(n), getCol(n));
-                error_range.add(p);
-                printError(p, p.column, 0);
+                addError(p, 0, p.column);
             }
             return true;
         }
@@ -232,8 +221,7 @@ public class Indentation extends CUBasedTest {
         public boolean visit(PackageDeclaration n) {
             if (getCol(n) != 0) {
                 SinglePosition p = Position.setPos(getLine(n), getCol(n));
-                error_range.add(p);
-                printError(p, p.column, 0);
+                addError(p, 0, p.column);
             }
             return true;
         }

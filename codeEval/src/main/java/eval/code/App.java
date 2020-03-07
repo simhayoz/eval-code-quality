@@ -7,8 +7,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import eval.code.tests.BlankLines;
-import eval.code.tests.CUBasedTest;
 import eval.code.tests.Indentation;
+import eval.code.tests.Test;
 import eval.code.tools.ProcessCU;
 import eval.code.tools.SFile;
 
@@ -16,10 +16,13 @@ public class App {
 
     public static void main(String[] args) {
       try {
-        System.out.println("Test for blank lines result: " + new BlankLines(SFile.stringFromFile(new File(args[0]))).runTest(true));
+        Test b = new BlankLines(SFile.stringFromFile(new File(args[0])));
+        b.runTest(true);
+        System.out.println(b);
         ProcessCU pcu = ProcessCU.fromFile(new File(args[0]));
-        CUBasedTest t = new Indentation(pcu.getCU());
-        System.out.println("Test for indentation result: " + t.runTest(true));
+        Test t = new Indentation(pcu.getCU());
+        t.runTest(true);
+        System.out.println(t);
       } catch(FileNotFoundException e) {
 
       }

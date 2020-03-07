@@ -1,8 +1,6 @@
 package eval.code.tests;
 
-import java.util.List;
-
-import eval.code.tools.pos.Range;
+import eval.code.tools.pos.ReportPosition;
 import eval.code.tools.pos.Position;
 
 /**
@@ -15,58 +13,98 @@ public abstract class Test {
     protected static String NAME;
     protected boolean verbose;
 
+    private final Report report = new Report();
+
+    public Report runTest() {
+        return runTest(false);
+    }
+
     /**
      * Runs the current test with standard output if needed (verbose)
      * 
      * @param verbose whether to print error or not
-     * @return a list of Position of all found error
      */
-    public List<Position> runTest(boolean verbose) {
+    public Report runTest(boolean verbose) {
+        report.clear();
         this.verbose = verbose;
-        if (verbose)
-            System.out.println("------------- Starting test: " + NAME + " -------------");
-        List<Position> result = test();
-        if (verbose)
-            System.out.println("-------------   End test: " + NAME + "    -------------\n");
-        return result;
+        printLine("------------- Starting test: " + NAME + " -------------");
+        test();
+        printLine("-------------   End test: " + NAME + "    -------------\n");
+        return report;
+    }
+
+    public void addError(Position position, String report) {
+        addError(ReportPosition.at(position, report));
+    }
+
+    public void addError(Position position, String expected, String was) {
+        addError(ReportPosition.at(position, expected, was));
+    }
+
+    public void addError(Position position, int expected, int was) {
+        addError(ReportPosition.at(position, ""+expected, ""+was));
+    }
+
+    public void addError(Position position, String expected, int was) {
+        addError(ReportPosition.at(position, expected, ""+was));
+    }
+
+    public void addError(Position position, int expected, String was) {
+        addError(ReportPosition.at(position, ""+expected, was));
+    }
+
+    public void addError(ReportPosition error) {
+        printError(error);
+        report.addError(error);
+    }
+
+    public void addWarning(Position position, String report) {
+        addWarning(ReportPosition.at(position, report));
+    }
+
+    public void addWarning(Position position, String expected, String was) {
+        addWarning(ReportPosition.at(position, expected, was));
+    }
+
+    public void addWarning(Position position, int expected, int was) {
+        addWarning(ReportPosition.at(position, ""+expected, ""+was));
+    }
+
+    public void addWarning(Position position, String expected, int was) {
+        addWarning(ReportPosition.at(position, expected, ""+was));
+    }
+
+    public void addWarning(Position position, int expected, String was) {
+        addWarning(ReportPosition.at(position, ""+expected, was));
+    }
+
+    public void addWarning(ReportPosition warning) {
+        printWarning(warning);
+        report.addWarning(warning);
     }
 
     /**
-     * Get the result of the test
-     * 
-     * @return a list of Position of all found error
+     * Get the result of the test, add every errors and warnings to the report
      */
-    protected abstract List<Position> test();
+    protected abstract void test();
 
-    protected void printLine(String l) {
+    private void printError(ReportPosition e) {
         if (verbose)
-            System.out.println(" > " + l);
+            System.out.println(" > (" + NAME + ") " + e.toString());
     }
 
-    protected void printError(String l) {
+    private void printWarning(ReportPosition e) {
         if (verbose)
-            System.out.println(" > " + l);
+            System.out.println(" > (" + NAME + ") " + e.toString());
     }
 
-    protected void printError(Position p, int was, int expected) {
-        printError(p, Integer.toString(was), Integer.toString(expected));
-    }
-
-    protected void printError(Position p, String was, int expected) {
-        printError(p, was, Integer.toString(expected));
-    }
-
-    protected void printError(Position p, int was, String expected) {
-        printError(p, Integer.toString(was), expected);
-    }
-
-    protected void printError(Position p, String was, String expected) {
-        printError(((p instanceof Range) ? "Block at " : "Line ") + p + " is not correctly indented (was " + was
-                + ", expected " + expected + ")");
-    }
-
-    protected void printSuccess() {
+    private void printLine(String s) {
         if (verbose)
-            System.out.println("Test " + NAME + ": Success");
+            System.out.println(s);
+    }
+
+    @Override
+    public String toString() {
+        return "Result for " + NAME + ":\n" + report.toString();
     }
 }
