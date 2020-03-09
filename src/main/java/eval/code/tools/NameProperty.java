@@ -2,6 +2,10 @@ package eval.code.tools;
 
 public class NameProperty {
 
+    /**
+     * TODO: AllUpper < AllUpperUnderscore / AllLower < AllLowerUnderscore & < CamelCase
+     */
+
     public enum FProperty {
         AllUpper, // eg: THISISAVARIABLE
         AllUpperUnderscore, // THIS_IS_A_VARIABLE
@@ -72,7 +76,7 @@ public class NameProperty {
 
     @Override
     public int hashCode() {
-        return full_property.hashCode() + start_property.hashCode() + end_property.hashCode();
+        return full_property.hashCode() + start_property.hashCode() + end_property.hashCode(); // TODO correct this
     }
 
     @Override
