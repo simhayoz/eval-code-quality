@@ -114,7 +114,7 @@ class NamingConventionTest {
     @Test
     void toStringWorkForEasyCase() {
         NameProperty n = NameProperty.getFor("_camelCaseTest");
-        assertThat(n.toString(), equalTo("[start:" + NameProperty.PProperty.Underscore + ",end:"
-                + NameProperty.PProperty.Lower + ",property:" + NameProperty.FProperty.CamelCase + "]"));
+        assertThat(n.toString(), equalTo("{start:" + NameProperty.PProperty.Underscore + ",end:"
+                + NameProperty.PProperty.Lower + ",property:" + NameProperty.FProperty.CamelCase + "}"));
     }
 } 

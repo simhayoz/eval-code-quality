@@ -2,10 +2,6 @@ package eval.code.tools;
 
 public class NameProperty {
 
-    /**
-     * TODO: AllUpper < AllUpperUnderscore / AllLower < AllLowerUnderscore & < CamelCase
-     */
-
     public enum FProperty {
         AllUpper, // eg: THISISAVARIABLE
         AllUpperUnderscore, // THIS_IS_A_VARIABLE
@@ -74,14 +70,26 @@ public class NameProperty {
         }
     }
 
+    public boolean isLogicEquals(NameProperty n) {
+        boolean upOrUpUnderscore = (this.full_property == FProperty.AllUpper
+                && n.full_property == FProperty.AllUpperUnderscore)
+                || (this.full_property == FProperty.AllUpperUnderscore && n.full_property == FProperty.AllUpper);
+        boolean LoOrCamelCase = (this.full_property == FProperty.AllLower && n.full_property == FProperty.CamelCase)
+                || (this.full_property == FProperty.CamelCase && n.full_property == FProperty.AllLower);
+        boolean LoOrLoUnderscore = (this.full_property == FProperty.AllLower
+                && n.full_property == FProperty.AllLowerUnderscore)
+                || (this.full_property == FProperty.AllLowerUnderscore && n.full_property == FProperty.AllLower);
+        return this.equals(n) || (startAndEndEquals(n) && (upOrUpUnderscore || LoOrCamelCase || LoOrLoUnderscore));
+    }
+
     @Override
     public int hashCode() {
-        return full_property.hashCode() + start_property.hashCode() + end_property.hashCode(); // TODO correct this
+        return full_property.ordinal() * 100 + start_property.ordinal() * 10 + end_property.ordinal();
     }
 
     @Override
     public String toString() {
-        return "[start:" + start_property + ",end:" + end_property + ",property:" + full_property + "]";
+        return "{start:" + start_property + ",end:" + end_property + ",property:" + full_property + "}";
     }
 
     @Override
@@ -92,8 +100,11 @@ public class NameProperty {
             return false;
         } else {
             NameProperty n = (NameProperty) obj;
-            return this.full_property == n.full_property && this.start_property == n.start_property
-                    && this.end_property == n.end_property;
+            return this.full_property == n.full_property && startAndEndEquals(n);
         }
     }
-} 
+
+    private boolean startAndEndEquals(NameProperty n) {
+        return this.start_property == n.start_property && this.end_property == n.end_property;
+    }
+}
