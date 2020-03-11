@@ -29,7 +29,7 @@ public abstract class Test {
         this.verbose = verbose;
         printLine("------------- Starting test: " + NAME + " -------------");
         test();
-        printLine("-------------   End test: " + NAME + "    -------------\n");
+        printLine("-------------   End test: " + NAME + "    -------------" + System.lineSeparator());
         return report;
     }
 
@@ -42,15 +42,15 @@ public abstract class Test {
     }
 
     public void addError(Position position, int expected, int was) {
-        addError(ReportPosition.at(position, ""+expected, ""+was));
+        addError(ReportPosition.at(position, "" + expected, "" + was));
     }
 
     public void addError(Position position, String expected, int was) {
-        addError(ReportPosition.at(position, expected, ""+was));
+        addError(ReportPosition.at(position, expected, "" + was));
     }
 
     public void addError(Position position, int expected, String was) {
-        addError(ReportPosition.at(position, ""+expected, was));
+        addError(ReportPosition.at(position, "" + expected, was));
     }
 
     public void addError(ReportPosition error) {
@@ -67,15 +67,15 @@ public abstract class Test {
     }
 
     public void addWarning(Position position, int expected, int was) {
-        addWarning(ReportPosition.at(position, ""+expected, ""+was));
+        addWarning(ReportPosition.at(position, "" + expected, "" + was));
     }
 
     public void addWarning(Position position, String expected, int was) {
-        addWarning(ReportPosition.at(position, expected, ""+was));
+        addWarning(ReportPosition.at(position, expected, "" + was));
     }
 
     public void addWarning(Position position, int expected, String was) {
-        addWarning(ReportPosition.at(position, ""+expected, was));
+        addWarning(ReportPosition.at(position, "" + expected, was));
     }
 
     public void addWarning(ReportPosition warning) {
@@ -105,6 +105,6 @@ public abstract class Test {
 
     @Override
     public String toString() {
-        return "Result for " + NAME + ":\n" + report.toString();
+        return "Result for " + NAME + ":" + System.lineSeparator() + report.toString();
     }
 }

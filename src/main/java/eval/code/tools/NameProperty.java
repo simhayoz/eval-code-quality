@@ -71,6 +71,7 @@ public class NameProperty {
     }
 
     public boolean isLogicEquals(NameProperty n) {
+        boolean isNone = this.full_property == FProperty.None || n.full_property == FProperty.None;
         boolean upOrUpUnderscore = (this.full_property == FProperty.AllUpper
                 && n.full_property == FProperty.AllUpperUnderscore)
                 || (this.full_property == FProperty.AllUpperUnderscore && n.full_property == FProperty.AllUpper);
@@ -79,7 +80,7 @@ public class NameProperty {
         boolean LoOrLoUnderscore = (this.full_property == FProperty.AllLower
                 && n.full_property == FProperty.AllLowerUnderscore)
                 || (this.full_property == FProperty.AllLowerUnderscore && n.full_property == FProperty.AllLower);
-        return this.equals(n) || (startAndEndEquals(n) && (upOrUpUnderscore || LoOrCamelCase || LoOrLoUnderscore));
+        return this.equals(n) || (startAndEndEquals(n) && (isNone || upOrUpUnderscore || LoOrCamelCase || LoOrLoUnderscore));
     }
 
     @Override

@@ -95,7 +95,7 @@ public class Naming extends CUBasedTest {
     }
 
     private void checkForCurrentGroup(Map<ASTNode, NameProperty> group, List<Modifier.ModifierKeyword> modifiers) {
-        if (group != null && group.size() > 1) {
+        if (group.size() > 1) {
             NameProperty pName = null;
             Set<NameProperty> property_set = new HashSet<NameProperty>(group.values());
             for (NameProperty n : property_set) {
