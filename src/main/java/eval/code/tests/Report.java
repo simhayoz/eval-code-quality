@@ -36,6 +36,7 @@ public class Report {
 
     @Override
     public String toString() {
-        return "Error(s) reported: " + errors + "\nWarning(s) reported: " + warnings;
+        return "Error(s) reported: " + ((errors.isEmpty()) ? "no error found " : errors) + System.lineSeparator() + "Warning(s) reported: "
+                + ((warnings.isEmpty()) ? "no warning found " : warnings);
     }
 }

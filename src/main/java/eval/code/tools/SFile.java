@@ -42,7 +42,7 @@ public class SFile {
             return "";
         }
         while (scanner.hasNextLine()) {
-            s.append("\n");
+            s.append(System.lineSeparator());
             s.append(scanner.nextLine());
         }
         scanner.close();

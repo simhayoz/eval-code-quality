@@ -25,7 +25,9 @@ class SFileTest {
     @Test void testForMultipleLineFile() throws FileNotFoundException {
         File f = new File("assets/tests/MultiLineTest.txt");
         String s_file = SFile.stringFromFile(f);
-        String[] split = s_file.split("\\n");
+        String p_file = SFile.stringFromPath("assets/tests/MultiLineTest.txt");
+        assertThat(p_file, equalTo(s_file));
+        String[] split = s_file.split(System.lineSeparator());
         String[] expected = {"test", "on", "multiple", "line"};
         assertThat(split, equalTo(expected));
         
