@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -24,8 +25,8 @@ import eval.code.tools.pos.PositionList;
 public class Naming extends CUBasedTest {
 
     private Map<ASTNode, NameProperty> method_var_names = new HashMap<>();
-    private Map<List<Modifier.ModifierKeyword>, List<TypeDeclaration>> class_names = new HashMap<>();
-    private Map<List<Modifier.ModifierKeyword>, List<MethodDeclaration>> method_names = new HashMap<>();
+    private Map<List<Modifier.ModifierKeyword>, List<ASTNode>> class_names = new HashMap<>();
+    private Map<List<Modifier.ModifierKeyword>, List<ASTNode>> method_names = new HashMap<>();
 
     public Naming(CompilationUnit cu) {
         super(cu);
@@ -62,35 +63,23 @@ public class Naming extends CUBasedTest {
         // Check variable inside method name
         checkForCurrentGroup(method_var_names, null);
         // Check method name
-        method_names.forEach((list_mod, fd) -> {
-            Map<ASTNode, NameProperty> current_group = new HashMap<>();
-            fd.forEach(f -> {
-                current_group.put(f, NameProperty.getFor(f.getName().toString()));
-            });
-            checkForCurrentGroup(current_group, list_mod);
+        testFor(method_names, (ASTNode n) -> {
+            return ((MethodDeclaration) n).getName().toString();
         });
         // Check class name
-        class_names.forEach((list_mod, fd) -> {
-            Map<ASTNode, NameProperty> current_group = new HashMap<>();
-            fd.forEach(f -> {
-                current_group.put(f, NameProperty.getFor(f.getName().toString()));
-            });
-            checkForCurrentGroup(current_group, list_mod);
+        testFor(class_names, (ASTNode n) -> {
+            return ((TypeDeclaration) n).getName().toString();
         });
     }
 
     private void checkClassVariable(FieldDeclaration[] fields) {
-        Map<List<Modifier.ModifierKeyword>, List<FieldDeclaration>> modifiers_group = new HashMap<>();
+        Map<List<Modifier.ModifierKeyword>, List<ASTNode>> modifiers_group = new HashMap<>();
         for (FieldDeclaration f : fields) {
             addNodeToListMap(modifiers_group, getModifiersList(f.modifiers()), f);
         }
-        modifiers_group.forEach((list_mod, fd) -> {
-            Map<ASTNode, NameProperty> current_group = new HashMap<>();
-            fd.forEach(f -> {
-                VariableDeclarationFragment v = (VariableDeclarationFragment) f.fragments().get(0);
-                current_group.put(f, NameProperty.getFor(v.getName().toString()));
-            });
-            checkForCurrentGroup(current_group, list_mod);
+        testFor(modifiers_group, (ASTNode n) -> {
+            VariableDeclarationFragment v = (VariableDeclarationFragment) ((FieldDeclaration) n).fragments().get(0);
+            return v.getName().toString();
         });
     }
 
@@ -118,9 +107,19 @@ public class Naming extends CUBasedTest {
         }
     }
 
-    private <T extends ASTNode> void addNodeToListMap(Map<List<Modifier.ModifierKeyword>, List<T>> map,
-            List<Modifier.ModifierKeyword> key, T value) {
-        List<T> new_list;
+    private void testFor(Map<List<Modifier.ModifierKeyword>, List<ASTNode>> map, Function<ASTNode, String> getName) {
+        map.forEach((list_mod, fd) -> {
+            Map<ASTNode, NameProperty> current_group = new HashMap<>();
+            fd.forEach(f -> {
+                current_group.put(f, NameProperty.getFor(getName.apply(f)));
+            });
+            checkForCurrentGroup(current_group, list_mod);
+        });
+    }
+
+    private void addNodeToListMap(Map<List<Modifier.ModifierKeyword>, List<ASTNode>> map,
+            List<Modifier.ModifierKeyword> key, ASTNode value) {
+        List<ASTNode> new_list;
         if (map.containsKey(key)) {
             new_list = map.get(key);
             new_list.add(value);

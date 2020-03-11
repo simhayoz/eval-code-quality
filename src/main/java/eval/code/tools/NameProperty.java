@@ -72,15 +72,10 @@ public class NameProperty {
 
     public boolean isLogicEquals(NameProperty n) {
         boolean isNone = this.full_property == FProperty.None || n.full_property == FProperty.None;
-        boolean upOrUpUnderscore = (this.full_property == FProperty.AllUpper
-                && n.full_property == FProperty.AllUpperUnderscore)
-                || (this.full_property == FProperty.AllUpperUnderscore && n.full_property == FProperty.AllUpper);
-        boolean LoOrCamelCase = (this.full_property == FProperty.AllLower && n.full_property == FProperty.CamelCase)
-                || (this.full_property == FProperty.CamelCase && n.full_property == FProperty.AllLower);
-        boolean LoOrLoUnderscore = (this.full_property == FProperty.AllLower
-                && n.full_property == FProperty.AllLowerUnderscore)
-                || (this.full_property == FProperty.AllLowerUnderscore && n.full_property == FProperty.AllLower);
-        return this.equals(n) || (startAndEndEquals(n) && (isNone || upOrUpUnderscore || LoOrCamelCase || LoOrLoUnderscore));
+        boolean upOrUpUnd = isP1AndP2(n, FProperty.AllUpper, FProperty.AllUpperUnderscore);
+        boolean LoOrCC = isP1AndP2(n, FProperty.AllLower, FProperty.CamelCase);
+        boolean LoOrLoUnd = isP1AndP2(n, FProperty.AllLower, FProperty.AllLowerUnderscore);
+        return this.equals(n) || (startAndEndEquals(n) && (isNone || upOrUpUnd || LoOrCC || LoOrLoUnd));
     }
 
     @Override
@@ -107,5 +102,10 @@ public class NameProperty {
 
     private boolean startAndEndEquals(NameProperty n) {
         return this.start_property == n.start_property && this.end_property == n.end_property;
+    }
+
+    private boolean isP1AndP2(NameProperty n, FProperty p1, FProperty p2) {
+        return (this.full_property == p1 && n.full_property == p2)
+                || (this.full_property == p2 && n.full_property == p1);
     }
 }
