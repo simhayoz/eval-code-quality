@@ -47,6 +47,7 @@ import eval.code.tools.pos.SinglePosition;
 public class Indentation extends CUBasedTest {
 
     private final Map<List<ASTNode>, Integer> block_tab_diff = new HashMap<>();
+    private final Map<Bracket, List<ASTNode>> same_line_bracket = new HashMap<>();
 
     public Indentation(CompilationUnit cu) {
         super(cu);
@@ -70,6 +71,10 @@ public class Indentation extends CUBasedTest {
                     addError(range, "a difference of " + max_occur, "a difference of " + t);
                 }
             });
+        }
+        if(same_line_bracket.size() > 1) {
+            // TODO error use of different style
+            System.out.println("ERROR HERE " + same_line_bracket);
         }
         block_tab_diff.clear();
     }
@@ -153,6 +158,7 @@ public class Indentation extends CUBasedTest {
         if (s != null) {
             if (s.getNodeType() == ASTNode.BLOCK) {
                 visitBlock(parent, ((Block) s).statements());
+                checkBracket(parent, ((Block) s));
             } else {
                 testForCurrNodeExpr(parent, s);
                 visitChildren(Collections.singletonList(s));
@@ -206,6 +212,26 @@ public class Indentation extends CUBasedTest {
         }
     }
 
+    private void checkBracket(ASTNode parent, Block child_block) {
+        if (Math.abs(getLine(parent) - getLine(child_block)) > 1) { // TODO check for javadoc and remove if needed
+            SinglePosition start = Position.setPos(getLine(parent), getCol(parent));
+            SinglePosition end = Position.setPos(getLine(child_block), getCol(child_block)); 
+            addWarning(Position.setRangeOrSinglePos(start, end), "either on same line or on the line after",
+                    (getLine(child_block) - getLine(parent)) + " lines after");
+        } else {
+            Bracket b = getLine(parent) == getLine(child_block) ? Bracket.SAME_LINE : Bracket.LINE_UNDER;
+            if (same_line_bracket.containsKey(b)) {
+                List<ASTNode> l = same_line_bracket.get(b);
+                l.add(parent);
+                same_line_bracket.replace(b, l);
+            } else {
+                List<ASTNode> l = new ArrayList<>();
+                l.add(parent);
+                same_line_bracket.put(b, l);
+            }
+        }
+    }
+
     private class BlockVisitor extends ASTVisitor {
 
         @Override
@@ -226,6 +252,7 @@ public class Indentation extends CUBasedTest {
             testNodeBlock(n, Arrays.asList(n.getMethods()));
             for (MethodDeclaration m : n.getMethods()) {
                 visitBlock(m, m.getBody().statements());
+                checkBracket(m, m.getBody());
             }
             return true;
         }
@@ -236,5 +263,9 @@ public class Indentation extends CUBasedTest {
             SinglePosition p = Position.setPos(getLine(n), getCol(n));
             addError(p, 0, p.column);
         }
+    }
+
+    private enum Bracket {
+        SAME_LINE, LINE_UNDER
     }
 }

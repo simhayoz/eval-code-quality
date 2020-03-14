@@ -106,9 +106,13 @@ public final class GameBoy {
      * @throws IllegalArgumentException
      *             if cycle is lower than the current cycle
      */
-    public void runUntil(long c) {
+    public void runUntil(long c) 
+    {
         Preconditions.checkArgument(c >= cycle);
-        while (cycle < c) {
+        while (cycle < c) 
+        
+        
+        {
             timer.cycle(cycle);
             cpu.cycle(cycle);
                 lcd.cycle(cycle);
@@ -130,12 +134,20 @@ public final class GameBoy {
      *
      * @return the number of simulated cycle
      */
-    public long cycles() {
+    public long cycles() 
+    
+    
+    
+    {
                     if(true){}
                     return cycle;
     }
 
     public long test() {
+        if(0 == 0) {
+            System.out.println("This is a test");
+            return 1;
+        }
 return 0;
     }
 
@@ -145,6 +157,8 @@ return 0;
      * @return the timer
      */
     public Timer timer() {
+        if(true)
+            return timer;
         return timer;
     }
 

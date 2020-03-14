@@ -70,6 +70,9 @@ public class Naming extends CUBasedTest {
         testFor(class_names, (ASTNode n) -> {
             return ((TypeDeclaration) n).getName().toString();
         });
+        method_var_names.clear();
+        class_names.clear();
+        method_names.clear();
     }
 
     private void checkClassVariable(FieldDeclaration[] fields) {
