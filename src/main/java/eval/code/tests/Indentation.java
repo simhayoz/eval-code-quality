@@ -210,19 +210,13 @@ public class Indentation extends CUBasedTest {
 
         @Override
         public boolean visit(ImportDeclaration n) {
-            if (getCol(n) != 0) {
-                SinglePosition p = Position.setPos(getLine(n), getCol(n));
-                addError(p, 0, p.column);
-            }
+            importPackageTest(n);
             return true;
         }
 
         @Override
         public boolean visit(PackageDeclaration n) {
-            if (getCol(n) != 0) {
-                SinglePosition p = Position.setPos(getLine(n), getCol(n));
-                addError(p, 0, p.column);
-            }
+            importPackageTest(n);
             return true;
         }
 
@@ -234,6 +228,13 @@ public class Indentation extends CUBasedTest {
                 visitBlock(m, m.getBody().statements());
             }
             return true;
+        }
+    }
+
+    private void importPackageTest(ASTNode n) {
+        if (getCol(n) != 0) {
+            SinglePosition p = Position.setPos(getLine(n), getCol(n));
+            addError(p, 0, p.column);
         }
     }
 }
