@@ -28,8 +28,8 @@ public class Naming extends CUBasedTest {
     private Map<List<Modifier.ModifierKeyword>, List<ASTNode>> class_names = new HashMap<>();
     private Map<List<Modifier.ModifierKeyword>, List<ASTNode>> method_names = new HashMap<>();
 
-    public Naming(CompilationUnit cu) {
-        super(cu);
+    public Naming(CompilationUnit cu, String content) {
+        super(cu, content);
         NAME = "naming";
     }
 

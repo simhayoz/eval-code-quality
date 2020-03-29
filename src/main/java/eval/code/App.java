@@ -18,17 +18,18 @@ public class App {
 
     public static void main(String[] args) {
       try {
-        Test b = new BlankLines(SFile.stringFromFile(new File(args[0])));
+        String s = SFile.stringFromFile(new File(args[0]));
+        Test b = new BlankLines(s);
         b.runTest();
         System.out.println(b);
         ProcessCU pcu = ProcessCU.fromFile(new File(args[0]));
-        Test t = new Indentation(pcu.getCU());
+        Test t = new Indentation(pcu.getCU(), s);
         t.runTest();
         System.out.println(t);
-        Test naming = new Naming(pcu.getCU());
+        Test naming = new Naming(pcu.getCU(), s);
         naming.runTest();
         System.out.println(naming);
-        Test bMatching = new BracketMatching(pcu.getCU());
+        Test bMatching = new BracketMatching(pcu.getCU(), s);
         bMatching.runTest(true);
         System.out.println(bMatching);
       } catch(FileNotFoundException e) {

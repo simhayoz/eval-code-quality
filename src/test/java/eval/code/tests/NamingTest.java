@@ -12,7 +12,7 @@ public class NamingTest {
 
     @Test
     void emptyCUReportNoError() {
-        Report r = new Naming(ProcessCU.fromString("").getCU()).runTest();
+        Report r = new Naming(ProcessCU.fromString("").getCU(), "").runTest();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }
@@ -26,7 +26,7 @@ public class NamingTest {
             addLn("}").
             addLn("public class TestStillWorking {").
             addLn("}");
-        Report r = new Naming(ProcessCU.fromString(sb.toString()).getCU()).runTest();
+        Report r = new Naming(ProcessCU.fromString(sb.toString()).getCU(), sb.toString()).runTest();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }
@@ -42,7 +42,7 @@ public class NamingTest {
             addLn("public String _other_style;", 4).
             addLn("private String evenWithOtherStyle;", 4).
             addLn("}");
-        Report r = new Naming(ProcessCU.fromString(sb.toString()).getCU()).runTest();
+        Report r = new Naming(ProcessCU.fromString(sb.toString()).getCU(), sb.toString()).runTest();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }
@@ -63,7 +63,7 @@ public class NamingTest {
             addLn("public static void thisisatest() {", 4).
             addLn("}", 4).
             addLn("}");
-        Report r = new Naming(ProcessCU.fromString(sb.toString()).getCU()).runTest();
+        Report r = new Naming(ProcessCU.fromString(sb.toString()).getCU(), sb.toString()).runTest();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }
@@ -86,7 +86,7 @@ public class NamingTest {
             addLn("int _even_empty;", 8).
             addLn("}", 4).
             addLn("}");
-        Report r = new Naming(ProcessCU.fromString(sb.toString()).getCU()).runTest();
+        Report r = new Naming(ProcessCU.fromString(sb.toString()).getCU(), sb.toString()).runTest();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }
@@ -106,7 +106,7 @@ public class NamingTest {
             addLn("public static void thisisatest() {", 4).
             addLn("}", 4).
             addLn("}");
-        Report r = new Naming(ProcessCU.fromString(sb.toString()).getCU()).runTest();
+        Report r = new Naming(ProcessCU.fromString(sb.toString()).getCU(), sb.toString()).runTest();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), hasSize(2));
     }
@@ -118,7 +118,7 @@ public class NamingTest {
             addLn("public static void test() {", 4).
             addLn("}", 4).
             addLn("}");
-        Report r = new Naming(ProcessCU.fromString(sb.toString()).getCU()).runTest();
+        Report r = new Naming(ProcessCU.fromString(sb.toString()).getCU(), sb.toString()).runTest();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }

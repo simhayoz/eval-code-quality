@@ -22,8 +22,8 @@ public class BracketMatching extends CUBasedTest {
 
     private final List<ASTNode> one_line_statements = new ArrayList<>();
 
-    public BracketMatching(CompilationUnit cu) {
-        super(cu);
+    public BracketMatching(CompilationUnit cu, String content) {
+        super(cu, content);
         NAME = "bracket matching";
     }
 

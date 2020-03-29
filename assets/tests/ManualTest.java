@@ -85,6 +85,7 @@ public final class GameBoy {
         return bus;
     }
 
+
     
 
     /**
@@ -93,6 +94,15 @@ public final class GameBoy {
      * @return the CPU
      */
     public Cpu cpu() {
+        return cpu;
+    }
+
+    /**
+     * Get the {@code Cpu} of the GameBoy
+     *
+     * @return the CPU
+     */
+    Cpu cpu2() {
         return cpu;
     }
 
@@ -176,6 +186,8 @@ return 0;
      *
      * @return the joypad
      */
+     
+     
     public Joypad joypad() {
                      return joypad;
     }

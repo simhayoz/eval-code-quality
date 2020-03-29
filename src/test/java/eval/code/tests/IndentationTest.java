@@ -20,7 +20,7 @@ class IndentationTest {
 
     @Test
     void emptyCUReportNoError() {
-        Report r = new Indentation(ProcessCU.fromString("").getCU()).runTest();
+        Report r = new Indentation(ProcessCU.fromString("").getCU(), "").runTest();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }
@@ -34,7 +34,7 @@ class IndentationTest {
                 "int i = 0;\nswitch (i) {\n    case 0:\n        return true;\n        break;\n    case 1:\n        return false;\n        break;\n    default:\n        return false;\n        break;\n}" };
         for (String s : blocks_to_test) {
             String wrapper = wrap(s);
-            Report r = new Indentation(ProcessCU.fromString(wrapper).getCU()).runTest();
+            Report r = new Indentation(ProcessCU.fromString(wrapper).getCU(), wrapper).runTest();
             assertThat(r.getWarnings(), is(empty()));
             assertThat(r.getErrors(), is(empty()));
         }
@@ -55,7 +55,7 @@ class IndentationTest {
                 Position.setPos(6, 12));
         for (Entry<String, Position> s : blocks_to_test.entrySet()) {
             String wrapper = wrap(s.getKey());
-            Report r = new Indentation(ProcessCU.fromString(wrapper).getCU()).runTest();
+            Report r = new Indentation(ProcessCU.fromString(wrapper).getCU(), wrapper).runTest();
             assertThat(wrapper, r.getWarnings(), is(empty()));
             assertThat(wrapper, r.getErrors(), Matchers
                     .<Collection<ReportPosition>>allOf(hasItem(is(ReportPosition.at(s.getValue()))), hasSize(1)));
@@ -70,7 +70,7 @@ class IndentationTest {
                 "try {\n    System.out.println();\n    return true;\n} \ncatch (Exception e) {\n    return false;\n} \ncatch (NullPointerException n) {\n    return false;\n}" };
         for (String s : blocks_to_test) {
             String wrapper = wrap(s);
-            Report r = new Indentation(ProcessCU.fromString(wrapper).getCU()).runTest();
+            Report r = new Indentation(ProcessCU.fromString(wrapper).getCU(), wrapper).runTest();
             assertThat(wrapper, r.getWarnings(), is(empty()));
             assertThat(wrapper, r.getErrors(), is(empty()));
         }
@@ -87,7 +87,7 @@ class IndentationTest {
                 Position.setPos(10, 10));
         for (Entry<String, Position> s : blocks_to_test.entrySet()) {
             String wrapper = wrap(s.getKey());
-            Report r = new Indentation(ProcessCU.fromString(wrapper).getCU()).runTest();
+            Report r = new Indentation(ProcessCU.fromString(wrapper).getCU(), wrapper).runTest();
             assertThat(wrapper, r.getWarnings(), is(empty()));
             assertThat(wrapper, r.getErrors(), Matchers
                     .<Collection<ReportPosition>>allOf(hasItem(is(ReportPosition.at(s.getValue()))), hasSize(1)));
@@ -99,7 +99,7 @@ class IndentationTest {
         String b1 = "try {\n    System.out.println();\n    return true;\n} catch (Exception e) {\n    return false;\n}";
         String b2 = "while(true) {\n        System.out.println();\n        return true;\n}";
         String wrapper = wrap(new String[] { b1, b2 });
-        Report r = new Indentation(ProcessCU.fromString(wrapper).getCU()).runTest();
+        Report r = new Indentation(ProcessCU.fromString(wrapper).getCU(), wrapper).runTest();
         assertThat(wrapper, r.getWarnings(), is(empty()));
         assertThat(wrapper, r.getErrors(),
                 Matchers.<Collection<ReportPosition>>allOf(

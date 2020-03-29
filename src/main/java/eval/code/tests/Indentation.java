@@ -22,7 +22,6 @@ import org.eclipse.jdt.core.dom.LabeledStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.PackageDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
-// import org.eclipse.jdt.core.dom.SwitchExpression;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.SynchronizedStatement;
 import org.eclipse.jdt.core.dom.TryStatement;
@@ -49,8 +48,8 @@ public class Indentation extends CUBasedTest {
     private final Map<List<ASTNode>, Integer> block_tab_diff = new HashMap<>();
     private final Map<Bracket, List<ASTNode>> same_line_bracket = new HashMap<>();
 
-    public Indentation(CompilationUnit cu) {
-        super(cu);
+    public Indentation(CompilationUnit cu, String content) {
+        super(cu, content);
         NAME = "indentation";
     }
 
@@ -118,9 +117,6 @@ public class Indentation extends CUBasedTest {
                         }
                     }
                     break;
-                // case ASTNode.SWITCH_EXPRESSION: // TODO is this useful?
-                // visitBlock(n, ((SwitchExpression) n).statements());
-                // break;
                 case ASTNode.DO_STATEMENT:
                     iterateBlockOrStatement(n, ((DoStatement) n).getBody());
                     break;
@@ -213,7 +209,7 @@ public class Indentation extends CUBasedTest {
     }
 
     private void checkBracket(ASTNode parent, Block child_block) {
-        if (Math.abs(getLine(parent) - getLine(child_block)) > 1) { // TODO check for javadoc and remove if needed
+        if (Math.abs(getLine(parent) - getLine(child_block)) > 1) { // TODO else part is considered with if as parent
             SinglePosition start = Position.setPos(getLine(parent), getCol(parent));
             SinglePosition end = Position.setPos(getLine(child_block), getCol(child_block)); 
             addWarning(Position.setRangeOrSinglePos(start, end), "either on same line or on the line after",
