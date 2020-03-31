@@ -9,7 +9,6 @@ import java.util.NoSuchElementException;
 
 public class StringProvider extends ContentProvider {
     private final SCUTuple tuple;
-    private boolean hasNext = true;
 
     public StringProvider(String content) {
         Preconditions.checkArg(content != null, "String cannot be null");
