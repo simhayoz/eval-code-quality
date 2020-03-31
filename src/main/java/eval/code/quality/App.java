@@ -22,8 +22,8 @@ public class App {
         files.add(new File("assets/tests/ManualTest.java"));
         ContentProvider contentProvider = new MultipleFileProvider(files);
         Test test = new BlankLines(contentProvider);
-//        System.out.println(test.run());
+        System.out.println(test.run());
         Test test2 = new Indentation(contentProvider);
-        test2.run();
+        System.out.println(test2.run());
     }
 }

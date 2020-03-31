@@ -17,16 +17,7 @@ public class MultipleStringProvider extends ContentProvider {
     }
 
     @Override
-    public boolean _hasNext() {
-        return current < content.size() - 1;
-    }
-
-    @Override
-    public SCUTuple _next() {
-        if(!_hasNext()) {
-            throw new NoSuchElementException();
-        }
-        ++current;
-        return content.get(current);
+    protected List<SCUTuple> getContent() {
+        return Collections.unmodifiableList(content);
     }
 }
