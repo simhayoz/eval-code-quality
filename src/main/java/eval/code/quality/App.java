@@ -8,6 +8,7 @@ import eval.code.quality.provider.FileProvider;
 import eval.code.quality.provider.MultipleFileProvider;
 import eval.code.quality.tests.BlankLines;
 import eval.code.quality.tests.Indentation;
+import eval.code.quality.tests.Naming;
 import eval.code.quality.tests.Test;
 
 import java.io.File;
@@ -19,11 +20,16 @@ public class App {
     public static void main(String[] args) {
         List<File> files = new ArrayList<>();
         files.add(new File("assets/tests/ManualTest.java"));
-        files.add(new File("assets/tests/ManualTest.java"));
+//        files.add(new File("assets/tests/ManualTest.java"));
         ContentProvider contentProvider = new MultipleFileProvider(files);
         Test test = new BlankLines(contentProvider);
-        System.out.println(test.run());
+        test.run();
+        System.out.println(test);
         Test test2 = new Indentation(contentProvider);
-        System.out.println(test2.run());
+        test2.run();
+        System.out.println(test2);
+        Test test3 = new Naming(contentProvider);
+        test3.run();
+        System.out.println(test3);
     }
 }

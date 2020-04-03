@@ -19,6 +19,7 @@ public abstract class CompilationUnitTest extends Test {
         for (SCUTuple tuple : contentProvider) {
             testFor(tuple.getString(), tuple.getCompilationUnit());
         }
+        afterTests();
     }
 
     /**
@@ -28,4 +29,9 @@ public abstract class CompilationUnitTest extends Test {
      * @param compilationUnit the CompilationUnit
      */
     protected abstract void testFor(String content, CompilationUnit compilationUnit);
+
+    /**
+     * Method called after having done every tests.
+     */
+    protected void afterTests() { }
 }

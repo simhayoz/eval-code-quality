@@ -68,6 +68,6 @@ public abstract class Test {
 
     @Override
     public String toString() {
-        return "Result for " + getName() + ":" + System.lineSeparator() + report.toString();
+        return "Result for " + getName() + ":" + System.lineSeparator() + report.toString().indent(1);
     }
 }

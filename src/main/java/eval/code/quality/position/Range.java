@@ -25,6 +25,10 @@ public class Range extends Position {
         this.end = end;
     }
 
+    public static Range from(com.github.javaparser.Range range) {
+        return new Range(SinglePosition.from(range.begin), SinglePosition.from(range.end));
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {

@@ -206,7 +206,6 @@ class IndentationTest {
         for (Entry<String, Position> s : blocks_to_test.entrySet()) {
             String wrapper = wrap(s.getKey());
             Report r = new Indentation(new StringProvider(wrapper)).run();
-            System.out.println(wrapper);
             assertThat(wrapper, r.getWarnings(), is(empty()));
             assertThat(wrapper, r.getErrors(), Matchers
                     .<Collection<Error>>allOf(hasItem(is(ReportPosition.at(s.getValue()))), hasSize(1)));

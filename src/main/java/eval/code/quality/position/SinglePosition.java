@@ -24,6 +24,10 @@ public class SinglePosition extends Position implements Comparable<SinglePositio
         this.column = Optional.of(column);
     }
 
+    public static SinglePosition from(com.github.javaparser.Position position) {
+        return new SinglePosition(position.line, position.column);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
