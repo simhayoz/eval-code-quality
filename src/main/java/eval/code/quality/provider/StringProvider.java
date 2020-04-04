@@ -1,22 +1,35 @@
 package eval.code.quality.provider;
 
-import eval.code.quality.utils.Preconditions;
-import eval.code.quality.utils.SCUTuple;
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
 
-import java.util.Collections;
+import eval.code.quality.utils.Lazy;
+import eval.code.quality.utils.Preconditions;
+
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public class StringProvider extends ContentProvider {
-    private final SCUTuple tuple;
+    private final String content;
+    private Lazy<CompilationUnit> compilationUnit;
 
     public StringProvider(String content) {
         Preconditions.checkArg(content != null, "String cannot be null");
-        this.tuple = new SCUTuple(content);
+        this.content = content;
+        this.compilationUnit = new Lazy<>(() -> StaticJavaParser.parse(content));
     }
 
     @Override
-    protected List<SCUTuple> getContent() {
-        return Collections.singletonList(tuple);
+    public String getString() {
+        return content;
+    }
+
+    @Override
+    public CompilationUnit getCompilationUnit() {
+        return compilationUnit.get();
+    }
+
+    @Override
+    public void addAll(List<ContentProvider> contentProviders) {
+        contentProviders.add(this);
     }
 }

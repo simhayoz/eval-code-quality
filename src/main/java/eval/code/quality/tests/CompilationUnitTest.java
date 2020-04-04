@@ -2,7 +2,6 @@ package eval.code.quality.tests;
 
 import com.github.javaparser.ast.CompilationUnit;
 import eval.code.quality.provider.ContentProvider;
-import eval.code.quality.utils.SCUTuple;
 
 /**
  * Represents all test that needs the {@code CompilationUnit}.
@@ -16,8 +15,8 @@ public abstract class CompilationUnitTest extends Test {
 
     @Override
     protected void test() {
-        for (SCUTuple tuple : contentProvider) {
-            testFor(tuple.getString(), tuple.getCompilationUnit());
+        for (ContentProvider current : contentProvider) {
+            testFor(current);
         }
         afterTests();
     }
@@ -25,10 +24,9 @@ public abstract class CompilationUnitTest extends Test {
     /**
      * Run test for current content and {@code CompilationUnit}.
      *
-     * @param content         the content
-     * @param compilationUnit the CompilationUnit
+     * @param contentProvider the current ContentProvider
      */
-    protected abstract void testFor(String content, CompilationUnit compilationUnit);
+    protected abstract void testFor(ContentProvider contentProvider);
 
     /**
      * Method called after having done every tests.

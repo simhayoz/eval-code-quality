@@ -4,7 +4,6 @@ import eval.code.quality.position.Position;
 import eval.code.quality.position.Range;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.ReportPosition;
-import eval.code.quality.utils.SCUTuple;
 
 import java.util.Scanner;
 
@@ -17,13 +16,13 @@ public class BlankLines extends Test {
 
     @Override
     protected void test() {
-        for(SCUTuple s: content) {
-            testFor(s.getString());
+        for(ContentProvider c: content) {
+            testFor(c);
         }
     }
 
-    private void testFor(String current) {
-        Scanner scanner = new Scanner(current);
+    private void testFor(ContentProvider contentProvider) {
+        Scanner scanner = new Scanner(contentProvider.getString());
         if (scanner.hasNextLine()) {
             int count_empty_line = scanner.nextLine().trim().isEmpty() ? 1 : 0;
             int line = 1;

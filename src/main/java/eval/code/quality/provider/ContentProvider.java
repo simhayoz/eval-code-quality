@@ -1,23 +1,26 @@
 package eval.code.quality.provider;
 
-import eval.code.quality.utils.SCUTuple;
+import com.github.javaparser.ast.CompilationUnit;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * Represents a content provider.
  */
-public abstract class ContentProvider implements Iterable<SCUTuple> {
+public abstract class ContentProvider implements Iterable<ContentProvider> {
+
+    public abstract String getString();
+
+    public abstract CompilationUnit getCompilationUnit();
+
+    public abstract void addAll(List<ContentProvider> contentProviders);
 
     @Override
-    public Iterator<SCUTuple> iterator() {
-        return getContent().iterator();
+    public Iterator<ContentProvider> iterator() {
+        List<ContentProvider> list = new ArrayList<>();
+        addAll(list);
+        return list.iterator();
     }
-
-    /**
-     * Get the content of this {@code ContentProvider}.
-     * @return the content of this {@code ContentProvider}
-     */
-    protected abstract List<SCUTuple> getContent();
 }

@@ -44,7 +44,7 @@ public class ReportPosition extends Error {
      * @return the new {@code ReportPosition}
      */
     public static ReportPosition at(Position position, String expected, String was) {
-        return ReportPosition.at(position, "expected: " + expected + " was " + was);
+        return ReportPosition.at(position, "expected: " + expected + " was: " + was);
     }
 
     @Override

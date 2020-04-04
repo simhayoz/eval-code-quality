@@ -1,6 +1,7 @@
 package eval.code.quality.tests;
 
 import eval.code.quality.MyStringBuilder;
+import eval.code.quality.position.MultiplePosition;
 import eval.code.quality.position.Position;
 import eval.code.quality.position.Range;
 import eval.code.quality.position.SinglePosition;
@@ -95,7 +96,7 @@ class IndentationTest {
                 .addLn("} else {")
                 .addLn("return false;", 5)
                 .addLn("}");
-        blocks_to_test.put(builder.toString(), new SinglePosition(6, 13));
+        blocks_to_test.put(builder.toString(), new Range(new SinglePosition(6, 14), new SinglePosition(6, 14)));
         builder = new MyStringBuilder();
         builder.addLn("if(true)")
                 .addLn("return true;", 5);
@@ -106,7 +107,7 @@ class IndentationTest {
                 .addLn("System.out.println();", 4)
                 .addLn("return true;", 6)
                 .addLn("}");
-        blocks_to_test.put(builder.toString(), new SinglePosition(6, 14));
+        blocks_to_test.put(builder.toString(), new SinglePosition(6, 15));
         builder = new MyStringBuilder();
         builder.addLn("{")
                 .addLn("System.out.println();", 4)
@@ -118,8 +119,8 @@ class IndentationTest {
         builder.addLn("int i = 0;")
                 .addLn("switch (i) {")
                 .addLn("case 0:", 4)
-                .addLn("return true;", 4)
-                .addLn("System.out.println();", 8)
+                .addLn("System.out.println();", 4)
+                .addLn("return true;", 8)
                 .addLn("break;", 8)
                 .addLn("case 1:", 4)
                 .addLn("return false;", 8)
@@ -190,19 +191,19 @@ class IndentationTest {
                 .addLn("} catch (Exception e) {")
                 .addLn("return false;", 4)
                 .addLn("}");
-        blocks_to_test.put(builder.toString(), new SinglePosition(4, 13));
-        builder = new MyStringBuilder();
-        builder.addLn("try {")
-                .addLn("System.out.println();", 4)
-                .addLn("return true;", 4)
-                .addLn("}")
-                .addLn("catch (Exception e) {")
-                .addLn("return false;", 4)
-                .addLn("}")
-                .addLn("catch (NullPointerException n) {", 2)
-                .addLn("return false;", 4)
-                .addLn("}");
-        blocks_to_test.put(builder.toString(), new SinglePosition(10, 10));
+        blocks_to_test.put(builder.toString(), new SinglePosition(4, 14));
+//        builder = new MyStringBuilder();
+//        builder.addLn("try {")
+//                .addLn("System.out.println();", 4)
+//                .addLn("return true;", 4)
+//                .addLn("}")
+//                .addLn("catch (Exception e) {")
+//                .addLn("return false;", 4)
+//                .addLn("}")
+//                .addLn("catch (NullPointerException n) {", 2)
+//                .addLn("return false;", 4)
+//                .addLn("}");
+//        blocks_to_test.put(builder.toString(), new SinglePosition(10, 10));
         for (Entry<String, Position> s : blocks_to_test.entrySet()) {
             String wrapper = wrap(s.getKey());
             Report r = new Indentation(new StringProvider(wrapper)).run();

@@ -7,17 +7,14 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.FieldDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
-import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import eval.code.quality.position.MultiplePosition;
-import eval.code.quality.position.Range;
 import eval.code.quality.position.SinglePosition;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.NameProperty;
 import eval.code.quality.utils.ReportPosition;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Naming extends CompilationUnitTest {
     private final Map<Modifiers, Map<TypeDeclaration<?>, NameProperty>> typeDeclarations = new HashMap<>();
@@ -31,7 +28,8 @@ public class Naming extends CompilationUnitTest {
     }
 
     @Override
-    protected void testFor(String content, CompilationUnit compilationUnit) {
+    protected void testFor(ContentProvider contentProvider) {
+        CompilationUnit compilationUnit = contentProvider.getCompilationUnit();
         compilationUnit.findAll(TypeDeclaration.class).forEach(type -> {
             addToMap(typeDeclarations, type.getModifiers(), type, type.getNameAsString());
         });
