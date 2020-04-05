@@ -5,6 +5,7 @@ import com.github.javaparser.ast.CompilationUnit;
 
 import eval.code.quality.utils.FileToString;
 import eval.code.quality.utils.Lazy;
+import eval.code.quality.utils.Preconditions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -16,6 +17,7 @@ public class FileProvider extends ContentProvider {
     private Lazy<CompilationUnit> compilationUnit;
 
     public FileProvider(File file) {
+        Preconditions.checkArg(file != null, "File should not be null");
         this.file = file;
         this.content = new Lazy<>(() -> {
             try {
@@ -36,6 +38,11 @@ public class FileProvider extends ContentProvider {
     @Override
     public String getString() {
         return content.get();
+    }
+
+    @Override
+    public String getName() {
+        return file.getName();
     }
 
     @Override

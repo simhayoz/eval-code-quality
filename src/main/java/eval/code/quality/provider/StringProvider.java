@@ -9,11 +9,14 @@ import eval.code.quality.utils.Preconditions;
 import java.util.List;
 
 public class StringProvider extends ContentProvider {
+    private final String name;
     private final String content;
     private Lazy<CompilationUnit> compilationUnit;
 
-    public StringProvider(String content) {
+    public StringProvider(String name, String content) {
+        Preconditions.checkArg(name != null, "String name cannot be null");
         Preconditions.checkArg(content != null, "String cannot be null");
+        this.name = name;
         this.content = content;
         this.compilationUnit = new Lazy<>(() -> StaticJavaParser.parse(content));
     }
@@ -21,6 +24,11 @@ public class StringProvider extends ContentProvider {
     @Override
     public String getString() {
         return content;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override

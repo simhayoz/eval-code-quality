@@ -27,6 +27,11 @@ public class MultipleContentProvider extends ContentProvider {
     }
 
     @Override
+    public String getName() {
+        return "Multiple ContentProvider";
+    }
+
+    @Override
     public void addAll(List<ContentProvider> contentProviders) {
         for(ContentProvider contentProvider: this.contentProviders) {
             contentProvider.addAll(contentProviders);
