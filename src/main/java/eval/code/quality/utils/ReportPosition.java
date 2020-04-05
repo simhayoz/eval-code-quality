@@ -1,15 +1,18 @@
 package eval.code.quality.utils;
 
+import eval.code.quality.position.NamePosition;
 import eval.code.quality.position.Position;
+
+import java.util.List;
 
 /**
  * Represents an error at a position with a description of the error.
  */
 public class ReportPosition extends Error {
-    public final Position position;
+    public final NamePosition position;
     public final String description;
 
-    private ReportPosition(Position position, String description) {
+    private ReportPosition(NamePosition position, String description) {
         this.position = position;
         this.description = description;
     }
@@ -20,7 +23,7 @@ public class ReportPosition extends Error {
      * @param position the position of the error
      * @return the new {@code ReportPosition}
      */
-    public static ReportPosition at(Position position) {
+    public static ReportPosition at(NamePosition position) {
         return ReportPosition.at(position, "");
     }
 
@@ -31,7 +34,7 @@ public class ReportPosition extends Error {
      * @param report   the description of the error
      * @return the new {@code ReportPosition}
      */
-    public static ReportPosition at(Position position, String report) {
+    public static ReportPosition at(NamePosition position, String report) {
         return new ReportPosition(position, report);
     }
 
@@ -43,7 +46,7 @@ public class ReportPosition extends Error {
      * @param was      the description of what was given
      * @return the new {@code ReportPosition}
      */
-    public static ReportPosition at(Position position, String expected, String was) {
+    public static ReportPosition at(NamePosition position, String expected, String was) {
         return ReportPosition.at(position, "expected: " + expected + " was: " + was);
     }
 
@@ -61,6 +64,6 @@ public class ReportPosition extends Error {
 
     @Override
     public String toString() {
-        return position + " " + description;
+        return position + ": " + description;
     }
 }

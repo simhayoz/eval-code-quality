@@ -9,19 +9,22 @@ import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.stmt.*;
 
 import eval.code.quality.position.MultiplePosition;
+import eval.code.quality.position.NamePosition;
 import eval.code.quality.position.Range;
 import eval.code.quality.position.SinglePosition;
+import eval.code.quality.position.NamePosition;
 import eval.code.quality.provider.ContentProvider;
+import eval.code.quality.utils.Context;
 import eval.code.quality.utils.ReportPosition;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Indentation extends CompilationUnitTest {
-    private final Map<Integer, List<eval.code.quality.position.Position>> blockIndentations = new HashMap<>();
+    private final Map<Integer, List<NamePosition>> blockIndentations = new HashMap<>();
 
-    public Indentation(ContentProvider contentProvider) {
-        super(contentProvider);
+    public Indentation(Context context) {
+        super(context);
     }
 
     @Override
@@ -29,7 +32,7 @@ public class Indentation extends CompilationUnitTest {
         CompilationUnit compilationUnit = contentProvider.getCompilationUnit();
         compilationUnit.findAll(SwitchEntry.class).forEach(parent -> {
             NodeList<Statement> children = parent.getStatements();
-            Range range = new Range(SinglePosition.from(children.get(0).getBegin().get()), SinglePosition.from(children.get(children.size() - 1).getBegin().get()));
+            NamePosition range = context.setPos(SinglePosition.from(children.get(0).getBegin().get()), SinglePosition.from(children.get(children.size() - 1).getBegin().get()));
             checkIndentationMap(getBlockIndentation(parent.getBegin().get().column, children), range, "block misaligned, expected all indented at one of: ");
         });
         compilationUnit.getImports().forEach(this::checkAlignLeft);
@@ -48,9 +51,10 @@ public class Indentation extends CompilationUnitTest {
             if (goodIndentation.size() > 1) {
                 for (int i : goodIndentation) {
                     if (blockIndentations.get(i).size() > 1) {
-                        MultiplePosition positions = new MultiplePosition();
-                        blockIndentations.get(i).forEach(positions::add);
-                        addError(ReportPosition.at(positions, "the same block difference for every blocks", "all of " + goodIndentation));
+                        // TODO fix this
+//                        List<eval.code.quality.position.Position> positions = new ArrayList<>();
+//                        blockIndentations.get(i).forEach(positions::add);
+//                        addError(ReportPosition.at(context.setPos(positions), "the same block difference for every blocks", "all of " + goodIndentation));
                     } else {
                         addError(ReportPosition.at(blockIndentations.get(i).get(0), "indentation of " + goodIndentation.get(0), i + ""));
                     }
@@ -58,9 +62,10 @@ public class Indentation extends CompilationUnitTest {
             }
             for (int i : wrongIndentation) {
                 if (blockIndentations.get(i).size() > 1) {
-                    MultiplePosition positions = new MultiplePosition();
-                    blockIndentations.get(i).forEach(positions::add);
-                    addError(ReportPosition.at(positions, "indentation of " + (goodIndentation.size() > 1 ? "one of " + goodIndentation : goodIndentation.get(0)), i + ""));
+                    // TODO fix this
+//                    MultiplePosition positions = new MultiplePosition();
+//                    blockIndentations.get(i).forEach(positions::add);
+//                    addError(ReportPosition.at(context.setPos(positions), "indentation of " + (goodIndentation.size() > 1 ? "one of " + goodIndentation : goodIndentation.get(0)), i + ""));
                 } else {
                     addError(ReportPosition.at(blockIndentations.get(i).get(0), "indentation of " + (goodIndentation.size() > 1 ? "one of " + goodIndentation : goodIndentation.get(0)), i + ""));
                 }
@@ -103,12 +108,12 @@ public class Indentation extends CompilationUnitTest {
         if(children.isEmpty()) {
             return;
         }
-        Range range = new Range(SinglePosition.from(children.get(0).getBegin().get()), SinglePosition.from(children.get(children.size() - 1).getBegin().get()));
+        NamePosition range = context.setPos((SinglePosition.from(children.get(0).getBegin().get())), SinglePosition.from(children.get(children.size() - 1).getBegin().get()));
         checkIndentationMap(getBlockIndentation(parent.getBegin().get().column, children), range, blockExpectation);
 
     }
 
-    public void checkIndentationMap(Map<Integer, List<eval.code.quality.position.Position>> indentationByDiff, Range blockRange, String blockExpectation) {
+    public void checkIndentationMap(Map<Integer, List<eval.code.quality.position.Position>> indentationByDiff, NamePosition blockRange, String blockExpectation) {
         if(indentationByDiff.size() > 1) {
             Map<Integer, Integer> indentationCount = indentationByDiff.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
             int maxNumberOfElement = Collections.max(indentationCount.values());
@@ -121,9 +126,9 @@ public class Indentation extends CompilationUnitTest {
                     if(indentationByDiff.get(i).size() > 1) {
                         MultiplePosition positions = new MultiplePosition();
                         indentationByDiff.get(i).forEach(positions::add);
-                        addError(ReportPosition.at(positions, "indentation of " + goodIndentation.get(0), i + ""));
+                        addError(ReportPosition.at(context.setPos(positions), "indentation of " + goodIndentation.get(0), i + ""));
                     } else {
-                        addError(ReportPosition.at(indentationByDiff.get(i).get(0), "indentation of " + goodIndentation.get(0), i + ""));
+                        addError(ReportPosition.at(context.setPos(indentationByDiff.get(i).get(0)), "indentation of " + goodIndentation.get(0), i + ""));
                     }
                 }
                 addToBlockIndentation(goodIndentation.get(0), blockRange);
@@ -137,7 +142,7 @@ public class Indentation extends CompilationUnitTest {
         node.getRange().ifPresent(e -> {
             Position position = e.begin;
             if(position.column != 1) {
-                addError(ReportPosition.at(new SinglePosition(position.line, position.column), "element is not aligned left"));
+                addError(ReportPosition.at(context.setPos(position), "element is not aligned left"));
             }
         });
     }
@@ -149,19 +154,19 @@ public class Indentation extends CompilationUnitTest {
             if(child.column > parentIndentation) {
                 addToMap(indentationByDiff, child.column - parentIndentation, child);
             } else {
-                addError(ReportPosition.at(SinglePosition.from(child), "less indented or equally indented than parent"));
+                addError(ReportPosition.at(context.setPos(child), "less indented or equally indented than parent"));
             }
         }
         return indentationByDiff;
     }
 
-    private void addToBlockIndentation(int indentation, eval.code.quality.position.Position block) {
+    private void addToBlockIndentation(int indentation, NamePosition block) {
         if(blockIndentations.containsKey(indentation)) {
-            List<eval.code.quality.position.Position> list = blockIndentations.get(indentation);
+            List<NamePosition> list = blockIndentations.get(indentation);
             list.add(block);
             blockIndentations.replace(indentation, list);
         } else {
-            List<eval.code.quality.position.Position> list = new ArrayList<>();
+            List<NamePosition> list = new ArrayList<>();
             list.add(block);
             blockIndentations.put(indentation, list);
         }

@@ -1,22 +1,22 @@
 package eval.code.quality.tests;
 
-import com.github.javaparser.ast.CompilationUnit;
 import eval.code.quality.provider.ContentProvider;
+import eval.code.quality.utils.Context;
 
 /**
  * Represents all test that needs the {@code CompilationUnit}.
  */
 public abstract class CompilationUnitTest extends Test {
-    protected final ContentProvider contentProvider;
+    protected final Context context;
 
-    public CompilationUnitTest(ContentProvider contentProvider) {
-        this.contentProvider = contentProvider;
+    public CompilationUnitTest(Context context) {
+        this.context = new Context(context);
     }
 
     @Override
     protected void test() {
-        for (ContentProvider current : contentProvider) {
-            testFor(current);
+        while(context.hasNextProvider()) {
+            testFor(context.nextProvider());
         }
         afterTests();
     }
