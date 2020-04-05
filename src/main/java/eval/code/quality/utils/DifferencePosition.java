@@ -7,6 +7,7 @@ import eval.code.quality.position.Position;
  * <p>This is used when we cannot determine which position was an error and which was not, but we know by the
  * difference between the two that an error was found</p>
  */
+@Deprecated
 public class DifferencePosition extends Error {
     public final Position firstPosition;
     public final Position secondPosition;

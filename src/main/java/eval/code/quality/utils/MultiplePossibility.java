@@ -5,7 +5,7 @@ import eval.code.quality.position.Position;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+@Deprecated
 public class MultiplePossibility extends Error {
     private final Map<Position, String> positions;
     private final String description;

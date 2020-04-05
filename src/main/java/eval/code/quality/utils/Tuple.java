@@ -6,6 +6,7 @@ package eval.code.quality.utils;
  * @param <L> the type of the first element
  * @param <R> the type of the second element
  */
+@Deprecated
 public class Tuple<L, R> {
     public final L _1;
     public final R _2;
