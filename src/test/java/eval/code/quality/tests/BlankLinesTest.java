@@ -24,7 +24,7 @@ public class BlankLinesTest {
             s.addBlankLine();
         }
         s.addLn("test");
-        ContentProvider contentProvider = new StringProvider(s.toString());
+        ContentProvider contentProvider = new StringProvider("oneLiner", s.toString());
         Report r = new BlankLines(contentProvider).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), Matchers.<Collection<Error>>allOf(
@@ -43,7 +43,7 @@ public class BlankLinesTest {
                 .addBlankLine()
                 .addBlankLine()
                 .addLn("test");
-        ContentProvider contentProvider = new StringProvider(s.toString());
+        ContentProvider contentProvider = new StringProvider("For tests", s.toString());
         Report r = new BlankLines(contentProvider).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(),
@@ -55,11 +55,11 @@ public class BlankLinesTest {
 
     @Test
     void emptyStringOrNoBreakStringIsSuccesful() {
-        ContentProvider contentProvider = new StringProvider("");
+        ContentProvider contentProvider = new StringProvider("EmptyString", "");
         Report r = new BlankLines(contentProvider).run();
         assertThat(r.getErrors(), is(empty()));
         assertThat(r.getWarnings(), is(empty()));
-        contentProvider = new StringProvider("Test on a unique line");
+        contentProvider = new StringProvider("For tests", "Test on a unique line");
         r = new BlankLines(contentProvider).run();
         assertThat(r.getErrors(), is(empty()));
         assertThat(r.getWarnings(), is(empty()));
