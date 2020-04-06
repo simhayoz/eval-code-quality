@@ -27,55 +27,55 @@ public class Context {
         this(context.firstElement);
     }
 
-    public NamePosition setPos(Node node) {
+    public Position setPos(Node node) {
         return setPos(node.getBegin().get());
     }
 
-    public NamePosition setPos(int line) {
+    public Position setPos(int line) {
         return setPos(new SinglePosition(line));
     }
 
-    public NamePosition setPos(int line, int column) {
+    public Position setPos(int line, int column) {
         return setPos(new SinglePosition(line, column));
     }
 
-    public NamePosition setPos(com.github.javaparser.Position position) {
+    public Position setPos(com.github.javaparser.Position position) {
         return setPos(SinglePosition.from(position));
     }
 
-    public NamePosition setPos(SinglePosition begin, SinglePosition end) {
+    public Position setPos(SinglePosition begin, SinglePosition end) {
         if (begin.equals(end)) {
             return setPos(begin);
         }
         return setPos(new Range(begin, end));
     }
 
-    public NamePosition setPos(int lineBegin, int columnBegin, int lineEnd, int columnEnd) {
+    public Position setPos(int lineBegin, int columnBegin, int lineEnd, int columnEnd) {
         if (lineBegin == lineEnd && columnBegin == columnEnd) {
             return setPos(new SinglePosition(lineBegin, columnBegin));
         }
         return setPos(new Range(lineBegin, columnBegin, lineEnd, columnEnd));
     }
 
-    public NamePosition setRange(int lineBegin, int lineEnd) {
+    public Position setRange(int lineBegin, int lineEnd) {
         if(lineBegin == lineEnd) {
             return setPos(new SinglePosition(lineBegin));
         }
         return setPos(new Range(lineBegin, lineEnd));
     }
 
-    public NamePosition setPos(com.github.javaparser.Range range) {
+    public Position setPos(com.github.javaparser.Range range) {
         if(range.begin.equals(range.end)) {
             return setPos(SinglePosition.from(range.begin));
         }
         return setPos(Range.from(range));
     }
 
-    public NamePosition setPos(List<Position> positions) {
+    public Position setPos(List<Position> positions) {
         return setPos(new MultiplePosition(positions));
     }
 
-    public NamePosition setPos(Position position) {
+    public Position setPos(Position position) {
         return new NamePosition(currentContentProvider.getName(), position);
     }
 

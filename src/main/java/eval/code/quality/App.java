@@ -16,6 +16,7 @@ public class App {
     public static void main(String[] args) {
         ContentProvider contentProvider = MultipleContentProvider.fromContentProvider(new FileProvider(new File("assets/tests/ManualTest.java")),
                 new StringProvider("String provider", "public class Test__ {\n\n\n\n          public static void test() {}}"));
+//        ContentProvider contentProvider = new FileProvider(new File("assets/tests/test.java"));
         List<Test> listTests = new ArrayList<>();
         Context context = new Context(contentProvider);
         listTests.add(new BlankLines(context));

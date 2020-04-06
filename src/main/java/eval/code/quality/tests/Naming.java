@@ -6,25 +6,23 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 
-import eval.code.quality.position.MultiplePosition;
-import eval.code.quality.position.NamePosition;
+import eval.code.quality.position.Position;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.Context;
 import eval.code.quality.utils.MultiplePossibility;
 import eval.code.quality.utils.NameProperty;
-import eval.code.quality.utils.ReportPosition;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Naming extends CompilationUnitTest {
-    private final Map<Modifiers, Map<NamePosition, NameProperty>> classDeclarations = new HashMap<>();
-    private final Map<Modifiers, Map<NamePosition, NameProperty>> enumDeclarations = new HashMap<>();
-    private final Map<Modifiers, Map<NamePosition, NameProperty>> annotationDeclarations = new HashMap<>();
-    private final Map<Modifiers, Map<NamePosition, NameProperty>> methodDeclarations = new HashMap<>();
-    private final Map<Modifiers, Map<NamePosition, NameProperty>> fieldDeclarations = new HashMap<>();
-    private final Map<Modifiers, Map<NamePosition, NameProperty>> variableDeclarations = new HashMap<>();
+    private final Map<Modifiers, Map<Position, NameProperty>> classDeclarations = new HashMap<>();
+    private final Map<Modifiers, Map<Position, NameProperty>> enumDeclarations = new HashMap<>();
+    private final Map<Modifiers, Map<Position, NameProperty>> annotationDeclarations = new HashMap<>();
+    private final Map<Modifiers, Map<Position, NameProperty>> methodDeclarations = new HashMap<>();
+    private final Map<Modifiers, Map<Position, NameProperty>> fieldDeclarations = new HashMap<>();
+    private final Map<Modifiers, Map<Position, NameProperty>> variableDeclarations = new HashMap<>();
 
 
     public Naming(Context context) {
@@ -54,13 +52,13 @@ public class Naming extends CompilationUnitTest {
         variableDeclarations.forEach(this::testName);
     }
 
-    private void testName(Modifiers modifiers, Map<NamePosition, NameProperty> map) {
+    private void testName(Modifiers modifiers, Map<Position, NameProperty> map) {
         if(map.size() > 1) {
             NameProperty pName = null;
             Set<NameProperty> property_set = new HashSet<>(map.values());
             for (NameProperty n : property_set) {
                 if (pName != null && !n.isLogicEquals(pName)) {
-                    Map<NamePosition, String> mapPositions = map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().toString()));
+                    Map<Position, String> mapPositions = map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().toString()));
                     if (modifiers != null) {
                         addError(MultiplePossibility.at(mapPositions, "Expected same naming convention for the same modifiers:" + modifiers));
                     } else {
