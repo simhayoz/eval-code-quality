@@ -19,7 +19,6 @@ public class BlankLines extends Test {
     protected void test() {
         while(context.hasNextProvider()) {
             testFor(context.nextProvider());
-            System.out.println(context.getContentProvider());
         }
     }
 

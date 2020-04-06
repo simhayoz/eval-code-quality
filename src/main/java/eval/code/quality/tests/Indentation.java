@@ -39,37 +39,28 @@ public class Indentation extends CompilationUnitTest {
 
     @Override
     protected void afterTests() {
-        if(blockIndentations.size() > 1) {
-            Map<Integer, Integer> indentationCount = blockIndentations.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
-            int maxNumberOfElement = Collections.max(indentationCount.values());
-            List<Integer> goodIndentation = indentationCount.entrySet().stream().filter(e -> e.getValue() == maxNumberOfElement).map(Map.Entry::getKey).collect(Collectors.toList());
-            List<Integer> wrongIndentation = indentationCount.entrySet().stream().filter(e -> e.getValue() != maxNumberOfElement).map(Map.Entry::getKey).collect(Collectors.toList());
-            if (goodIndentation.size() > 1) {
-//                for (int i : goodIndentation) {
-//                    if (blockIndentations.get(i).size() > 1) {
-//                        // TODO fix this
-////                        List<eval.code.quality.position.Position> positions = new ArrayList<>();
-////                        blockIndentations.get(i).forEach(positions::add);
-////                        addError(ReportPosition.at(context.setPos(positions), "the same block difference for every blocks", "all of " + goodIndentation));
-//                    } else {
-//                        addError(ReportPosition.at(blockIndentations.get(i).get(0), "indentation of " + goodIndentation.get(0), i + ""));
-//                    }
-//                }
-                Map<Position, String> intended = new HashMap<>();
-                goodIndentation.forEach(i -> intended.put(new MultiplePosition(blockIndentations.get(i)), i+""));
-                addError(MultiplePossibility.at(intended, "Multiple possible indentation for blocks, should be all the same"));
-            }
-            for(int i: wrongIndentation) {
-                if(blockIndentations.get(i).size() > 1) {
-                    MultiplePosition positions = new MultiplePosition();
-                    blockIndentations.get(i).forEach(positions::add);
-                    addError(ReportPosition.at(positions, "difference indentation of " + goodIndentation.get(0), i + ""));
-                } else {
-                    addError(ReportPosition.at(blockIndentations.get(i).get(0), "difference indentation of " + goodIndentation.get(0), i + ""));
-                }
+        if(blockIndentations.size() <= 1) {
+            blockIndentations.clear();
+            return;
+        }
+        Map<Integer, Integer> indentationCount = blockIndentations.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
+        int maxNumberOfElement = Collections.max(indentationCount.values());
+        List<Integer> goodIndentation = indentationCount.entrySet().stream().filter(e -> e.getValue() == maxNumberOfElement).map(Map.Entry::getKey).collect(Collectors.toList());
+        List<Integer> wrongIndentation = indentationCount.entrySet().stream().filter(e -> e.getValue() != maxNumberOfElement).map(Map.Entry::getKey).collect(Collectors.toList());
+        if (goodIndentation.size() > 1) {
+            Map<Position, String> intended = new HashMap<>();
+            goodIndentation.forEach(i -> intended.put(new MultiplePosition(blockIndentations.get(i)), i+""));
+            addError(MultiplePossibility.at(intended, "Multiple possible indentation for blocks, should be all the same"));
+        }
+        for(int i: wrongIndentation) {
+            if(blockIndentations.get(i).size() > 1) {
+                MultiplePosition positions = new MultiplePosition();
+                blockIndentations.get(i).forEach(positions::add);
+                addError(ReportPosition.at(positions, "difference indentation of " + goodIndentation.get(0), i + ""));
+            } else {
+                addError(ReportPosition.at(blockIndentations.get(i).get(0), "difference indentation of " + goodIndentation.get(0), i + ""));
             }
         }
-        blockIndentations.clear();
     }
 
     private void iterateTypeDeclaration(TypeDeclaration<?> typeDeclaration) {
@@ -112,27 +103,27 @@ public class Indentation extends CompilationUnitTest {
     }
 
     public void checkIndentationMap(Map<Integer, List<Position>> indentationByDiff, Position blockRange, String blockExpectation) {
-        if(indentationByDiff.size() > 1) {
-            Map<Integer, Integer> indentationCount = indentationByDiff.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
-            int maxNumberOfElement = Collections.max(indentationCount.values());
-            List<Integer> goodIndentation = indentationCount.entrySet().stream().filter(e -> e.getValue() == maxNumberOfElement).map(Map.Entry::getKey).collect(Collectors.toList());
-            List<Integer> wrongIndentation = indentationCount.entrySet().stream().filter(e -> e.getValue() != maxNumberOfElement).map(Map.Entry::getKey).collect(Collectors.toList());
-            if(goodIndentation.size() > 1) {
-                addError(ReportPosition.at(blockRange, blockExpectation + goodIndentation));
-            } else {
-                for(int i: wrongIndentation) {
-                    if(indentationByDiff.get(i).size() > 1) {
-                        MultiplePosition positions = new MultiplePosition();
-                        indentationByDiff.get(i).forEach(positions::add);
-                        addError(ReportPosition.at(context.setPos(positions), "indentation of " + goodIndentation.get(0), i + ""));
-                    } else {
-                        addError(ReportPosition.at(context.setPos(indentationByDiff.get(i).get(0)), "indentation of " + goodIndentation.get(0), i + ""));
-                    }
-                }
-                addToBlockIndentation(goodIndentation.get(0), blockRange);
-            }
-        } else {
+        if(indentationByDiff.size() <= 1) {
             addToBlockIndentation(indentationByDiff.entrySet().iterator().next().getKey(), blockRange);
+            return;
+        }
+        Map<Integer, Integer> indentationCount = indentationByDiff.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
+        int maxNumberOfElement = Collections.max(indentationCount.values());
+        List<Integer> goodIndentation = indentationCount.entrySet().stream().filter(e -> e.getValue() == maxNumberOfElement).map(Map.Entry::getKey).collect(Collectors.toList());
+        List<Integer> wrongIndentation = indentationCount.entrySet().stream().filter(e -> e.getValue() != maxNumberOfElement).map(Map.Entry::getKey).collect(Collectors.toList());
+        if(goodIndentation.size() > 1) {
+            addError(ReportPosition.at(blockRange, blockExpectation + goodIndentation));
+        } else {
+            for(int i: wrongIndentation) {
+                if(indentationByDiff.get(i).size() > 1) {
+                    MultiplePosition positions = new MultiplePosition();
+                    indentationByDiff.get(i).forEach(positions::add);
+                    addError(ReportPosition.at(context.setPos(positions), "indentation of " + goodIndentation.get(0), i + ""));
+                } else {
+                    addError(ReportPosition.at(context.setPos(indentationByDiff.get(i).get(0)), "indentation of " + goodIndentation.get(0), i + ""));
+                }
+            }
+            addToBlockIndentation(goodIndentation.get(0), blockRange);
         }
     }
 
@@ -159,15 +150,7 @@ public class Indentation extends CompilationUnitTest {
     }
 
     private void addToBlockIndentation(int indentation, Position block) {
-        if(blockIndentations.containsKey(indentation)) {
-            List<Position> list = blockIndentations.get(indentation);
-            list.add(block);
-            blockIndentations.replace(indentation, list);
-        } else {
-            List<Position> list = new ArrayList<>();
-            list.add(block);
-            blockIndentations.put(indentation, list);
-        }
+        addToMap(blockIndentations, indentation, block);
     }
 
     private void addToMap(Map<Integer, List<Position>> map, int diff, Position child) {
