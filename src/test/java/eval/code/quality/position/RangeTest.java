@@ -15,6 +15,7 @@ public class RangeTest {
         assertThrows(IllegalArgumentException.class, () -> {new Range(p, null);});
         assertThrows(IllegalArgumentException.class, () -> {new Range(null, p);});
         assertThrows(IllegalArgumentException.class, () -> {new Range(null, null);});
+        assertThrows(IllegalArgumentException.class, () -> {Range.from(null);});
     }
 
     @Test void setRangeNegativeOrderDoesNotWork() {
@@ -57,8 +58,19 @@ public class RangeTest {
     @Test void equalWorkForSimpleRange() {
         Range r = new Range(1, 3);
         Range r2 = new Range(1, 3);
+        Range r3 = new Range(1, 4);
         assertTrue(r.equals(r));
         assertFalse(r.equals(new Object()));
         assertTrue(r.equals(r2));
+        assertFalse(r.equals(r3));
+    }
+
+    @Test void canCreateFromJavaParserPosition() {
+        com.github.javaparser.Position begin = new com.github.javaparser.Position(1, 2);
+        com.github.javaparser.Position end = new com.github.javaparser.Position(3, 4);
+        com.github.javaparser.Range range = new com.github.javaparser.Range(begin, end);
+        Range rangeFrom = Range.from(range);
+        assertThat(rangeFrom.begin, equalTo(new SinglePosition(1, 2)));
+        assertThat(rangeFrom.end, equalTo(new SinglePosition(3, 4)));
     }
 }

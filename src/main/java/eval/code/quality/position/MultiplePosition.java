@@ -1,5 +1,7 @@
 package eval.code.quality.position;
 
+import eval.code.quality.utils.Preconditions;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -14,7 +16,13 @@ public class MultiplePosition extends Position {
         this(new ArrayList<>());
     }
 
+    /**
+     * Create a new {@code MultiplePosition}.
+     *
+     * @param positions the list of {@code Position}
+     */
     public MultiplePosition(List<Position> positions) {
+        Preconditions.checkArg(positions != null, "The list of position cannot be null");
         this.positions = positions;
     }
 

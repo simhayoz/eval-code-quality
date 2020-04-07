@@ -27,18 +27,22 @@ public class SinglePositionTest {
         assertThrows(IllegalArgumentException.class, () -> new SinglePosition(-5));
     }
 
-    @Test void sameSinglePositionAreEqual() {
+    @Test void testSinglePositionEqual() {
         SinglePosition p = new SinglePosition(1, 0);
         SinglePosition p2 = new SinglePosition(1, 0);
-        assertTrue(p.equals(p2));
+        SinglePosition p3 = new SinglePosition(1);
+        SinglePosition p4 = new SinglePosition(1);
+        assertEquals(p, p2);
+        assertNotEquals(p, p3);
+        assertEquals(p3, p4);
         p = new SinglePosition(3);
         p2 = new SinglePosition(3);
-        assertTrue(p.equals(p2));
-        assertTrue(p.equals(p));
-        assertFalse(p.equals(new Object()));
+        assertEquals(p, p2);
+        assertEquals(p, p);
+        assertNotEquals(p, new Object());
         p = new SinglePosition(4, 0);
         p2 = new SinglePosition(5, 0);
-        assertFalse(p.equals(p2));
+        assertNotEquals(p, p2);
     }
 
     @Test void compareToWorks() {
