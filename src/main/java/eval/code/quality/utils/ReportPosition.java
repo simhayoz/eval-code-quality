@@ -21,6 +21,7 @@ public class ReportPosition extends Error {
      * @return the new {@code ReportPosition}
      */
     public static ReportPosition at(Position position) {
+        Preconditions.checkArg(position != null, "Position can not be null");
         return ReportPosition.at(position, "");
     }
 
@@ -32,6 +33,8 @@ public class ReportPosition extends Error {
      * @return the new {@code ReportPosition}
      */
     public static ReportPosition at(Position position, String report) {
+        Preconditions.checkArg(position != null, "Position can not be null");
+        Preconditions.checkArg(report != null, "Report string can not be null");
         return new ReportPosition(position, report);
     }
 
@@ -44,19 +47,18 @@ public class ReportPosition extends Error {
      * @return the new {@code ReportPosition}
      */
     public static ReportPosition at(Position position, String expected, String was) {
-        return ReportPosition.at(position, "expected: " + expected + " was: " + was);
+        Preconditions.checkArg(position != null, "Position can not be null");
+        Preconditions.checkArg(expected != null, "Expected string can not be null");
+        Preconditions.checkArg(was != null, "Was string can not be null");
+        return ReportPosition.at(position, "expected: " + expected + ", was: " + was);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        } else if (!(obj instanceof ReportPosition)) {
-            return false;
-        } else {
-            ReportPosition s = (ReportPosition) obj;
-            return this.position.equals(s.position);
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReportPosition that = (ReportPosition) o;
+        return this.position.equals(that.position);
     }
 
     @Override

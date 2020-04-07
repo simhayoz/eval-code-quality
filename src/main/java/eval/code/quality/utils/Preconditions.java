@@ -3,7 +3,9 @@ package eval.code.quality.utils;
 /**
  * Utility class for easier checking of arguments.
  */
-public class Preconditions {
+public final class Preconditions {
+
+    private Preconditions() {}
 
     /**
      * Check if the argument is true, if not throws an error.

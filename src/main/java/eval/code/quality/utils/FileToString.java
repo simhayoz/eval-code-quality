@@ -5,9 +5,11 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 /**
- * Utils method for getting the {@code String} from a {@code File}
+ * Utils method for getting the {@code String} from a {@code File}.
  */
-public class FileToString {
+public final class FileToString {
+
+    private FileToString() {}
 
     /**
      * Get the content of the file.
@@ -17,6 +19,7 @@ public class FileToString {
      * @throws FileNotFoundException if no file where found
      */
     public static String fromFile(File file) throws FileNotFoundException {
+        Preconditions.checkArg(file != null, "Cannot get string from empty file");
         StringBuilder s = new StringBuilder();
         Scanner scanner = new Scanner(file);
         if (scanner.hasNextLine()) {
