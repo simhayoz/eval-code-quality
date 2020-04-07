@@ -15,8 +15,8 @@ public abstract class CompilationUnitTest extends Test {
 
     @Override
     protected void test() {
-        while(context.hasNextProvider()) {
-            testFor(context.nextProvider());
+        while(context.hasNext()) {
+            testFor(context.next());
         }
         afterTests();
     }

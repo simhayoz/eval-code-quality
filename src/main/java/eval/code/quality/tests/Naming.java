@@ -13,7 +13,6 @@ import eval.code.quality.utils.MultiplePossibility;
 import eval.code.quality.utils.NameProperty;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class Naming extends CompilationUnitTest {
@@ -32,14 +31,14 @@ public class Naming extends CompilationUnitTest {
     @Override
     protected void testFor(ContentProvider contentProvider) {
         CompilationUnit compilationUnit = contentProvider.getCompilationUnit();
-        compilationUnit.findAll(ClassOrInterfaceDeclaration.class).forEach(type -> addToMap(classDeclarations, type.getModifiers(), context.setPos(type), type.getNameAsString()));
-        compilationUnit.findAll(EnumDeclaration.class).forEach(type -> addToMap(enumDeclarations, type.getModifiers(), context.setPos(type), type.getNameAsString()));
-        compilationUnit.findAll(AnnotationDeclaration.class).forEach(type -> addToMap(annotationDeclarations, type.getModifiers(), context.setPos(type), type.getNameAsString()));
-        compilationUnit.findAll(MethodDeclaration.class).forEach(method -> addToMap(methodDeclarations, method.getModifiers(), context.setPos(method), method.getNameAsString()));
+        compilationUnit.findAll(ClassOrInterfaceDeclaration.class).forEach(type -> addToMap(classDeclarations, type.getModifiers(), context.getPos(type), type.getNameAsString()));
+        compilationUnit.findAll(EnumDeclaration.class).forEach(type -> addToMap(enumDeclarations, type.getModifiers(), context.getPos(type), type.getNameAsString()));
+        compilationUnit.findAll(AnnotationDeclaration.class).forEach(type -> addToMap(annotationDeclarations, type.getModifiers(), context.getPos(type), type.getNameAsString()));
+        compilationUnit.findAll(MethodDeclaration.class).forEach(method -> addToMap(methodDeclarations, method.getModifiers(), context.getPos(method), method.getNameAsString()));
         compilationUnit.findAll(FieldDeclaration.class).forEach(field -> field.getVariables().forEach(variable -> {
-            addToMap(fieldDeclarations, field.getModifiers(), context.setPos(field), variable.getNameAsString());
+            addToMap(fieldDeclarations, field.getModifiers(), context.getPos(field), variable.getNameAsString());
         }));
-        compilationUnit.findAll(VariableDeclarationExpr.class).forEach(variableDeclaration -> variableDeclaration.getVariables().forEach(variable -> addToMap(variableDeclarations, variableDeclaration.getModifiers(), context.setPos(variableDeclaration), variable.getNameAsString())));
+        compilationUnit.findAll(VariableDeclarationExpr.class).forEach(variableDeclaration -> variableDeclaration.getVariables().forEach(variable -> addToMap(variableDeclarations, variableDeclaration.getModifiers(), context.getPos(variableDeclaration), variable.getNameAsString())));
     }
 
     @Override

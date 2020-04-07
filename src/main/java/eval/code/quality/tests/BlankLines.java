@@ -1,7 +1,5 @@
 package eval.code.quality.tests;
 
-import eval.code.quality.position.Position;
-import eval.code.quality.position.Range;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.Context;
 import eval.code.quality.utils.ReportPosition;
@@ -17,8 +15,8 @@ public class BlankLines extends Test {
 
     @Override
     protected void test() {
-        while(context.hasNextProvider()) {
-            testFor(context.nextProvider());
+        while(context.hasNext()) {
+            testFor(context.next());
         }
     }
 
@@ -32,7 +30,7 @@ public class BlankLines extends Test {
                     ++count_empty_line;
                 } else {
                     if (count_empty_line > 1) {
-                        addError(ReportPosition.at(context.setRange(line - count_empty_line + 1, line), count_empty_line + " empty lines in a row"));
+                        addError(ReportPosition.at(context.getRange(line - count_empty_line + 1, line), count_empty_line + " empty lines in a row"));
                     }
                     count_empty_line = 0;
                 }
