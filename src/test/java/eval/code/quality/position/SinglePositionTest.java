@@ -48,7 +48,12 @@ public class SinglePositionTest {
     @Test void compareToWorks() {
         SinglePosition p = new SinglePosition(1, 0);
         SinglePosition p2 = new SinglePosition(1, 0);
+        SinglePosition p3 = new SinglePosition(1);
+        SinglePosition p4 = new SinglePosition(1);
         assertThat(p.compareTo(p2), is(0));
+        assertThat(p3.compareTo(p4), is(0));
+        assertThat(p.compareTo(p3), is(1));
+        assertThat(p3.compareTo(p), is(-1));
         p = new SinglePosition(4);
         p2 = new SinglePosition(4);
         assertThat(p.compareTo(p2), is(0));

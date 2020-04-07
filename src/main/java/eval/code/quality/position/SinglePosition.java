@@ -71,7 +71,7 @@ public class SinglePosition extends Position implements Comparable<SinglePositio
             if (this.column.isPresent() && p.column.isPresent()) {
                 return Integer.compare(this.column.get(), p.column.get());
             }
-            return 0;
+            return (p.column.isEmpty() ? 1 : 0) - (this.column.isEmpty() ? 1 : 0);
         }
         return Integer.compare(this.line, p.line);
     }
