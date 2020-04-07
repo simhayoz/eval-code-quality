@@ -57,15 +57,11 @@ public class Range extends Position {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        } else if (!(obj instanceof Range)) {
-            return false;
-        } else {
-            Range r = (Range) obj;
-            return this.begin.equals(r.begin) && this.end.equals(r.end);
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Range range = (Range) o;
+        return this.begin.equals(range.begin) && this.end.equals(range.end);
     }
 
     @Override

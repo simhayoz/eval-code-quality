@@ -86,15 +86,11 @@ public class NameProperty {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        } else if (!(obj instanceof NameProperty)) {
-            return false;
-        } else {
-            NameProperty n = (NameProperty) obj;
-            return this.full_property == n.full_property && startAndEndEquals(n);
-        }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NameProperty that = (NameProperty) o;
+        return this.full_property == that.full_property && startAndEndEquals(that);
     }
 
     private boolean startAndEndEquals(NameProperty n) {
