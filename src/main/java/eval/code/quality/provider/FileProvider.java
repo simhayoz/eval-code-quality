@@ -11,26 +11,35 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.List;
 
+/**
+ * Content provider represented by a {@code File}.
+ */
 public class FileProvider extends ContentProvider {
     private final File file;
     private Lazy<String> content;
     private Lazy<CompilationUnit> compilationUnit;
 
+    /**
+     * Create a new {@code FileProvider}.
+     *
+     * @param file the file
+     */
     public FileProvider(File file) {
         Preconditions.checkArg(file != null, "File should not be null");
+        Preconditions.checkArg(file.exists(), "File does not exist");
         this.file = file;
         this.content = new Lazy<>(() -> {
             try {
                 return FileToString.fromFile(file);
             } catch (FileNotFoundException e) {
-                throw new IllegalArgumentException("File not found");
+                return "";
             }
         });
         this.compilationUnit = new Lazy<>(() -> {
             try {
                 return StaticJavaParser.parse(file);
             } catch (FileNotFoundException e) {
-                throw new IllegalArgumentException("File not found");
+                return new CompilationUnit();
             }
         });
     }
