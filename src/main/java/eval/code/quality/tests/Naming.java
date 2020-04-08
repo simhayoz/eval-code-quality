@@ -56,7 +56,7 @@ public class Naming extends CompilationUnitTest {
             NameProperty pName = null;
             Set<NameProperty> property_set = new HashSet<>(map.values());
             for (NameProperty n : property_set) {
-                if (pName != null && !n.isLogicEquals(pName)) {
+                if (pName != null && !n.equals(pName)) {
                     Map<Position, String> mapPositions = map.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, v -> v.getValue().toString()));
                     if (modifiers != null) {
                         addError(MultiplePossibility.at(mapPositions, "Expected same naming convention for the same modifiers:" + modifiers));
@@ -73,7 +73,7 @@ public class Naming extends CompilationUnitTest {
     private <T> void addToMap(Map<Modifiers, Map<T, NameProperty>> map, NodeList<Modifier> modifierList, T node, String name) {
         Modifiers modifiers = new Modifiers();
         modifierList.forEach(e -> modifiers.modifiers.add(e.getKeyword()));
-        NameProperty nameProperty = NameProperty.getFor(name);
+        NameProperty nameProperty = new NameProperty(name);
         if(map.containsKey(modifiers)) {
             Map<T, NameProperty> value = map.get(modifiers);
             value.put(node, nameProperty);

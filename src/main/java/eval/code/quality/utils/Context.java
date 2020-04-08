@@ -124,6 +124,19 @@ public class Context implements Iterator<ContentProvider> {
     }
 
     /**
+     * Get the range inside the current content provider.
+     * @param nodes the list of {@code com.github.javaparser.Node} that form a block
+     * @return the named position
+     */
+    public Position getRange(List<? extends Node> nodes) {
+        Preconditions.checkArg(nodes != null && !nodes.isEmpty(), "Statements can not be null or empty");
+        if (nodes.size() == 1) {
+            return getPos(nodes.get(0));
+        }
+        return getPos(new Range(SinglePosition.from(nodes.get(0).getBegin().get()), SinglePosition.from(nodes.get(nodes.size() - 1).getBegin().get())));
+    }
+
+    /**
      * Get the position inside the current content provider.
      *
      * @param range the {@code com.github.javaparser.Range}
