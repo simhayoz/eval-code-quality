@@ -59,10 +59,11 @@ public class RangeTest {
         Range r = new Range(1, 3);
         Range r2 = new Range(1, 3);
         Range r3 = new Range(1, 4);
-        assertTrue(r.equals(r));
-        assertFalse(r.equals(new Object()));
-        assertTrue(r.equals(r2));
-        assertFalse(r.equals(r3));
+        assertEquals(r, r);
+        assertNotEquals(r, null);
+        assertNotEquals(r, new Object());
+        assertEquals(r, r2);
+        assertNotEquals(r, r3);
     }
 
     @Test void canCreateFromJavaParserPosition() {

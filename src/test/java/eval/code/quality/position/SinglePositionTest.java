@@ -43,6 +43,8 @@ public class SinglePositionTest {
         p = new SinglePosition(4, 0);
         p2 = new SinglePosition(5, 0);
         assertNotEquals(p, p2);
+        assertNotEquals(p, null);
+        assertNotEquals(p, new Object());
     }
 
     @Test void compareToWorks() {
