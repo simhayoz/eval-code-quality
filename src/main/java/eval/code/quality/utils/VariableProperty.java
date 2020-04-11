@@ -1,5 +1,7 @@
 package eval.code.quality.utils;
 
+import java.util.Objects;
+
 /**
  * Represents the property of a variable as described in the {@code Property} enum.
  * <p>The property does not consider the first and last character as it can be different from the overall style of
@@ -43,12 +45,11 @@ public class VariableProperty {
          * @return a new {@code Property} from the string
          */
         public static Property getFor(String s) {
-            if (s.length() <= 2) {
+            if (s.isEmpty()) {
                 return Empty;
             }
-            String forTest = s.substring(1, s.length() - 1);
             for (Property property : Property.values()) {
-                if (testProperty(forTest, property)) {
+                if (testProperty(s, property)) {
                     return property;
                 }
             }
@@ -89,6 +90,11 @@ public class VariableProperty {
 
     private boolean testBothWay(VariableProperty that, Property p1, Property p2) {
         return (this.property == p1 && that.property == p2) || (this.property == p2 && that.property == p1);
+    }
+
+    @Override
+    public int hashCode() {
+        return property.ordinal();
     }
 
     @Override

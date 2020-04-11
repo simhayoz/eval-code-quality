@@ -1,6 +1,7 @@
 package eval.code.quality.utils;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.function.Function;
 
 /**
@@ -54,6 +55,11 @@ public class CharacterProperty {
         if (o == null || getClass() != o.getClass()) return false;
         CharacterProperty that = (CharacterProperty) o;
         return this.property == that.property;
+    }
+
+    @Override
+    public int hashCode() {
+        return property.ordinal();
     }
 
     @Override

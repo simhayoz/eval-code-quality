@@ -2,8 +2,6 @@ package eval.code.quality.utils;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
@@ -13,6 +11,17 @@ class NamePropertyTest {
     @Test void emptyOrNullStringThrowsException() {
         assertThrows(IllegalArgumentException.class, () -> new NameProperty(""));
         assertThrows(IllegalArgumentException.class, () -> new NameProperty(null));
+    }
+
+    @Test void singleOrTwoCharactersVariableThrowsNoError() {
+        NameProperty nameProperty = new NameProperty("i");
+        assertEquals(CharacterProperty.Property.Lower, nameProperty.start_property.property);
+        assertEquals(CharacterProperty.Property.Lower, nameProperty.end_property.property);
+        assertEquals(VariableProperty.Property.Empty, nameProperty.full_property.property);
+        NameProperty nameProperty2 = new NameProperty("i2");
+        assertEquals(CharacterProperty.Property.Lower, nameProperty2.start_property.property);
+        assertEquals(CharacterProperty.Property.Digit, nameProperty2.end_property.property);
+        assertEquals(VariableProperty.Property.Empty, nameProperty2.full_property.property);
     }
 
     @Test void equalityWorksForSimpleVariable() {
@@ -29,5 +38,10 @@ class NamePropertyTest {
         assertNotEquals(nameProperty, nameProperty3);
         nameProperty2 = new NameProperty("_testForSecondDifferent_");
         assertNotEquals(nameProperty, nameProperty2);
+    }
+
+    @Test void toStringWorksForSomeProperties() {
+        NameProperty nameProperty = new NameProperty("_testForCamelCase$");
+        assertEquals("{start:Underscore,end:Dollar,property:CamelCase}", nameProperty.toString());
     }
 }

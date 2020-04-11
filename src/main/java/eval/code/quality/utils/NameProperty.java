@@ -18,7 +18,11 @@ public class NameProperty {
      */
     public NameProperty(String var_name) {
         Preconditions.checkArg(var_name != null && !var_name.isEmpty(), "The variable name cannot be null or empty");
-        this.full_property = new VariableProperty(var_name);
+        if(var_name.length() > 1) {
+            this.full_property = new VariableProperty(var_name.substring(1, var_name.length() - 1));
+        } else {
+            this.full_property = new VariableProperty("");
+        }
         this.start_property = new CharacterProperty(var_name.charAt(0));
         this.end_property = new CharacterProperty(var_name.charAt(var_name.length() - 1));
     }
@@ -31,6 +35,15 @@ public class NameProperty {
         return Objects.equals(full_property, that.full_property) &&
                 Objects.equals(start_property, that.start_property) &&
                 Objects.equals(end_property, that.end_property);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 1;
+        hash = 89 * hash + Objects.hashCode(full_property);
+        hash = 89 * hash + Objects.hashCode(start_property);
+        hash = 89 * hash + Objects.hashCode(end_property);
+        return hash;
     }
 
     @Override

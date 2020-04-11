@@ -9,32 +9,20 @@ public class VariablePropertyTest {
 
     @Test void stringMatchesToRightProperty() {
         assertEquals(VariableProperty.Property.AllUpper, new VariableProperty("TEST").property);
-        assertEquals(VariableProperty.Property.AllUpper, new VariableProperty("tTEST_").property);
         assertEquals(VariableProperty.Property.AllUpperUnderscore, new VariableProperty("TE_ST").property);
-        assertEquals(VariableProperty.Property.AllUpperUnderscore, new VariableProperty("tTE_ST$").property);
         assertEquals(VariableProperty.Property.AllUpperDollar, new VariableProperty("TE$ST").property);
-        assertEquals(VariableProperty.Property.AllUpperDollar, new VariableProperty("tTE$ST_").property);
 
         assertEquals(VariableProperty.Property.CamelCase, new VariableProperty("thisIsATest").property);
-        assertEquals(VariableProperty.Property.CamelCase, new VariableProperty("$thisIsATest_").property);
 
         assertEquals(VariableProperty.Property.AllLower, new VariableProperty("test").property);
-        assertEquals(VariableProperty.Property.AllLower, new VariableProperty("Ttest_").property);
         assertEquals(VariableProperty.Property.AllLowerUnderscore, new VariableProperty("te_st").property);
-        assertEquals(VariableProperty.Property.AllLowerUnderscore, new VariableProperty("Tte_st$").property);
         assertEquals(VariableProperty.Property.AllLowerDollar, new VariableProperty("te$st").property);
-        assertEquals(VariableProperty.Property.AllLowerDollar, new VariableProperty("Tte$st_").property);
 
         assertEquals(VariableProperty.Property.Underscore, new VariableProperty("this_Is_A_Test").property);
-        assertEquals(VariableProperty.Property.Underscore, new VariableProperty("$this_Is_A_Test$").property);
         assertEquals(VariableProperty.Property.Dollar, new VariableProperty("this$Is$A$Test").property);
-        assertEquals(VariableProperty.Property.Dollar, new VariableProperty("_this$Is$A$Test_").property);
 
         assertEquals(VariableProperty.Property.None, new VariableProperty("this$Is$A_Test").property);
-        assertEquals(VariableProperty.Property.None, new VariableProperty("_this_Is$A$Test_").property);
-        assertEquals(VariableProperty.Property.Empty, new VariableProperty("__").property);
-        assertEquals(VariableProperty.Property.Empty, new VariableProperty("tt").property);
-        assertEquals(VariableProperty.Property.Empty, new VariableProperty("t$").property);
+        assertEquals(VariableProperty.Property.Empty, new VariableProperty("").property);
     }
 
     @Test void equalsWorksForUpperGroup() {
@@ -68,7 +56,7 @@ public class VariablePropertyTest {
     }
 
     @Test void equalsWorksForEmpty() {
-        VariableProperty empty = new VariableProperty("__");
+        VariableProperty empty = new VariableProperty("");
         VariableProperty notEmpty = new VariableProperty("testForLonger");
         assertEquals(empty, notEmpty);
         assertEquals(notEmpty, empty);
