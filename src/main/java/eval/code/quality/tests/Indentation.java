@@ -67,6 +67,10 @@ public class Indentation extends CompilationUnitTest {
                     (blockIndentations.get(i).size() > 1 ? new MultiplePosition(blockIndentations.get(i)) : blockIndentations.get(i).get(0)), i + ""));
             addError(MultiplePossibility.at(intended, "Multiple possible indentation for blocks, should be all the same"));
         }
+        reportWrongIndentationBlock(wrongIndentation, goodIndentation);
+    }
+
+    private void reportWrongIndentationBlock(List<Integer> wrongIndentation, List<Integer> goodIndentation) {
         for (int i : wrongIndentation) {
             if (blockIndentations.get(i).size() > 1) {
                 MultiplePosition positions = new MultiplePosition();
