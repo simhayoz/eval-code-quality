@@ -4,7 +4,6 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.stmt.*;
 
 import eval.code.quality.position.*;
@@ -16,6 +15,16 @@ import eval.code.quality.utils.ReportPosition;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Check Indentation for a {@code CompilationUnit}.
+ * <p>
+ * Checks for:
+ * <ul>
+ * <li>Same indentation for each statements within the same block
+ * <li>Greater indentation than parent for each statement inside a block
+ * <li>Blocks have the same indentation difference everywhere
+ * </ul>
+ */
 public class Indentation extends CompilationUnitTest {
     private final Map<Integer, List<Position>> blockIndentations = new HashMap<>();
 
@@ -26,34 +35,40 @@ public class Indentation extends CompilationUnitTest {
     @Override
     protected void testFor(ContentProvider contentProvider) {
         CompilationUnit compilationUnit = contentProvider.getCompilationUnit();
-        compilationUnit.findAll(SwitchEntry.class).forEach(parent -> {
-            NodeList<Statement> children = parent.getStatements();
-            Position range = context.getPos(SinglePosition.from(children.get(0).getBegin().get()), SinglePosition.from(children.get(children.size() - 1).getBegin().get()));
-            checkIndentationMap(getBlockIndentation(parent.getBegin().get().column, children), range, "block misaligned, expected all indented at one of: ");
-        });
         compilationUnit.getImports().forEach(this::checkAlignLeft);
         compilationUnit.getPackageDeclaration().ifPresent(this::checkAlignLeft);
         compilationUnit.getTypes().forEach(this::checkAlignLeft);
-        compilationUnit.getTypes().forEach(this::iterateTypeDeclaration);
+        compilationUnit.getTypes().forEach(typeDeclaration -> {
+            checkBlock(typeDeclaration, typeDeclaration.getMembers(), "multiple method and/or field declaration misaligned, expected all indented at one of: ");
+            typeDeclaration.findAll(MethodDeclaration.class).forEach(this::visitChildStatement);
+        });
+        compilationUnit.findAll(SwitchEntry.class).forEach(parent -> {
+            NodeList<Statement> children = parent.getStatements();
+            Position range = context.getRange(children);
+            checkIndentationMap(getIndentationMap(parent.getBegin().get().column, children), range, "block misaligned, expected all indented at one of: ");
+        });
     }
 
     @Override
     protected void afterTests() {
-        if(blockIndentations.size() <= 1) {
+        if (blockIndentations.size() <= 1) {
             blockIndentations.clear();
             return;
         }
-        Map<Integer, Integer> indentationCount = blockIndentations.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
+        Map<Integer, Integer> indentationCount = blockIndentations.entrySet().stream().collect(
+                Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
         int maxNumberOfElement = Collections.max(indentationCount.values());
-        List<Integer> goodIndentation = indentationCount.entrySet().stream().filter(e -> e.getValue() == maxNumberOfElement).map(Map.Entry::getKey).collect(Collectors.toList());
-        List<Integer> wrongIndentation = indentationCount.entrySet().stream().filter(e -> e.getValue() != maxNumberOfElement).map(Map.Entry::getKey).collect(Collectors.toList());
+        List<Integer> goodIndentation = new ArrayList<>();
+        List<Integer> wrongIndentation = new ArrayList<>();
+        indentationCount.forEach((key, value) -> (value == maxNumberOfElement ? goodIndentation : wrongIndentation).add(key));
         if (goodIndentation.size() > 1) {
             Map<Position, String> intended = new HashMap<>();
-            goodIndentation.forEach(i -> intended.put(new MultiplePosition(blockIndentations.get(i)), i+""));
+            goodIndentation.forEach(i -> intended.put(
+                    (blockIndentations.get(i).size() > 1 ? new MultiplePosition(blockIndentations.get(i)) : blockIndentations.get(i).get(0)), i + ""));
             addError(MultiplePossibility.at(intended, "Multiple possible indentation for blocks, should be all the same"));
         }
-        for(int i: wrongIndentation) {
-            if(blockIndentations.get(i).size() > 1) {
+        for (int i : wrongIndentation) {
+            if (blockIndentations.get(i).size() > 1) {
                 MultiplePosition positions = new MultiplePosition();
                 blockIndentations.get(i).forEach(positions::add);
                 addError(ReportPosition.at(positions, "difference indentation of " + goodIndentation.get(0), i + ""));
@@ -63,25 +78,37 @@ public class Indentation extends CompilationUnitTest {
         }
     }
 
-    private void iterateTypeDeclaration(TypeDeclaration<?> typeDeclaration) {
-        checkBlock(typeDeclaration, typeDeclaration.getMembers(), "multiple method and/or field declaration misaligned, expected all indented at one of: ");
-        typeDeclaration.findAll(MethodDeclaration.class).forEach(this::visitChildStatement);
+    private void checkAlignLeft(Node node) {
+        node.getRange().ifPresent(e -> {
+            SinglePosition position = SinglePosition.from(e.begin);
+            if (position.column.get() != 1) {
+                addError(ReportPosition.at(context.getPos(position), "element is not aligned left"));
+            }
+        });
+    }
+
+    private void checkBlock(Node parent, List<? extends Node> children, String errorMessage) {
+        if (children.isEmpty()) {
+            return;
+        }
+        Position range = context.getRange(children);
+        checkIndentationMap(getIndentationMap(parent.getBegin().get().column, children), range, errorMessage);
     }
 
     private void visitChildStatement(Node node) {
-        List<Statement> children = getStatementChildren(node);
-        if(!children.isEmpty() && !children.stream().allMatch(Statement::isBlockStmt)) {
-            checkBlock(node, children.stream().filter(child -> !child.isBlockStmt()).collect(Collectors.toList()), "block misaligned, expected all indented at one of: ");
+        List<Statement> children = node.getChildNodes().stream().filter(child -> child instanceof Statement).map(child -> (Statement) child).collect(Collectors.toList());
+        if (!children.isEmpty() && !children.stream().allMatch(Statement::isBlockStmt)) {
+            checkBlock(node, children, "block misaligned, expected all indented at one of: ");
         }
-        for(Statement child: children) {
+        for (Statement child : children) {
             iterateBlock(node, child);
         }
     }
 
     private void iterateBlock(Node node, Statement child) {
-        if(child.isBlockStmt()) {
+        if (child.isBlockStmt()) {
             checkBlock(node, child.asBlockStmt().getStatements(), "block misaligned, expected all indented at one of: ");
-            for(Statement c: child.asBlockStmt().getStatements()) {
+            for (Statement c : child.asBlockStmt().getStatements()) {
                 visitChildStatement(c);
             }
         } else {
@@ -89,59 +116,16 @@ public class Indentation extends CompilationUnitTest {
         }
     }
 
-    private List<Statement> getStatementChildren(Node node) {
-        return node.getChildNodes().stream().filter(child -> child instanceof Statement).map(child -> (Statement)child).collect(Collectors.toList());
-    }
-
-    private void checkBlock(Node parent, List<? extends Node> children, String blockExpectation) {
-        if(children.isEmpty()) {
-            return;
-        }
-        Position range = context.getPos((SinglePosition.from(children.get(0).getBegin().get())), SinglePosition.from(children.get(children.size() - 1).getBegin().get()));
-        checkIndentationMap(getBlockIndentation(parent.getBegin().get().column, children), range, blockExpectation);
-
-    }
-
-    public void checkIndentationMap(Map<Integer, List<Position>> indentationByDiff, Position blockRange, String blockExpectation) {
-        if(indentationByDiff.size() <= 1) {
-            addToBlockIndentation(indentationByDiff.entrySet().iterator().next().getKey(), blockRange);
-            return;
-        }
-        Map<Integer, Integer> indentationCount = indentationByDiff.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
-        int maxNumberOfElement = Collections.max(indentationCount.values());
-        List<Integer> goodIndentation = indentationCount.entrySet().stream().filter(e -> e.getValue() == maxNumberOfElement).map(Map.Entry::getKey).collect(Collectors.toList());
-        List<Integer> wrongIndentation = indentationCount.entrySet().stream().filter(e -> e.getValue() != maxNumberOfElement).map(Map.Entry::getKey).collect(Collectors.toList());
-        if(goodIndentation.size() > 1) {
-            addError(ReportPosition.at(blockRange, blockExpectation + goodIndentation));
-        } else {
-            for(int i: wrongIndentation) {
-                if(indentationByDiff.get(i).size() > 1) {
-                    MultiplePosition positions = new MultiplePosition();
-                    indentationByDiff.get(i).forEach(positions::add);
-                    addError(ReportPosition.at(context.getPos(positions), "indentation of " + goodIndentation.get(0), i + ""));
-                } else {
-                    addError(ReportPosition.at(context.getPos(indentationByDiff.get(i).get(0)), "indentation of " + goodIndentation.get(0), i + ""));
-                }
-            }
-            addToBlockIndentation(goodIndentation.get(0), blockRange);
-        }
-    }
-
-    private void checkAlignLeft(Node node) {
-        node.getRange().ifPresent(e -> {
-            SinglePosition position = SinglePosition.from(e.begin);
-            if(position.column.get() != 1) {
-                addError(ReportPosition.at(context.getPos(position), "element is not aligned left"));
-            }
-        });
-    }
-
-    private Map<Integer, List<eval.code.quality.position.Position>> getBlockIndentation(int parentIndentation, List<? extends Node> children) {
-        List<SinglePosition> childrenPos = children.stream().map(e -> SinglePosition.from(e.getBegin().get())).collect(Collectors.toList());
+    /**
+     * Get a map of indentation -> list of position at that indentation.
+     * Also check the indentation for each child
+     */
+    private Map<Integer, List<Position>> getIndentationMap(int parentIndentation, List<? extends Node> children) {
         Map<Integer, List<Position>> indentationByDiff = new HashMap<>();
-        for(SinglePosition child: childrenPos) {
-            if(child.column.get() > parentIndentation) {
-                addToMap(indentationByDiff, child.column.get() - parentIndentation, child);
+        for (Node child : children) {
+            int column = child.getBegin().get().column;
+            if (column > parentIndentation) {
+                addToMap(indentationByDiff, column - parentIndentation, SinglePosition.from(child.getBegin().get()));
             } else {
                 addError(ReportPosition.at(context.getPos(child), "less indented or equally indented than parent"));
             }
@@ -149,12 +133,43 @@ public class Indentation extends CompilationUnitTest {
         return indentationByDiff;
     }
 
+    public void checkIndentationMap(Map<Integer, List<Position>> indentationByDiff, Position blockRange, String blockExpectation) {
+        if (indentationByDiff.size() > 1) {
+            Map<Integer, Integer> indentationCount = indentationByDiff.entrySet().stream().collect(
+                    Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
+            int maxNumberOfElement = Collections.max(indentationCount.values());
+            List<Integer> goodIndentation = new ArrayList<>();
+            List<Integer> wrongIndentation = new ArrayList<>();
+            indentationCount.forEach((key, value) -> (value == maxNumberOfElement ? goodIndentation : wrongIndentation).add(key));
+            if (goodIndentation.size() > 1) {
+                addError(ReportPosition.at(blockRange, blockExpectation + goodIndentation));
+            } else {
+                reportWrongIndentation(goodIndentation, wrongIndentation, indentationByDiff);
+                addToBlockIndentation(goodIndentation.get(0), blockRange);
+            }
+        } else {
+            addToBlockIndentation(indentationByDiff.entrySet().iterator().next().getKey(), blockRange);
+        }
+    }
+
+    private void reportWrongIndentation(List<Integer> goodIndentation, List<Integer> wrongIndentation, Map<Integer, List<Position>> indentationByDiff) {
+        for (int i : wrongIndentation) {
+            if (indentationByDiff.get(i).size() > 1) {
+                MultiplePosition positions = new MultiplePosition();
+                indentationByDiff.get(i).forEach(positions::add);
+                addError(ReportPosition.at(context.getPos(positions), "indentation of " + goodIndentation.get(0), i + ""));
+            } else {
+                addError(ReportPosition.at(context.getPos(indentationByDiff.get(i).get(0)), "indentation of " + goodIndentation.get(0), i + ""));
+            }
+        }
+    }
+
     private void addToBlockIndentation(int indentation, Position block) {
         addToMap(blockIndentations, indentation, block);
     }
 
     private void addToMap(Map<Integer, List<Position>> map, int diff, Position child) {
-        if(map.containsKey(diff)) {
+        if (map.containsKey(diff)) {
             List<Position> list = map.get(diff);
             list.add(child);
             map.replace(diff, list);

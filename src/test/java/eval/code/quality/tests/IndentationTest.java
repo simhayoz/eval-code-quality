@@ -6,15 +6,14 @@ import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.provider.StringProvider;
 import eval.code.quality.utils.Context;
 import eval.code.quality.utils.Error;
+import eval.code.quality.utils.MultiplePossibility;
 import eval.code.quality.utils.ReportPosition;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import org.hamcrest.Matchers;
@@ -27,6 +26,22 @@ class IndentationTest {
         Report r = new Indentation(new Context(contentProvider)).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
+    }
+
+    @Test void typeOrImportNotAlignedLeftFails() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("import java.utils.List;")
+                .addLn("import java.utils.ArrayList;", 1)
+                .addBlankLine()
+                .addLn("public class Test {", 1)
+                .addBlankLine()
+                .addLn("}");
+        Report r = new Indentation(new Context(new StringProvider("For tests", builder.toString()))).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(), Matchers.<Collection<Error>>allOf(
+                hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(2, 2))))),
+                hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(4, 2))))),
+                hasSize(2)));
     }
 
     @Test
@@ -221,6 +236,116 @@ class IndentationTest {
                         hasItem(is(ReportPosition.at(
                                 new NamePosition("For tests", new Range(new SinglePosition(10, 17), new SinglePosition(11, 17)))))),
                         hasSize(1)));
+    }
+
+    @Test void blockWithSomeWrongIndentationFails() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("if(true) {")
+                .addLn("System.out.println();", 4)
+                .addLn("System.out.println();", 5)
+                .addLn("System.out.println();", 4)
+                .addLn("System.out.println();", 5)
+                .addLn("System.out.println();", 4)
+                .addLn("return true;", 4)
+                .addLn("}");
+        String wrapper = wrap(builder.toString());
+        Report r = new Indentation(new Context(new StringProvider("For tests", wrapper))).run();
+        MultiplePosition multiplePosition = new MultiplePosition();
+        multiplePosition.add(new SinglePosition(5, 14));
+        multiplePosition.add(new SinglePosition(7, 14));
+        assertThat(wrapper, r.getWarnings(), is(empty()));
+        assertThat(wrapper, r.getErrors(),
+                Matchers.<Collection<Error>>allOf(
+                        hasItem(is(ReportPosition.at(new NamePosition("For tests", multiplePosition)))),
+                        hasSize(1)));
+    }
+
+    @Test void cannotInferBlockDiffWhenDifferentBlocks() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("System.out.println(\"\");", 4)
+            .addLn("return true;", 4);
+        String wrapper = wrap(builder.toString());
+        Report r = new Indentation(new Context(new StringProvider("For tests", wrapper))).run();
+        Map<Position, String> map = new HashMap<>();
+        map.put(new NamePosition("For tests", new SinglePosition(2, 5)), 4+"");
+        map.put(new NamePosition("For tests", new Range(new SinglePosition(3, 13), new SinglePosition(4, 13))), ""+8);
+        assertThat(wrapper, r.getWarnings(), is(empty()));
+        assertThat(wrapper, r.getErrors(),
+                Matchers.<Collection<Error>>allOf(
+                        hasItem(is(MultiplePossibility.at(map))),
+                        hasSize(1)));
+    }
+
+    @Test void cannotInferBlockDiffWhenMultipleDifferentBlocks() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("if(true) {", 4)
+                .addLn("while(true) {", 8)
+                .addLn("System.out.println(\"\");", 16)
+                .addLn("}", 8)
+                .addLn("}", 4)
+                .addLn("return true;", 4);
+        String wrapper = wrap(builder.toString());
+        Report r = new Indentation(new Context(new StringProvider("For tests", wrapper))).run();
+        Map<Position, String> map = new HashMap<>();
+        MultiplePosition multiplePosition1 = new MultiplePosition();
+        multiplePosition1.add(new NamePosition("For tests", new SinglePosition(2, 5)));
+        multiplePosition1.add(new NamePosition("For tests", new SinglePosition(4, 17)));
+        MultiplePosition multiplePosition2 = new MultiplePosition();
+        multiplePosition2.add(new NamePosition("For tests", new Range(new SinglePosition(3, 13), new SinglePosition(8, 13))));
+        multiplePosition2.add(new NamePosition("For tests", new SinglePosition(5, 25)));
+        map.put(multiplePosition1, 4+"");
+        map.put(multiplePosition2, ""+8);
+        assertThat(wrapper, r.getWarnings(), is(empty()));
+        assertThat(wrapper, r.getErrors(),
+                Matchers.<Collection<Error>>allOf(
+                        hasItem(is(MultiplePossibility.at(map))),
+                        hasSize(1)));
+    }
+
+    @Test void multipleWrongBlocksReportError() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("if(true) {")
+                .addLn("while(true) {", 4)
+                .addLn("System.out.println(\"\");", 16)
+                .addLn("System.out.println(\"\");", 16)
+                .addLn("if(true) {", 16)
+                .addLn("System.out.println(\"\");", 28)
+                .addLn("}", 16)
+                .addLn("}", 4)
+                .addLn("}")
+                .addLn("return true;");
+        String wrapper = wrap(builder.toString());
+        Report r = new Indentation(new Context(new StringProvider("For tests", wrapper))).run();
+        MultiplePosition multiplePosition = new MultiplePosition();
+        multiplePosition.add(new NamePosition("For tests", new Range(5, 25, 7, 25)));
+        multiplePosition.add(new NamePosition("For tests", new SinglePosition(8, 37)));
+        assertThat(wrapper, r.getWarnings(), is(empty()));
+        assertThat(wrapper, r.getErrors(),
+                Matchers.<Collection<Error>>allOf(
+                        hasItem(is(ReportPosition.at(multiplePosition))),
+                        hasSize(1)));
+    }
+
+    @Test void cannotInferBlockTypeWhenMultiplePossibleIndentation() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("System.out.println(\"\");")
+            .addLn("System.out.println(\"\");", 4)
+            .addLn("System.out.println(\"\");")
+            .addLn("return true;", 4);
+        String wrapper = wrap(builder.toString());
+        Report r = new Indentation(new Context(new StringProvider("For tests", wrapper))).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(), Matchers.<Collection<Error>>allOf(
+                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new Range(new SinglePosition(3, 9), new SinglePosition(6, 13)))))),
+                        hasSize(1)));
+    }
+
+    @Test void emptyBlockDoesNotFail() {
+        String wrapper = wrap("");
+        ContentProvider contentProvider = new StringProvider("For tests", wrapper);
+        Report r = new Indentation(new Context(contentProvider)).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(), is(empty()));
     }
 
     private String wrap(String s) {
