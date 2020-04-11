@@ -2,9 +2,7 @@ package eval.code.quality.utils;
 
 import eval.code.quality.position.Position;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -54,6 +52,14 @@ public class MultiplePossibility extends Error {
         Preconditions.checkArg(positions != null, "The map of positions and error can not be null");
         Preconditions.checkArg(description != null, "The description can not be null");
         return new MultiplePossibility(positions, description);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MultiplePossibility that = (MultiplePossibility) o;
+        return new HashSet<>(this.positions.keySet()).equals(new HashSet<>(that.positions.keySet()));
     }
 
     @Override
