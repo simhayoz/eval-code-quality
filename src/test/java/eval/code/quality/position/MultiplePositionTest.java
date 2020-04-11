@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MultiplePositionTest {
 
@@ -28,6 +28,23 @@ public class MultiplePositionTest {
         MultiplePosition multiplePosition = new MultiplePosition(list);
         assertThat(multiplePosition.getPositions(), Matchers.<Collection<Position>>allOf(hasItem(new SinglePosition(1, 2)),
                 hasItem(new SinglePosition(3, 4)), hasSize(2)));
+    }
+
+    @Test void equalsWorksForSimpleList() {
+        MultiplePosition m = new MultiplePosition();
+        m.add(new SinglePosition(1, 2));
+        m.add(new SinglePosition(3, 4));
+        List<Position> list = new ArrayList<>();
+        list.add(new SinglePosition(1, 2));
+        list.add(new SinglePosition(3, 4));
+        MultiplePosition m2 = new MultiplePosition(list);
+        MultiplePosition m3 = new MultiplePosition();
+        m3.add(new SinglePosition(1, 2));
+        assertEquals(m, m);
+        assertEquals(m, m2);
+        assertNotEquals(m, m3);
+        assertNotEquals(m, null);
+        assertNotEquals(m, new Object());
     }
 
     @Test void toStringWorks() {
