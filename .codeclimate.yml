@@ -1,0 +1,7 @@
+method-complexity:
+  config:
+    threshold: 8
+similar-code:
+  enabled: true
+  config:
+    threshold: 60
