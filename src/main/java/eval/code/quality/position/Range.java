@@ -2,6 +2,8 @@ package eval.code.quality.position;
 
 import eval.code.quality.utils.Preconditions;
 
+import java.util.Objects;
+
 /**
  * Represents a range inside a file (line1,col1) -> (line2,col2).
  */
@@ -60,8 +62,13 @@ public class Range extends Position {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Range range = (Range) o;
-        return this.begin.equals(range.begin) && this.end.equals(range.end);
+        Range that = (Range) o;
+        return this.begin.equals(that.begin) && this.end.equals(that.end);
+    }
+
+    @Override
+    public int hashCode() {
+        return 89 * Objects.hashCode(begin) + Objects.hashCode(end);
     }
 
     @Override

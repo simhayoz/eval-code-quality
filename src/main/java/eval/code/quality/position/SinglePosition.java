@@ -2,6 +2,7 @@ package eval.code.quality.position;
 
 import eval.code.quality.utils.Preconditions;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -51,6 +52,11 @@ public class SinglePosition extends Position implements Comparable<SinglePositio
         if (o == null || getClass() != o.getClass()) return false;
         SinglePosition that = (SinglePosition) o;
         return this.line == that.line && this.column.equals(that.column);
+    }
+
+    @Override
+    public int hashCode() {
+        return 89 * line + column.orElse(0);
     }
 
     @Override

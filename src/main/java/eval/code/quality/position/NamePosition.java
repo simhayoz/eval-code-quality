@@ -2,6 +2,8 @@ package eval.code.quality.position;
 
 import eval.code.quality.utils.Preconditions;
 
+import java.util.Objects;
+
 /**
  * Decorator for {@code Position} to add name of the {@code ContentProvider}.
  */
@@ -28,6 +30,11 @@ public class NamePosition extends Position {
         if (o == null || getClass() != o.getClass()) return false;
         NamePosition that = (NamePosition) o;
         return this.name.equals(that.name) && this.position.equals(that.position);
+    }
+
+    @Override
+    public int hashCode() {
+        return 89 * Objects.hashCode(name) + Objects.hashCode(position);
     }
 
     @Override

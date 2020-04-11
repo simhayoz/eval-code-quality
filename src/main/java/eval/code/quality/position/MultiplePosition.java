@@ -2,13 +2,12 @@ package eval.code.quality.position;
 
 import eval.code.quality.utils.Preconditions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents multiple position that are not necessarily successive.
  */
+// TODO make a sorted set
 public class MultiplePosition extends Position {
     private final List<Position> positions;
 
@@ -43,6 +42,19 @@ public class MultiplePosition extends Position {
      */
     public List<Position> getPositions() {
         return Collections.unmodifiableList(positions);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MultiplePosition that = (MultiplePosition) o;
+        return new HashSet<>(this.positions).equals(new HashSet<>(that.positions));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(positions);
     }
 
     @Override
