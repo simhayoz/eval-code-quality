@@ -44,4 +44,13 @@ class NamePropertyTest {
         NameProperty nameProperty = new NameProperty("_testForCamelCase$");
         assertEquals("{start:Underscore,end:Dollar,property:CamelCase}", nameProperty.toString());
     }
+
+    @Test void canCreateFromOtherProperty() {
+        NameProperty nameProperty = new NameProperty(new VariableProperty(VariableProperty.Property.AllUpper),
+                new CharacterProperty(CharacterProperty.Property.Dollar),
+                new CharacterProperty(CharacterProperty.Property.Digit));
+        assertEquals(VariableProperty.Property.AllUpper, nameProperty.full_property.property);
+        assertEquals(CharacterProperty.Property.Dollar, nameProperty.start_property.property);
+        assertEquals(CharacterProperty.Property.Digit, nameProperty.end_property.property);
+    }
 }

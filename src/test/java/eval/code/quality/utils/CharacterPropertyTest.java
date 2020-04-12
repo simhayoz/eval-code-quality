@@ -44,4 +44,9 @@ public class CharacterPropertyTest {
           assertEquals("Digit", new CharacterProperty('2').toString());
           assertEquals("Digit", new CharacterProperty('3').toString());
      }
+
+     @Test void canCreateFromOtherProperty() {
+          CharacterProperty characterProperty = new CharacterProperty(CharacterProperty.Property.Dollar);
+          assertEquals(CharacterProperty.Property.Dollar, characterProperty.property);
+     }
 }

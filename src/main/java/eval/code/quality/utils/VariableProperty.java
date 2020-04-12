@@ -75,21 +75,21 @@ public class VariableProperty {
         this.property = Property.getFor(s);
     }
 
+    /**
+     * Create a new {@code VariableProperty} from a property.
+     *
+     * @param property the property
+     */
+    public VariableProperty(Property property) {
+        this.property = property;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         VariableProperty that = (VariableProperty) o;
-        return property == that.property || (property == Property.Empty) || (that.property == Property.Empty)
-                || testBothWay(that, Property.AllUpper, Property.AllUpperUnderscore)
-                || testBothWay(that, Property.AllUpper, Property.AllUpperDollar)
-                || testBothWay(that, Property.AllLower, Property.AllLowerUnderscore)
-                || testBothWay(that, Property.AllLower, Property.AllLowerDollar)
-                || testBothWay(that, Property.AllLower, Property.CamelCase);
-    }
-
-    private boolean testBothWay(VariableProperty that, Property p1, Property p2) {
-        return (this.property == p1 && that.property == p2) || (this.property == p2 && that.property == p1);
+        return property == that.property;
     }
 
     @Override

@@ -18,13 +18,26 @@ public class NameProperty {
      */
     public NameProperty(String var_name) {
         Preconditions.checkArg(var_name != null && !var_name.isEmpty(), "The variable name cannot be null or empty");
-        if(var_name.length() > 1) {
+        if (var_name.length() > 1) {
             this.full_property = new VariableProperty(var_name.substring(1, var_name.length() - 1));
         } else {
             this.full_property = new VariableProperty("");
         }
         this.start_property = new CharacterProperty(var_name.charAt(0));
         this.end_property = new CharacterProperty(var_name.charAt(var_name.length() - 1));
+    }
+
+    /**
+     * Create a new {@code NameProperty} from properties.
+     *
+     * @param full_property  the property of the name
+     * @param start_property the property of the first character
+     * @param end_property   the property of the last character
+     */
+    public NameProperty(VariableProperty full_property, CharacterProperty start_property, CharacterProperty end_property) {
+        this.full_property = full_property;
+        this.start_property = start_property;
+        this.end_property = end_property;
     }
 
     @Override

@@ -25,43 +25,6 @@ public class VariablePropertyTest {
         assertEquals(VariableProperty.Property.Empty, new VariableProperty("").property);
     }
 
-    @Test void equalsWorksForUpperGroup() {
-        VariableProperty allUpper = new VariableProperty("TEST");
-        VariableProperty allUpperUnderscore = new VariableProperty("TE_ST");
-        VariableProperty allUpperDollar = new VariableProperty("TE$ST");
-        assertEquals(allUpper, allUpper);
-        assertEquals(allUpper, allUpperUnderscore);
-        assertEquals(allUpperUnderscore, allUpper);
-        assertEquals(allUpper, allUpperDollar);
-        assertEquals(allUpperDollar, allUpper);
-        assertNotEquals(allUpperUnderscore, allUpperDollar);
-        assertNotEquals(allUpperDollar, allUpperUnderscore);
-    }
-
-    @Test void equalsWorksForLowerGroup() {
-        VariableProperty allLower = new VariableProperty("test");
-        VariableProperty allLowerUnderscore = new VariableProperty("te_st");
-        VariableProperty allLowerDollar = new VariableProperty("te$st");
-        VariableProperty camelCase = new VariableProperty("thisIsATest");
-        assertEquals(allLower, allLower);
-        assertEquals(allLower, allLowerUnderscore);
-        assertEquals(allLowerUnderscore, allLower);
-        assertEquals(allLower, allLowerDollar);
-        assertEquals(allLowerDollar, allLower);
-        assertEquals(allLower, camelCase);
-        assertEquals(camelCase, allLower);
-        assertNotEquals(allLowerUnderscore, allLowerDollar);
-        assertNotEquals(camelCase, allLowerUnderscore);
-        assertNotEquals(camelCase, allLowerDollar);
-    }
-
-    @Test void equalsWorksForEmpty() {
-        VariableProperty empty = new VariableProperty("");
-        VariableProperty notEmpty = new VariableProperty("testForLonger");
-        assertEquals(empty, notEmpty);
-        assertEquals(notEmpty, empty);
-    }
-
     @Test void equalsWorksForGeneralCase() {
         VariableProperty underscore = new VariableProperty("this_Is_A_Test");
         VariableProperty underscore2 = new VariableProperty("this_Is_A_Test");
@@ -71,6 +34,7 @@ public class VariablePropertyTest {
         assertEquals(dollar, dollar2);
         VariableProperty none = new VariableProperty("this$Is$A_Test");
         VariableProperty none2 = new VariableProperty("this$__Is$A_Test");
+        assertEquals(none, none);
         assertEquals(none, none2);
         assertNotEquals(underscore, none);
         assertNotEquals(underscore, dollar);
@@ -94,5 +58,10 @@ public class VariablePropertyTest {
         assertEquals("Dollar", new VariableProperty("this$Is$A$Test").toString());
 
         assertEquals("None", new VariableProperty("this$Is$A_Test").toString());
+    }
+
+    @Test void canCreateFromProperty() {
+        VariableProperty variableProperty = new VariableProperty(VariableProperty.Property.AllLower);
+        assertEquals(VariableProperty.Property.AllLower, variableProperty.property);
     }
 }

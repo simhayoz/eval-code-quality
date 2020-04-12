@@ -49,6 +49,15 @@ public class CharacterProperty {
         this.property = Property.getFor(c);
     }
 
+    /**
+     * Create a new {@code CharacterProperty} from a property.
+     *
+     * @param property the property
+     */
+    public CharacterProperty(Property property) {
+        this.property = property;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
