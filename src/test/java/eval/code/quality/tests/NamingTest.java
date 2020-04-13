@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.*;
 public class NamingTest {
 
     @Test void emptyCUReportNoError() {
-        Report r = new Naming(new Context(new StringProvider("tests", ""))).run();
+        Report r = new Naming(new StringProvider("tests", "")).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }
@@ -34,7 +34,7 @@ public class NamingTest {
                 addLn("}").
                 addLn("public class TestStillWorking {").
                 addLn("}");
-        Report r = new Naming(new Context(new StringProvider("tests", sb.toString()))).run();
+        Report r = new Naming(new StringProvider("tests", sb.toString())).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }
@@ -49,7 +49,7 @@ public class NamingTest {
                 addLn("public String _other_style;", 4).
                 addLn("private String evenWithOtherStyle;", 4).
                 addLn("}");
-        Report r = new Naming(new Context(new StringProvider("tests", sb.toString()))).run();
+        Report r = new Naming(new StringProvider("tests", sb.toString())).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }
@@ -69,7 +69,7 @@ public class NamingTest {
                 addLn("public static void thisisatest() {", 4).
                 addLn("}", 4).
                 addLn("}");
-        Report r = new Naming(new Context(new StringProvider("tests", sb.toString()))).run();
+        Report r = new Naming(new StringProvider("tests", sb.toString())).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }
@@ -91,7 +91,7 @@ public class NamingTest {
                 addLn("int _even_empty;", 8).
                 addLn("}", 4).
                 addLn("}");
-        Report r = new Naming(new Context(new StringProvider("tests", sb.toString()))).run();
+        Report r = new Naming(new StringProvider("tests", sb.toString())).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }
@@ -114,7 +114,7 @@ public class NamingTest {
                 addLn("public static void _workForLongerMethodName() {", 4).
                 addLn("}", 4).
                 addLn("}");
-        Report r = new Naming(new Context(new StringProvider("tests", sb.toString()))).run();
+        Report r = new Naming(new StringProvider("tests", sb.toString())).run();
         List<Position> expected = new ArrayList<>();
         expected.add(new NamePosition("tests", new SinglePosition(7, 9)));
         expected.add(new NamePosition("tests", new SinglePosition(8, 9)));
@@ -144,7 +144,7 @@ public class NamingTest {
         expected.add(new NamePosition("tests", new SinglePosition(2, 5)));
         expected.add(new NamePosition("tests", new SinglePosition(5, 5)));
         Error error = MultiplePossibility.at(expected);
-        Report r = new Naming(new Context(new StringProvider("tests", sb.toString()))).run();
+        Report r = new Naming(new StringProvider("tests", sb.toString())).run();
         assertThat(r.getErrors(), Matchers.<Collection<Error>>allOf(
                 hasItems(is(ReportPosition.at(new NamePosition("tests", new SinglePosition(6, 9)))),
                         is(error)),
@@ -164,7 +164,7 @@ public class NamingTest {
                 addLn("boolean same_other_style = true;", 8).
                 addLn("}", 4).
                 addLn("}");
-        Report r = new Naming(new Context(new StringProvider("tests", sb.toString()))).run();
+        Report r = new Naming(new StringProvider("tests", sb.toString())).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), Matchers.<Collection<Error>>allOf(
                 hasItem(is(ReportPosition.at(new NamePosition("tests", new SinglePosition(5, 9))))),
@@ -177,7 +177,7 @@ public class NamingTest {
                 addLn("public static void test() {", 4).
                 addLn("}", 4).
                 addLn("}");
-        Report r = new Naming(new Context(new StringProvider("tests", sb.toString()))).run();
+        Report r = new Naming(new StringProvider("tests", sb.toString())).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }

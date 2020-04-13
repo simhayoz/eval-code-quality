@@ -10,19 +10,21 @@ import java.util.Scanner;
  * Check for multiple blank lines in a row.
  */
 public class BlankLines extends Test {
-    private final Context context;
+    private final ContentProvider contentProvider;
+    private Context context;
 
     /**
      * Create a new {@code BlankLines} with a context.
      *
-     * @param context the context
+     * @param contentProvider the contentProvider
      */
-    public BlankLines(Context context) {
-        this.context = new Context(context);
+    public BlankLines(ContentProvider contentProvider) {
+        this.contentProvider = contentProvider;
     }
 
     @Override
     protected void test() {
+        context = new Context(contentProvider);
         while (context.hasNext()) {
             testFor(context.next());
         }

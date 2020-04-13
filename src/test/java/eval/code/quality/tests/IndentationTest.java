@@ -23,7 +23,7 @@ class IndentationTest {
     @Test
     void emptyCUReportNoError() {
         ContentProvider contentProvider = new StringProvider("Empty String", "");
-        Report r = new Indentation(new Context(contentProvider)).run();
+        Report r = new Indentation(contentProvider).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }
@@ -36,7 +36,7 @@ class IndentationTest {
                 .addLn("public class Test {", 1)
                 .addBlankLine()
                 .addLn("}");
-        Report r = new Indentation(new Context(new StringProvider("For tests", builder.toString()))).run();
+        Report r = new Indentation(new StringProvider("For tests", builder.toString())).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), Matchers.<Collection<Error>>allOf(
                 hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(2, 2))))),
@@ -89,7 +89,7 @@ class IndentationTest {
         blocks_to_test[4] = builder.toString();
         for (String s : blocks_to_test) {
             String wrapper = wrap(s);
-            Report r = new Indentation(new Context(new StringProvider("For tests", wrapper))).run();
+            Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
             assertThat(r.getWarnings(), is(empty()));
             assertThat(r.getErrors(), is(empty()));
         }
@@ -145,7 +145,7 @@ class IndentationTest {
         blocks_to_test.put(builder.toString(), new NamePosition("For tests", new SinglePosition(6, 13)));
         for (Entry<String, Position> s : blocks_to_test.entrySet()) {
             String wrapper = wrap(s.getKey());
-            Report r = new Indentation(new Context(new StringProvider("For tests", wrapper))).run();
+            Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
             assertThat(wrapper, r.getWarnings(), is(empty()));
             assertThat(wrapper, r.getErrors(), Matchers
                     .<Collection<Error>>allOf(hasItem(is(ReportPosition.at(s.getValue()))), hasSize(1)));
@@ -187,7 +187,7 @@ class IndentationTest {
         blocks_to_test[2] = builder.toString();
         for (String s : blocks_to_test) {
             String wrapper = wrap(s);
-            Report r = new Indentation(new Context(new StringProvider("For tests", wrapper))).run();
+            Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
             assertThat(wrapper, r.getWarnings(), is(empty()));
             assertThat(wrapper, r.getErrors(), is(empty()));
         }
@@ -207,7 +207,7 @@ class IndentationTest {
         blocks_to_test.put(builder.toString(), new NamePosition("For tests", new SinglePosition(4, 14)));
         for (Entry<String, Position> s : blocks_to_test.entrySet()) {
             String wrapper = wrap(s.getKey());
-            Report r = new Indentation(new Context(new StringProvider("For tests", wrapper))).run();
+            Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
             assertThat(wrapper, r.getWarnings(), is(empty()));
             assertThat(wrapper, r.getErrors(), Matchers
                     .<Collection<Error>>allOf(hasItem(is(ReportPosition.at(s.getValue()))), hasSize(1)));
@@ -229,7 +229,7 @@ class IndentationTest {
                 .addLn("return true;", 8)
                 .addLn("}");
         String wrapper = wrap(new String[]{b1.toString(), b2.toString()});
-        Report r = new Indentation(new Context(new StringProvider("For tests", wrapper))).run();
+        Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
         assertThat(wrapper, r.getWarnings(), is(empty()));
         assertThat(wrapper, r.getErrors(),
                 Matchers.<Collection<Error>>allOf(
@@ -249,7 +249,7 @@ class IndentationTest {
                 .addLn("return true;", 4)
                 .addLn("}");
         String wrapper = wrap(builder.toString());
-        Report r = new Indentation(new Context(new StringProvider("For tests", wrapper))).run();
+        Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
         MultiplePosition multiplePosition = new MultiplePosition();
         multiplePosition.add(new SinglePosition(5, 14));
         multiplePosition.add(new SinglePosition(7, 14));
@@ -265,7 +265,7 @@ class IndentationTest {
         builder.addLn("System.out.println(\"\");", 4)
             .addLn("return true;", 4);
         String wrapper = wrap(builder.toString());
-        Report r = new Indentation(new Context(new StringProvider("For tests", wrapper))).run();
+        Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
         Map<Position, String> map = new HashMap<>();
         map.put(new NamePosition("For tests", new SinglePosition(2, 5)), 4+"");
         map.put(new NamePosition("For tests", new Range(new SinglePosition(3, 13), new SinglePosition(4, 13))), ""+8);
@@ -285,7 +285,7 @@ class IndentationTest {
                 .addLn("}", 4)
                 .addLn("return true;", 4);
         String wrapper = wrap(builder.toString());
-        Report r = new Indentation(new Context(new StringProvider("For tests", wrapper))).run();
+        Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
         Map<Position, String> map = new HashMap<>();
         MultiplePosition multiplePosition1 = new MultiplePosition();
         multiplePosition1.add(new NamePosition("For tests", new SinglePosition(2, 5)));
@@ -315,7 +315,7 @@ class IndentationTest {
                 .addLn("}")
                 .addLn("return true;");
         String wrapper = wrap(builder.toString());
-        Report r = new Indentation(new Context(new StringProvider("For tests", wrapper))).run();
+        Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
         MultiplePosition multiplePosition = new MultiplePosition();
         multiplePosition.add(new NamePosition("For tests", new Range(5, 25, 7, 25)));
         multiplePosition.add(new NamePosition("For tests", new SinglePosition(8, 37)));
@@ -333,7 +333,7 @@ class IndentationTest {
             .addLn("System.out.println(\"\");")
             .addLn("return true;", 4);
         String wrapper = wrap(builder.toString());
-        Report r = new Indentation(new Context(new StringProvider("For tests", wrapper))).run();
+        Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), Matchers.<Collection<Error>>allOf(
                         hasItem(is(ReportPosition.at(new NamePosition("For tests", new Range(new SinglePosition(3, 9), new SinglePosition(6, 13)))))),
@@ -343,7 +343,7 @@ class IndentationTest {
     @Test void emptyBlockDoesNotFail() {
         String wrapper = wrap("");
         ContentProvider contentProvider = new StringProvider("For tests", wrapper);
-        Report r = new Indentation(new Context(contentProvider)).run();
+        Report r = new Indentation(contentProvider).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }

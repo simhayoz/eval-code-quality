@@ -27,8 +27,8 @@ public class Naming extends CompilationUnitTest {
     private final Map<Modifiers, Map<NameProperty, List<Position>>> variableDeclarations = new HashMap<>();
 
 
-    public Naming(Context context) {
-        super(context);
+    public Naming(ContentProvider contentProvider) {
+        super(contentProvider);
     }
 
     @Override

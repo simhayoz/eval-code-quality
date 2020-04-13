@@ -27,7 +27,7 @@ public class BlankLinesTest {
         }
         s.addLn("test");
         ContentProvider contentProvider = new StringProvider("oneLiner", s.toString());
-        Report r = new BlankLines(new Context(contentProvider)).run();
+        Report r = new BlankLines(contentProvider).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), Matchers.<Collection<Error>>allOf(
                 hasItem(is(ReportPosition.at(new NamePosition("oneLiner", new Range(1, 32))))), hasSize(1)));
@@ -46,7 +46,7 @@ public class BlankLinesTest {
                 .addBlankLine()
                 .addLn("test");
         ContentProvider contentProvider = new StringProvider("For tests", s.toString());
-        Report r = new BlankLines(new Context(contentProvider)).run();
+        Report r = new BlankLines(contentProvider).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(),
                 Matchers.<Collection<Error>>allOf(
@@ -56,13 +56,13 @@ public class BlankLinesTest {
     }
 
     @Test
-    void emptyStringOrNoBreakStringIsSuccesful() {
+    void emptyStringOrNoBreakStringIsSuccessful() {
         ContentProvider contentProvider = new StringProvider("EmptyString", "");
-        Report r = new BlankLines(new Context(contentProvider)).run();
+        Report r = new BlankLines(contentProvider).run();
         assertThat(r.getErrors(), is(empty()));
         assertThat(r.getWarnings(), is(empty()));
         contentProvider = new StringProvider("For tests", "Test on a unique line");
-        r = new BlankLines(new Context(contentProvider)).run();
+        r = new BlankLines(contentProvider).run();
         assertThat(r.getErrors(), is(empty()));
         assertThat(r.getWarnings(), is(empty()));
     }

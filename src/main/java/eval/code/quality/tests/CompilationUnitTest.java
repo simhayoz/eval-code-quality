@@ -7,14 +7,16 @@ import eval.code.quality.utils.Context;
  * Represents all test that needs the {@code CompilationUnit}.
  */
 public abstract class CompilationUnitTest extends Test {
-    protected final Context context;
+    private final ContentProvider contentProvider;
+    protected Context context;
 
-    public CompilationUnitTest(Context context) {
-        this.context = new Context(context);
+    public CompilationUnitTest(ContentProvider contentProvider) {
+        this.contentProvider = contentProvider;
     }
 
     @Override
     protected void test() {
+        context = new Context(contentProvider);
         while(context.hasNext()) {
             testFor(context.next());
         }

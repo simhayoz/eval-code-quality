@@ -8,7 +8,6 @@ import com.github.javaparser.ast.stmt.*;
 
 import eval.code.quality.position.*;
 import eval.code.quality.provider.ContentProvider;
-import eval.code.quality.utils.Context;
 import eval.code.quality.utils.MultiplePossibility;
 import eval.code.quality.utils.ReportPosition;
 
@@ -28,8 +27,8 @@ import java.util.stream.Collectors;
 public class Indentation extends CompilationUnitTest {
     private final Map<Integer, List<Position>> blockIndentations = new HashMap<>();
 
-    public Indentation(Context context) {
-        super(context);
+    public Indentation(ContentProvider contentProvider) {
+        super(contentProvider);
     }
 
     @Override
