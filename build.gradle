@@ -50,7 +50,7 @@ application {
 
 jacocoTestReport {
     reports {
-        xml.enabled false
+        xml.enabled true
         csv.enabled false
         reports.html.destination file("${buildDir}/reports/coverage")
     }
