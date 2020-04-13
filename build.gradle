@@ -3,7 +3,7 @@
  *
  * This generated file contains a sample Java project to get you started.
  * For more details take a look at the Java Quickstart chapter in the Gradle
- * User Manual available at https://docs.gradle.org/6.1.1/userguide/tutorial_java_projects.html
+ * User Manual available at https://docs.gradle.org/6.2.2/userguide/tutorial_java_projects.html
  */
 
 plugins {
@@ -31,8 +31,8 @@ dependencies {
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:28.1-jre'
 
-    // org Eclipse for AST.
-    implementation 'org.eclipse.jdt:org.eclipse.jdt.core:3.20.0'
+    // JAVA AST parser
+    implementation 'com.github.javaparser:javaparser-symbol-solver-core:3.15.14'
 
     // Use JUnit Jupiter API for testing.
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
@@ -45,7 +45,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClassName = 'eval.code.App'
+    mainClassName = 'eval.code.quality.App'
 }
 
 jacocoTestReport {
