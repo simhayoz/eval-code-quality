@@ -31,13 +31,12 @@ public class NameProperty {
      * Create a new {@code NameProperty} from properties.
      *
      * @param full_property  the property of the name
-     * @param start_property the property of the first character
-     * @param end_property   the property of the last character
+     * @param nameProperty the property to get the start and end property
      */
-    public NameProperty(VariableProperty full_property, CharacterProperty start_property, CharacterProperty end_property) {
+    public NameProperty(VariableProperty full_property, NameProperty nameProperty) {
         this.full_property = full_property;
-        this.start_property = start_property;
-        this.end_property = end_property;
+        this.start_property = nameProperty.start_property;
+        this.end_property = nameProperty.end_property;
     }
 
     @Override
