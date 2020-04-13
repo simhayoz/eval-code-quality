@@ -60,17 +60,18 @@ public class Naming extends CompilationUnitTest {
     private void testName(Modifiers modifiers, Map<NameProperty, List<Position>> map) {
         if(map.size() > 1) {
             List<Map.Entry<NameProperty, List<Position>>> orderedList = new ArrayList<>(map.entrySet());
-            orderedList.sort((e1, e2) -> Integer.compare(e2.getValue().size(), e1.getValue().size()));
+            orderedList.sort(Comparator.comparingInt(e -> e.getValue().size()));
             List<Map.Entry<NameProperty, List<Position>>> sameSize = new ArrayList<>();
             List<Map.Entry<NameProperty, List<Position>>> smallerSize = new ArrayList<>();
-            int maxSize = orderedList.get(0).getValue().size();
-            orderedList.forEach(e -> (e.getValue().size() == maxSize ? sameSize : smallerSize).add(e)); // TODO reverse order for sameSize and smallerSize
-            Node<NameProperty> root = NamePropertyTree.getCurrentNodeForTree(orderedList.get(0).getKey());
+            int indexBiggestElement = orderedList.size()-1;
+            int maxSize = orderedList.get(indexBiggestElement).getValue().size();
+            orderedList.forEach(e -> (e.getValue().size() == maxSize ? sameSize : smallerSize).add(e));
+            Node<NameProperty> root = NamePropertyTree.getCurrentNodeForTree(orderedList.get(indexBiggestElement).getKey());
             if(sameSize.size() > 1) {
                 Map<Position, NameProperty> accumulator = new HashMap<>();
                 checkIsInSameTreePath(sameSize.iterator(), root, accumulator);
                 if(!accumulator.isEmpty()) {
-                    accumulator.put(new MultiplePosition(orderedList.get(0).getValue()), orderedList.get(0).getKey());
+                    accumulator.put(getSingleOrMultiplePosition(orderedList.get(indexBiggestElement).getValue()), orderedList.get(indexBiggestElement).getKey());
                     addError(MultiplePossibility.at(
                             accumulator.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toString())),
                             modifiers != null ? "Expected same naming convention for the same modifiers:" + modifiers : "Expected same naming convention"));
@@ -94,7 +95,7 @@ public class Naming extends CompilationUnitTest {
                 } else {
                     Node<NameProperty> child = currentNode.getChildrenWithValueOrNull(current.getKey());
                     if(child == null) {
-                        errorAccumulator.put(new MultiplePosition(current.getValue()), current.getKey());
+                        errorAccumulator.put(getSingleOrMultiplePosition(current.getValue()), current.getKey());
                     } else {
                         checkIsInSameTreePath(iterator, child, errorAccumulator);
                     }
@@ -126,6 +127,10 @@ public class Naming extends CompilationUnitTest {
             map.put(nameProperty, list);
         }
         return map;
+    }
+
+    private Position getSingleOrMultiplePosition(List<Position> positions) {
+        return positions.size() == 1 ? positions.get(0) : new MultiplePosition(positions);
     }
 
     @Override
