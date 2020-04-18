@@ -55,6 +55,42 @@ public class TestSuiteTest {
         assertThat(report.get("Second").getWarnings(), is(empty()));
     }
 
+    @Test void canCreateEmptyTestSuite() {
+        TestSuite testSuite = new TestSuite();
+        testSuite.add(new eval.code.quality.tests.Test() {
+            @Override
+            protected void test() {
+                // Do nothing
+            }
+
+            @Override
+            protected String getName() {
+                return "First";
+            }
+        });
+        testSuite.add(new eval.code.quality.tests.Test() {
+            @Override
+            protected void test() {
+                addError(ReportPosition.at(new SinglePosition(1)));
+            }
+
+            @Override
+            protected String getName() {
+                return "Second";
+            }
+        });
+        Map<String, Report> report = testSuite.runTests();
+        assertThat(report.get("First").getErrors(), is(empty()));
+        assertThat(report.get("First").getWarnings(), is(empty()));
+        assertThat(report.get("Second").getErrors(), hasItem(ReportPosition.at(new SinglePosition(1))));
+        assertThat(report.get("Second").getWarnings(), is(empty()));
+        report = testSuite.runTests(true);
+        assertThat(report.get("First").getErrors(), is(empty()));
+        assertThat(report.get("First").getWarnings(), is(empty()));
+        assertThat(report.get("Second").getErrors(), hasItem(ReportPosition.at(new SinglePosition(1))));
+        assertThat(report.get("Second").getWarnings(), is(empty()));
+    }
+
     @Test void toStringWorksForSimpleReport() {
         List<eval.code.quality.tests.Test> tests = new ArrayList<>();
         tests.add(new eval.code.quality.tests.Test() {

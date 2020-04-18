@@ -150,7 +150,7 @@ public class Indentation extends CompilationUnitTest {
                 reportWrongIndentation(goodIndentation, wrongIndentation, indentationByDiff);
                 addToBlockIndentation(goodIndentation.get(0), blockRange);
             }
-        } else {
+        } else if(indentationByDiff.size() == 1) { // TODO make only else when fixed
             addToBlockIndentation(indentationByDiff.entrySet().iterator().next().getKey(), blockRange);
         }
     }
@@ -173,9 +173,7 @@ public class Indentation extends CompilationUnitTest {
 
     private void addToMap(Map<Integer, List<Position>> map, int diff, Position child) {
         if (map.containsKey(diff)) {
-            List<Position> list = map.get(diff);
-            list.add(child);
-            map.replace(diff, list);
+            map.get(diff).add(child);
         } else {
             List<Position> list = new ArrayList<>();
             list.add(child);

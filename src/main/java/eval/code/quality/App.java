@@ -7,19 +7,17 @@ import eval.code.quality.provider.StringProvider;
 import eval.code.quality.tests.*;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public class App {
 
     public static void main(String[] args) {
         ContentProvider contentProvider = MultipleContentProvider.fromContentProvider(new FileProvider(new File("assets/manual/ManualTest.java")),
                 new StringProvider("String provider", "public class Test__ {\n\n\n\n          public static void test() {}}"));
-        List<Test> listTests = new ArrayList<>();
-        listTests.add(new BlankLines(contentProvider));
-        listTests.add(new Indentation(contentProvider));
-        listTests.add(new Naming(contentProvider));
-        TestSuite testSuite = new TestSuite(listTests);
+        TestSuite testSuite = new TestSuite();
+        testSuite.add(new BlankLines(contentProvider));
+        testSuite.add(new Indentation(contentProvider));
+        testSuite.add(new Naming(contentProvider));
+        testSuite.add(new BracketMatching(contentProvider));
         testSuite.runTests();
         System.out.println(testSuite);
     }
