@@ -4,7 +4,6 @@ import com.github.javaparser.StaticJavaParser;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

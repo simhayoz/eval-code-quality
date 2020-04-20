@@ -13,7 +13,6 @@ import eval.code.quality.utils.ReportPosition;
 import eval.code.quality.utils.Tuple;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class BracketMatching extends CompilationUnitTest {
 
@@ -59,6 +58,7 @@ public class BracketMatching extends CompilationUnitTest {
                         bracketPosMap.add(new Tuple<>(getIndexNext(contentProvider.getString(), "else", prev.getBegin().get().line), null));
                     }
                     prev = temp;
+                    addIfOneLiner(temp.getThenStmt());
                 }
                 if(temp.hasElseBranch()) {
                     if(temp.hasElseBlock()) {
@@ -67,16 +67,15 @@ public class BracketMatching extends CompilationUnitTest {
                     } else {
                         bracketPosMap.add(new Tuple<>(getIndexNext(contentProvider.getString(), "else", temp.getBegin().get().line), null));
                     }
+                    addIfOneLiner(temp.getElseStmt().get());
                 }
                 if(ifStmt.hasThenBlock()) {
                     checkCurrentBlocks(ifStmt, new BracketPos(ifStmt.getThenStmt().asBlockStmt()), bracketPosMap);
                 } else {
                     checkCurrentBlocks(ifStmt, null, bracketPosMap);
                 }
-
+                addIfOneLiner(ifStmt.getThenStmt());
             }
-            addIfOneLiner(ifStmt.getThenStmt());
-            ifStmt.getElseStmt().ifPresent(this::addIfOneLiner);
         });
         compilationUnit.findAll(ForStmt.class).forEach(forStmt -> addIfOneLiner(forStmt.getBody()));
         compilationUnit.findAll(ForEachStmt.class).forEach(forEachStmt -> addIfOneLiner(forEachStmt.getBody()));
@@ -99,55 +98,35 @@ public class BracketMatching extends CompilationUnitTest {
 
     private void checkSameStyleOneLiner() {
         if(isOneLinerBlock.get(true).size() > 0 && isOneLinerBlock.get(false).size() > 0) {
+            MultiplePosition multiplePositionBlock = new MultiplePosition();
+            isOneLinerBlock.get(true).forEach(multiplePositionBlock::add);
+            MultiplePosition multiplePositionNoBlock = new MultiplePosition();
+            isOneLinerBlock.get(false).forEach(multiplePositionNoBlock::add);
             if(isOneLinerBlock.get(true).size() > isOneLinerBlock.get(false).size()) {
-                MultiplePosition multiplePosition = new MultiplePosition();
-                isOneLinerBlock.get(false).forEach(multiplePosition::add);
-                addError(ReportPosition.at(multiplePosition, "one liner with block (bracket)", "one liner without block (bracket)"));
+                addError(ReportPosition.at(multiplePositionNoBlock, "one liner with bracket block", "one liner without bracket block"));
             } else if(isOneLinerBlock.get(true).size() < isOneLinerBlock.get(false).size()) {
-                MultiplePosition multiplePosition = new MultiplePosition();
-                isOneLinerBlock.get(true).forEach(multiplePosition::add);
-                addError(ReportPosition.at(multiplePosition, "one liner without block (bracket)", "one liner with block (bracket)"));
+                addError(ReportPosition.at(multiplePositionBlock, "one liner without bracket block", "one liner with bracket block"));
             } else {
-                MultiplePosition multiplePositionBlock = new MultiplePosition();
-                isOneLinerBlock.get(true).forEach(multiplePositionBlock::add);
-                MultiplePosition multiplePositionNoBlock = new MultiplePosition();
-                isOneLinerBlock.get(false).forEach(multiplePositionNoBlock::add);
                 Map<Position, String> map = new HashMap<>();
-                map.put(multiplePositionBlock, "opening bracket on next line");
-                map.put(multiplePositionNoBlock, "opening bracket on same line");
-                addError(MultiplePossibility.at(map, "expected the same style for opening bracket"));
+                map.put(multiplePositionBlock, "one liner with bracket block");
+                map.put(multiplePositionNoBlock, "one liner without bracket block");
+                addError(MultiplePossibility.at(map, "expected the same style for one liner"));
             }
         }
     }
 
     private void checkSameStyleBracket() {
-//        openingProperties.forEach((k, v) -> System.out.println(k + System.lineSeparator() + v.stream().map(e -> e.toString().indent(2)).collect(Collectors.joining(System.lineSeparator()))));
-//        System.out.println("-");
-//        dualProperties.forEach((k, v) -> System.out.println(k + System.lineSeparator() + v.stream().map(e -> e.toString().indent(2)).collect(Collectors.joining(System.lineSeparator()))));
-//        System.out.println("-");
-//        closingProperties.forEach((k, v) -> System.out.println(k + System.lineSeparator() + v.stream().map(e -> e.toString().indent(2)).collect(Collectors.joining(System.lineSeparator()))));
-        checkAndReportStyleError(openingProperties, "opening");
-        // TODO check and report error for dualProperties
-        checkAndReportStyleError(closingProperties, "closing");
+        reportWith(openingProperties, bracketProperty -> printWithType("opening bracket", "parent", bracketProperty), "opening bracket and parent");
+        reportWith(dualProperties, (tuple) ->
+                "child bracket property: (" +
+                        printWithType("opening bracket", "parent", tuple._1) + ", " +
+                        printWithType("child", "closing bracket", tuple._2) + ")", "child between opening and closing bracket");
+        reportWith(closingProperties, bracketProperty -> printWithType("child", "closing bracket", bracketProperty), "closing bracket and child");
     }
 
-    private void checkAndReportStyleError(Map<BracketProperty, List<Position>> propertiesMap, String type) { // TODO better error message
-        if(!propertiesMap.get(BracketProperty.SAME_LINE).isEmpty() && !propertiesMap.get(BracketProperty.NEXT_LINE).isEmpty()) {
-            if(propertiesMap.get(BracketProperty.SAME_LINE).size() > propertiesMap.get(BracketProperty.NEXT_LINE).size()) {
-                MultiplePosition multiplePosition = new MultiplePosition(propertiesMap.get(BracketProperty.NEXT_LINE));
-                addError(ReportPosition.at(multiplePosition, type + " bracket on the same line than parent", "on the line after"));
-            } else if(propertiesMap.get(BracketProperty.SAME_LINE).size() < propertiesMap.get(BracketProperty.NEXT_LINE).size()) {
-                MultiplePosition multiplePosition = new MultiplePosition(propertiesMap.get(BracketProperty.SAME_LINE));
-                addError(ReportPosition.at(multiplePosition, type + " bracket on the line after parent", "on the same line"));
-            } else {
-                MultiplePosition multiplePositionNextLine = new MultiplePosition(propertiesMap.get(BracketProperty.NEXT_LINE));
-                MultiplePosition multiplePositionSameLine = new MultiplePosition(propertiesMap.get(BracketProperty.SAME_LINE));
-                Map<Position, String> map = new HashMap<>();
-                map.put(multiplePositionNextLine, type + " bracket on next line");
-                map.put(multiplePositionSameLine, type + " bracket on same line");
-                addError(MultiplePossibility.at(map, "expected the same style for " + type + " bracket"));
-            }
-        }
+    private String printWithType(String type1, String type2, BracketProperty bracketProperty) {
+        return bracketProperty == BracketProperty.NEXT_LINE ?
+                type1 + " on the line after " + type2 : type1 + " on the same line than " + type2;
     }
 
     public void checkCurrentBlocks(Node parent, BracketPos bracketsPosition) {
@@ -155,33 +134,15 @@ public class BracketMatching extends CompilationUnitTest {
     }
 
     public void checkCurrentBlocks(Node parent, BracketPos bracketsPosition, List<Tuple<SinglePosition, BracketPos>> bracketPosMap) {
-//        System.out.println("Will check the following: " + parent +  "->" + bracketsPosition);
-//        int i = 0;
-//        System.out.println("Children: ");
-//        for(Tuple<Node, BracketPos> t: bracketPosMap) {
-//            System.out.println(t.toString() + i++);
-//        }
-//        System.out.println("-----------------------------------------------------");
-
         int parentLine = parent.getBegin().get().line;
         int parentColumn = parent.getBegin().get().column;
-
         if(bracketsPosition != null) {
-            int openingBracketLine = bracketsPosition.range.begin.line;
-            int openingBracketColumn = bracketsPosition.range.begin.column.get();
-
-            // Check same line or not if not aligned opening 1st child
             addToMap(getOpeningType(parentLine, parentColumn, bracketsPosition.range.begin), null, context.getPos(parent));
-
-            // Check closing bracket aligned with parent
             if(bracketsPosition.range.end.column.get() != parentColumn) {
                 addError(ReportPosition.at(bracketsPosition.namedClosingPosition, "Closing bracket is not aligned with parent"));
             }
         }
-
         BracketPos prevBlock = bracketsPosition;
-
-        // Iterate over children
         for(Tuple<SinglePosition, BracketPos> tuple: bracketPosMap) {
             SinglePosition child = tuple._1;
             BracketPos currBlock = tuple._2;
@@ -217,7 +178,7 @@ public class BracketMatching extends CompilationUnitTest {
             return BracketProperty.NEXT_LINE;
         } else {
             addError(ReportPosition.at(context.getPos(childPos), "Child was more than one line after closing bracket of previous element"));
-            return BracketProperty.NONE;
+            return null;
         }
     }
 
@@ -231,18 +192,16 @@ public class BracketMatching extends CompilationUnitTest {
             return BracketProperty.NEXT_LINE;
         } else {
             addError(ReportPosition.at(context.getPos(bracketPos), "Opening bracket was more than one line after parent"));
-            return BracketProperty.NONE;
+            return null;
         }
     }
 
     private void addToMap(BracketProperty openingProperty, BracketProperty closingProperty, Position position) {
-        BracketProperty rightOpening = openingProperty == BracketProperty.NONE ? null : openingProperty;
-        BracketProperty rightClosing = closingProperty == BracketProperty.NONE ? null : closingProperty;
-        if(rightOpening != null && rightClosing != null) {
-            add(dualProperties, new Tuple<>(rightOpening, rightClosing), position);
+        if(openingProperty != null && closingProperty != null) {
+            add(dualProperties, new Tuple<>(openingProperty, closingProperty), position);
         } else {
-            add(openingProperties, rightOpening, position);
-            add(closingProperties, rightClosing, position);
+            add(openingProperties, openingProperty, position);
+            add(closingProperties, closingProperty, position);
         }
     }
 
@@ -287,7 +246,7 @@ public class BracketMatching extends CompilationUnitTest {
     }
 
     private enum BracketProperty {
-        SAME_LINE, NEXT_LINE, NONE
+        SAME_LINE, NEXT_LINE
     }
 
     @Override
@@ -304,15 +263,6 @@ public class BracketMatching extends CompilationUnitTest {
             this.range = Range.from(blockStmt.getRange().get());
             this.namedOpeningPosition = context.getPos(range.begin);
             this.namedClosingPosition = context.getPos(range.end);
-        }
-
-        @Override
-        public String toString() {
-            return "BracketPos{" +
-                    "namedOpeningPosition=" + namedOpeningPosition +
-                    ", namedClosingPosition=" + namedClosingPosition +
-                    ", range=" + range +
-                    '}';
         }
     }
 }

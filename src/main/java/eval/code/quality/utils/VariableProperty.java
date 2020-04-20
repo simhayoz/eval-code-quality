@@ -1,7 +1,5 @@
 package eval.code.quality.utils;
 
-import java.util.Objects;
-
 /**
  * Represents the property of a variable as described in the {@code Property} enum.
  * <p>The property does not consider the first and last character as it can be different from the overall style of

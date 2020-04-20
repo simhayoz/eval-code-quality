@@ -5,7 +5,6 @@ import eval.code.quality.position.NamePosition;
 import eval.code.quality.position.Range;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.provider.StringProvider;
-import eval.code.quality.utils.Context;
 import eval.code.quality.utils.Error;
 import eval.code.quality.utils.ReportPosition;
 import org.hamcrest.Matchers;

@@ -49,7 +49,8 @@ public class MultiplePosition extends Position {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MultiplePosition that = (MultiplePosition) o;
-        return new HashSet<>(this.positions).equals(new HashSet<>(that.positions));
+        return new ArrayList<>(this.positions).containsAll(new ArrayList<>(that.positions))
+                && new ArrayList<>(that.positions).containsAll(new ArrayList<>(this.positions));
     }
 
     @Override

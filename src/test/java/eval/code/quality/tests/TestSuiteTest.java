@@ -116,7 +116,7 @@ public class TestSuiteTest {
             }
         });
         TestSuite testSuite = new TestSuite(tests);
-        Map<String, Report> report = testSuite.runTests();
+        testSuite.runTests();
         System.out.println(testSuite.toString());
         assertThat(testSuite.toString(), equalTo("TestSuite: \n" +
                 " Test for Second: \n" +
