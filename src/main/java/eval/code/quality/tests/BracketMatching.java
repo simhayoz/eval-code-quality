@@ -3,12 +3,10 @@ package eval.code.quality.tests;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.stmt.*;
-import eval.code.quality.position.MultiplePosition;
 import eval.code.quality.position.Position;
 import eval.code.quality.position.Range;
 import eval.code.quality.position.SinglePosition;
 import eval.code.quality.provider.ContentProvider;
-import eval.code.quality.utils.MultiplePossibility;
 import eval.code.quality.utils.ReportPosition;
 import eval.code.quality.utils.Tuple;
 
@@ -93,26 +91,7 @@ public class BracketMatching extends CompilationUnitTest {
     @Override
     protected void afterTests() {
         checkSameStyleBracket();
-        checkSameStyleOneLiner();
-    }
-
-    private void checkSameStyleOneLiner() {
-        if(isOneLinerBlock.get(true).size() > 0 && isOneLinerBlock.get(false).size() > 0) {
-            MultiplePosition multiplePositionBlock = new MultiplePosition();
-            isOneLinerBlock.get(true).forEach(multiplePositionBlock::add);
-            MultiplePosition multiplePositionNoBlock = new MultiplePosition();
-            isOneLinerBlock.get(false).forEach(multiplePositionNoBlock::add);
-            if(isOneLinerBlock.get(true).size() > isOneLinerBlock.get(false).size()) {
-                addError(ReportPosition.at(multiplePositionNoBlock, "one liner with bracket block", "one liner without bracket block"));
-            } else if(isOneLinerBlock.get(true).size() < isOneLinerBlock.get(false).size()) {
-                addError(ReportPosition.at(multiplePositionBlock, "one liner without bracket block", "one liner with bracket block"));
-            } else {
-                Map<Position, String> map = new HashMap<>();
-                map.put(multiplePositionBlock, "one liner with bracket block");
-                map.put(multiplePositionNoBlock, "one liner without bracket block");
-                addError(MultiplePossibility.at(map, "expected the same style for one liner"));
-            }
-        }
+        reportWith(isOneLinerBlock, (isBlock) -> "one liner " + (isBlock ? "with" : "without") + " block", "one liner type");
     }
 
     private void checkSameStyleBracket() {

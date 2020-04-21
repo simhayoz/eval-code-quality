@@ -78,7 +78,7 @@ public abstract class Test {
         reportWith(map, func, func, type, true);
     }
 
-    public <T> void reportWith(Map<T, List<Position>> map, Function<T, String> wasFor, Function<T, String> notExpected, String type, boolean shouldReportWrongWhenMultiplePossibility) {
+    public <T> void reportWith(Map<T, List<Position>> map, Function<T, String> wasFor, Function<T, String> notExpected, String type, boolean reportWrong) {
         if(map.size() > 1) {
             List<T> goodList = new ArrayList<>();
             List<T> wrongList = new ArrayList<>();
@@ -92,20 +92,28 @@ public abstract class Test {
 
     public <T> void reportIfMultiplePossibility(Map<T, List<Position>> map, List<T> goodList, Function<T, String> wasFor, String type) {
         Map<Position, String> intended = new HashMap<>();
-        goodList.forEach(i -> intended.put(
-                (map.get(i).size() > 1 ? new MultiplePosition(map.get(i)) : map.get(i).get(0)), wasFor.apply(i)));
-        addError(MultiplePossibility.at(intended, "Multiple possible properties for " + type + ", should be all the same"));
+        goodList.forEach(i -> {
+            if(!map.get(i).isEmpty()) {
+                intended.put(
+                        (map.get(i).size() > 1 ? new MultiplePosition(map.get(i)) : map.get(i).get(0)), wasFor.apply(i));
+            }
+        });
+        if(!intended.isEmpty()) {
+            addError(MultiplePossibility.at(intended, "Multiple possible properties for " + type + ", should be all the same"));
+        }
     }
 
     public <T> void reportNotExpected(Map<T, List<Position>> map, List<T> goodList, List<T> wrongList, Function<T, String> expectedFor, Function<T, String> notExpected) {
         String expected = goodList.size() == 1 ? expectedFor.apply(goodList.get(0)) : goodList.stream().map(expectedFor).collect(Collectors.toList()).toString();
         for (T element : wrongList) {
-            if (map.get(element).size() > 1) {
-                MultiplePosition positions = new MultiplePosition();
-                map.get(element).forEach(positions::add);
-                addError(ReportPosition.at(positions, expected, notExpected.apply(element)));
-            } else {
-                addError(ReportPosition.at(map.get(element).get(0), expected, notExpected.apply(element)));
+            if(!map.get(element).isEmpty()) {
+                if (map.get(element).size() > 1) {
+                    MultiplePosition positions = new MultiplePosition();
+                    map.get(element).forEach(positions::add);
+                    addError(ReportPosition.at(positions, expected, notExpected.apply(element)));
+                } else {
+                    addError(ReportPosition.at(map.get(element).get(0), expected, notExpected.apply(element)));
+                }
             }
         }
     }

@@ -17,7 +17,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.hasSize;
-// TODO add test for dostmt, foreach, else if not bracket, not aligned child, more than one line after child
+
 public class BracketMatchingTest {
 
     @Test void emptyCUReportNoError() {
@@ -65,6 +65,68 @@ public class BracketMatchingTest {
         assertThat(r.getErrors(), is(empty()));
     }
 
+    @Test void simpleTryForEachAndDoStmtThrowsNoError() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("try {")
+                .addLn("System.out.println();", 4)
+                .addLn("System.out.println();", 4)
+                .addLn("} catch(IOException e) {")
+                .addLn("return true;", 4)
+                .addLn("} catch (Exception e) {")
+                .addLn("return false;", 4)
+                .addLn("}")
+                .addLn("do {")
+                .addLn("System.out.println();", 4)
+                .addLn("} while(true);")
+                .addLn("for(char c: \"test\") {")
+                .addLn("System.out.println(c);", 4)
+                .addLn("}");
+        String wrapper = wrap(builder.toString());
+        Report r = new BracketMatching(new StringProvider("For tests", wrapper)).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(), is(empty()));
+    }
+
+    @Test void elseIfNoBracketWillWork() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("if(true)")
+                .addLn("return true;", 4)
+                .addLn("else if(false)")
+                .addLn("return false;", 4)
+                .addLn("else")
+                .addLn("return true;", 4);
+        String wrapper = wrap(builder.toString());
+        Report r = new BracketMatching(new StringProvider("For tests", wrapper)).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(), is(empty()));
+    }
+
+    @Test void notAlignedChildThrowsError() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("public class Test")
+                .addLn("{")
+                .addLn("public static boolean test()", 4)
+                .addLn("{", 4)
+                .addLn("if(true) ", 8)
+                .addLn("{", 8)
+                .addLn("return true;", 12)
+                .addLn("}", 8)
+                .addLn(" else if(false) {", 8)
+                .addLn("return false;", 12)
+                .addLn("}", 8)
+                .addLn("else {", 8)
+                .addLn("return true;", 12)
+                .addLn("}", 8)
+                .addLn("}", 4)
+                .addLn("}");
+        Report r = new BracketMatching(new StringProvider("For tests", builder.toString())).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(),
+                Matchers.<Collection<Error>>allOf(
+                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(9, 10))))),
+                        hasSize(1)));
+    }
+
     @Test void oneLinerBlockDifferentThrowsError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("for(int i=0; i < 2; ++i) {")
@@ -90,6 +152,65 @@ public class BracketMatchingTest {
         assertThat(wrapper, r.getErrors(),
                 Matchers.<Collection<Error>>allOf(
                         hasItem(is(ReportPosition.at(multiplePosition))),
+                        hasSize(1)));
+    }
+
+    @Test void bracketMoreThanOneLineAfterThrowsError() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("public class Test")
+                .addLn("{")
+                .addLn("public static boolean test()", 4)
+                .addLn("{", 4)
+                .addLn("if(true) ", 8)
+                .addBlankLine()
+                .addBlankLine()
+                .addBlankLine()
+                .addLn("{", 8)
+                .addLn("return true;", 12)
+                .addLn("}", 8)
+                .addLn("else if(false) {", 8)
+                .addLn("return false;", 12)
+                .addLn("}", 8)
+                .addLn("else {", 8)
+                .addLn("return true;", 12)
+                .addLn("}", 8)
+                .addLn("}", 4)
+                .addLn("}");
+        Report r = new BracketMatching(new StringProvider("For tests", builder.toString())).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(),
+                Matchers.<Collection<Error>>allOf(
+                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(9, 9))))),
+                        hasSize(1)));
+    }
+
+    @Test void childMoreThanOneLineAfterThrowsError() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("public class Test")
+                .addLn("{")
+                .addLn("public static boolean test()", 4)
+                .addLn("{", 4)
+                .addLn("if(true) ", 8)
+                .addLn("{", 8)
+                .addLn("return true;", 12)
+                .addLn("}", 8)
+                .addBlankLine()
+                .addBlankLine()
+                .addBlankLine()
+                .addLn("else if(false)", 8)
+                .addLn("{", 8)
+                .addLn("return false;", 12)
+                .addLn("}", 8)
+                .addLn("else {", 8)
+                .addLn("return true;", 12)
+                .addLn("}", 8)
+                .addLn("}", 4)
+                .addLn("}");
+        Report r = new BracketMatching(new StringProvider("For tests", builder.toString())).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(),
+                Matchers.<Collection<Error>>allOf(
+                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(12, 9))))),
                         hasSize(1)));
     }
 
