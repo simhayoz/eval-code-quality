@@ -279,7 +279,8 @@ public class BracketMatchingTest {
 
     @Test void notAlignedOpeningBracketThrowsError() {
         MyStringBuilder builder = new MyStringBuilder();
-        builder.addLn("public class Test {")
+        builder.addLn("public class Test")
+                .addLn("{")
                 .addLn("public static boolean test()", 4)
                 .addLn("{", 4)
                 .addLn("if(true)", 8)
@@ -296,13 +297,14 @@ public class BracketMatchingTest {
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(),
                 Matchers.<Collection<Error>>allOf(
-                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(5, 10))))),
+                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(6, 10))))),
                         hasSize(1)));
     }
 
     @Test void notAlignedClosingBracketThrowsError() {
         MyStringBuilder builder = new MyStringBuilder();
-        builder.addLn("public class Test {")
+        builder.addLn("public class Test")
+                .addLn("{")
                 .addLn("public static boolean test()", 4)
                 .addLn("{", 4)
                 .addLn("if(true)", 8)
@@ -319,7 +321,7 @@ public class BracketMatchingTest {
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(),
                 Matchers.<Collection<Error>>allOf(
-                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(7, 10))))),
+                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(8, 10))))),
                         hasSize(1)));
     }
 

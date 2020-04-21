@@ -347,6 +347,72 @@ class IndentationTest {
         assertThat(r.getErrors(), is(empty()));
     }
 
+    // ------------------------ Test bug fix ----------------------------------
+    @Test void elseIfBracketWillWork() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("if(true) {")
+                .addLn("return true;", 4)
+                .addLn("} else if(false) {")
+                .addLn("return false;", 4)
+                .addLn("} else {")
+                .addLn("return true;", 4)
+                .addLn("}");
+        String wrapper = wrap(builder.toString());
+        Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(), is(empty()));
+    }
+
+    @Test void elseIfNoBracketWillWork() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("if(true)")
+                .addLn("return true;", 4)
+                .addLn("else if(false)")
+                .addLn("return false;", 4)
+                .addLn("else")
+                .addLn("return true;", 4);
+        String wrapper = wrap(builder.toString());
+        Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(), is(empty()));
+    }
+
+    @Test void elseIfBracketFailsForIndentError() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("if(true) {")
+                .addLn("return true;", 4)
+                .addLn("} else if(false) {")
+                .addLn(" return false;", 4)
+                .addLn("} else {")
+                .addLn("return true;", 4)
+                .addLn("}");
+        String wrapper = wrap(builder.toString());
+        System.out.println(wrapper);
+        Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(),
+                Matchers.<Collection<Error>>allOf(
+                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(6, 13))))),
+                        hasSize(1)));
+    }
+
+    @Test void elseIfNoBracketFailsForIndentError() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("if(true)")
+                .addLn("return true;", 4)
+                .addLn("else if(false)")
+                .addLn(" return false;", 4)
+                .addLn("else")
+                .addLn("return true;", 4);
+        String wrapper = wrap(builder.toString());
+        Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(),
+                Matchers.<Collection<Error>>allOf(
+                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(6, 13))))),
+                        hasSize(1)));
+    }
+
     private String wrap(String s) {
         String[] arr = {s};
         return wrap(arr);
