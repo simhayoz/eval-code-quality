@@ -2,6 +2,7 @@ package eval.code.quality.tests;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.*;
 import eval.code.quality.position.Position;
 import eval.code.quality.position.Range;
@@ -31,6 +32,9 @@ public class BracketMatching extends CompilationUnitTest {
         compilationUnit.findAll(BlockStmt.class).forEach(b -> b.getParentNode().ifPresent(parentNode -> {
             if(!(parentNode instanceof BlockStmt)) {
                 if(!(parentNode instanceof IfStmt) && !(parentNode instanceof TryStmt) && !(parentNode instanceof CatchClause) && !(parentNode instanceof DoStmt)) {
+                    if(parentNode instanceof MethodDeclaration) {
+                        System.out.println("--" + (((MethodDeclaration) parentNode).getAnnotations())); // TODO javaparser get position without annotation
+                    }
                     checkCurrentBlocks(parentNode, new BracketPos(b));
                 }
             }
@@ -117,7 +121,7 @@ public class BracketMatching extends CompilationUnitTest {
         int parentColumn = parent.getBegin().get().column;
         if(bracketsPosition != null) {
             addToMap(getOpeningType(parentLine, parentColumn, bracketsPosition.range.begin), null, context.getPos(parent));
-            if(bracketsPosition.range.end.column.get() != parentColumn) {
+            if(bracketsPosition.range.end.column.get() != parentColumn) { // TODO check non empty too
                 addError(ReportPosition.at(bracketsPosition.namedClosingPosition, "Closing bracket is not aligned with parent"));
             }
         }
@@ -131,7 +135,7 @@ public class BracketMatching extends CompilationUnitTest {
                 }
                 if(currBlock != null) {
                     addToMap(getOpeningType(child.line, parentColumn, currBlock.range.begin), null, context.getPos(parent));
-                    if(currBlock.range.end.column.get() !=  parentColumn) {
+                    if(currBlock.range.end.column.get() !=  parentColumn) {// TODO check non empty too
                         addError(ReportPosition.at(currBlock.namedClosingPosition, "Closing bracket is not aligned with parent"));
                     }
                 }
