@@ -30,7 +30,7 @@ public class Lazy<T> {
      * @return the value
      */
     public T get() {
-        if (value == null) {
+        if (!wasComputed) {
             value = sup.get();
             wasComputed = true;
         }

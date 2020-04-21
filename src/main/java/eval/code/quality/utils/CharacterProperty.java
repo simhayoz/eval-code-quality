@@ -1,7 +1,6 @@
 package eval.code.quality.utils;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.function.Function;
 
 /**

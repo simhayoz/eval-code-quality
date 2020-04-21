@@ -59,7 +59,8 @@ public class MultiplePossibility extends Error {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         MultiplePossibility that = (MultiplePossibility) o;
-        return new HashSet<>(this.positions.keySet()).equals(new HashSet<>(that.positions.keySet()));
+        return new ArrayList<>(this.positions.keySet()).containsAll(new ArrayList<>(that.positions.keySet()))
+                && new ArrayList<>(that.positions.keySet()).containsAll(new ArrayList<>(this.positions.keySet()));
     }
 
     @Override

@@ -2,7 +2,6 @@ package eval.code.quality.position;
 
 import eval.code.quality.utils.Preconditions;
 
-import java.util.Objects;
 import java.util.Optional;
 
 /**

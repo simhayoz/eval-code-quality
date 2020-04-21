@@ -4,7 +4,6 @@ import eval.code.quality.MyStringBuilder;
 import eval.code.quality.position.*;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.provider.StringProvider;
-import eval.code.quality.utils.Context;
 import eval.code.quality.utils.Error;
 import eval.code.quality.utils.MultiplePossibility;
 import eval.code.quality.utils.ReportPosition;
