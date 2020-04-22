@@ -51,7 +51,7 @@ public class FileProvider extends ContentProvider {
 
     @Override
     public String getName() {
-        return file.getName();
+        return file.getPath();
     }
 
     @Override

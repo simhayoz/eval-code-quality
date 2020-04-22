@@ -36,7 +36,7 @@ public class FileProviderTest {
 
     @Test void canGetNameFromProvider() {
         FileProvider fileProvider = new FileProvider(file);
-        assertEquals(fileProvider.getName(), "FileProvider.java");
+        assertEquals(fileProvider.getName(), "assets/tests/FileProvider.java");
     }
 
     @Test void canAddAllToListOfProvider() {
