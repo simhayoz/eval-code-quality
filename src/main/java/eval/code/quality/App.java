@@ -8,9 +8,10 @@ import java.io.File;
 public class App {
 
     public static void main(String[] args) {
-        ContentProvider contentProvider = MultipleContentProvider.fromContentProvider(new FileProvider(new File("assets/manual/ManualTest.java")),
-                new StringProvider("String provider", "public class Test__ {\n\n\n\n          public static void test() {}}"));
-//        ContentProvider contentProvider = new DirectoryProvider("src/main/java");
+//        ContentProvider contentProvider = MultipleContentProvider.fromContentProvider(new FileProvider(new File("assets/manual/ManualTest.java")),
+//                new StringProvider("String provider", "public class Test__ {\n\n\n\n          public static void test() {}}"));
+//        ContentProvider contentProvider = new FileProvider(new File("src/main/java/eval/code/quality/tests/Naming.java"));
+        ContentProvider contentProvider = new DirectoryProvider("src/main/java");
         TestSuite testSuite = new TestSuite();
         testSuite.add(new BlankLines(contentProvider));
         testSuite.add(new Indentation(contentProvider));

@@ -34,9 +34,9 @@ public class Indentation extends CompilationUnitTest {
         compilationUnit.getPackageDeclaration().ifPresent(this::checkAlignLeft);
         compilationUnit.getTypes().forEach(this::checkAlignLeft);
         ParentBlock.getFor(compilationUnit, contentProvider.getString()).forEach(parentBlock -> {
-            checkBlock(parentBlock.parent, parentBlock.childStatements);
+            checkBlock(parentBlock, parentBlock.childStatements);
             for(ChildBlock childBlock: parentBlock.childBlocks) {
-                checkBlock(parentBlock.parent, childBlock.childStatements);
+                checkBlock(parentBlock, childBlock.childStatements);
             }
         });
     }
@@ -55,11 +55,10 @@ public class Indentation extends CompilationUnitTest {
         });
     }
 
-    private void checkBlock(Node parent, List<? extends Node> children) {
+    private void checkBlock(ParentBlock parentBlock, List<? extends Node> children) {
         if (!children.isEmpty()) {
             Position range = context.getRange(children);
-            parent.getBegin().ifPresent(parentPos ->
-                    checkIndentationMap(getIndentationMap(parentPos, children), range, "block misaligned, expected all indented at one of: "));
+            checkIndentationMap(getIndentationMap(parentBlock.getParentStart(), children), range, "block misaligned, expected all indented at one of: ");
         }
     }
 

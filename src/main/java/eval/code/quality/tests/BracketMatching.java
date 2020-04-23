@@ -27,7 +27,6 @@ public class BracketMatching extends CompilationUnitTest {
     @Override
     protected void testFor(ContentProvider contentProvider) {
         CompilationUnit compilationUnit = contentProvider.getCompilationUnit();
-        // TODO Javaparser get position without annotation
         ParentBlock.getFor(compilationUnit, contentProvider.getString()).forEach(this::checkCurrentBlocks);
         compilationUnit.findAll(IfStmt.class).forEach(ifStmt -> {
             addIfOneLiner(ifStmt.getThenStmt());
@@ -56,15 +55,17 @@ public class BracketMatching extends CompilationUnitTest {
     }
 
     public void checkCurrentBlocks(ParentBlock parentBlock) {
-        if(parentBlock.parent instanceof MethodDeclaration) {
-            System.out.println(parentBlock);
-        }
-        int parentLine = parentBlock.parent.getBegin().get().line;
-        int parentColumn = parentBlock.parent.getBegin().get().column;
+        int parentLine = parentBlock.getParentStart().line;
+        int parentColumn = parentBlock.getParentStart().column;
         if(parentBlock.bracketPosition != null) {
-            addToMap(getOpeningType(parentLine, parentColumn, parentBlock.bracketPosition.begin), null, context.getPos(parentBlock.parent));
-            if(parentBlock.bracketPosition.end.column.get() != parentColumn && !parentBlock.childStatements.isEmpty()) {
-                addError(ReportPosition.at(context.getPos(parentBlock.bracketPosition.end), "Closing bracket is not aligned with parent"));
+            if(bracketHasElementBefore(context.getContentProvider().getString(), parentBlock.bracketPosition.begin)) {
+                // Specific check for multiple line header (method declaration with @annotation, if on multiple line, etc)
+                addToMap(BracketProperty.SAME_LINE, null, context.getPos(parentBlock.parent));
+            } else {
+                addToMap(getOpeningType(parentLine, parentColumn, parentBlock.bracketPosition.begin), null, context.getPos(parentBlock.parent));
+                if(parentBlock.bracketPosition.end.column.get() != parentColumn && !parentBlock.childStatements.isEmpty()) {
+                    addError(ReportPosition.at(context.getPos(parentBlock.bracketPosition.end), "Closing bracket is not aligned with parent"));
+                }
             }
         }
         Range prevBlock = parentBlock.bracketPosition;
@@ -149,6 +150,10 @@ public class BracketMatching extends CompilationUnitTest {
         if(!statement.isBlockStmt()) {
             isOneLinerBlock.get(false).add(context.getPos(statement));
         }
+    }
+
+    private static boolean bracketHasElementBefore(String content, SinglePosition bracketPos) {
+        return content.split(System.lineSeparator())[bracketPos.line-1].trim().charAt(0) != '{';
     }
 
     private enum BracketProperty {

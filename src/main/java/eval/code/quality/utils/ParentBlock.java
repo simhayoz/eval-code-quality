@@ -1,21 +1,17 @@
 package eval.code.quality.utils;
 
+import com.github.javaparser.Position;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.AnnotationDeclaration;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.EnumDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithBody;
 import com.github.javaparser.ast.stmt.*;
-import eval.code.quality.position.Position;
 import eval.code.quality.position.Range;
 import eval.code.quality.position.SinglePosition;
-import eval.code.quality.tests.BracketMatching;
 
-import javax.swing.plaf.nimbus.State;
 import java.util.*;
 
 public class ParentBlock {
@@ -36,6 +32,10 @@ public class ParentBlock {
         this.childBlocks = childBlocks;
     }
 
+    public Position getParentStart() {
+        return parent.getBegin().get();
+    }
+
     public static List<ParentBlock> getFor(CompilationUnit compilationUnit, String content) {
         List<ParentBlock> parentBlocks = new ArrayList<>();
         compilationUnit.findAll(AnnotationDeclaration.class).forEach(annotationDeclaration ->
@@ -53,7 +53,7 @@ public class ParentBlock {
                     && !(parentNode instanceof CatchClause)
                     && !(parentNode instanceof DoStmt)
                     && !(parentNode instanceof LambdaExpr)) {
-                parentBlocks.add(new ParentBlock(parentNode instanceof BlockStmt ? b : parentNode, Range.from(b.getRange().get()), b.getStatements(), new ArrayList<>()));// TODO isBlockStatement?
+                parentBlocks.add(new ParentBlock(parentNode instanceof BlockStmt ? b : parentNode, Range.from(b.getRange().get()), b.getStatements(), new ArrayList<>()));
             }
         }));
         compilationUnit.findAll(TryStmt.class).forEach(tryStmt -> {
@@ -74,11 +74,11 @@ public class ParentBlock {
                 IfStmt prev = ifStmt;
                 while(temp.hasCascadingIfStmt()) {
                     temp = temp.getElseStmt().get().asIfStmt();
-                    childBlocks.add(new ChildBlock(getIndexNext(content, "else", prev.getBegin().get().line),
+                    childBlocks.add(new ChildBlock(getIndexNext(content, "else", getStartingLine(prev)),
                             getRangeOrNull(temp.getThenStmt()), getStatements(temp.getThenStmt())));
                     prev = temp;
                 }
-                final int tempLine = temp.getBegin().get().line;
+                final int tempLine = getStartingLine(temp);
                 temp.getElseStmt().ifPresent(elseBranch -> childBlocks.add(new ChildBlock(getIndexNext(content, "else", tempLine),
                         getRangeOrNull(elseBranch), getStatements(elseBranch))));
                 parentBlocks.add(new ParentBlock(ifStmt, getRangeOrNull(ifStmt.getThenStmt()),
@@ -95,9 +95,28 @@ public class ParentBlock {
                     Collections.singletonList(new ChildBlock(getIndexNext(content, "while", doStmt.getBegin().get().line), null, new ArrayList<>()))));
         });
         compilationUnit.findAll(LambdaExpr.class).forEach(lambdaExpr -> {
-            // TODO this
+            if(lambdaExpr.getBody().isBlockStmt()) {
+                lambdaExpr.getBegin().ifPresent(pos -> {
+                    int columnStart = getIndexFirstElementLine(content, pos.line);
+                    if(pos.column == columnStart) {
+                        parentBlocks.add(new ParentBlock(lambdaExpr, getRangeOrNull(lambdaExpr.getBody().asBlockStmt()), getStatements(lambdaExpr.getBody().asBlockStmt()), new ArrayList<>()));
+                    } else {
+                        parentBlocks.add(
+                                new ParentBlock(lambdaExpr, getRangeOrNull(lambdaExpr.getBody().asBlockStmt()), getStatements(lambdaExpr.getBody().asBlockStmt()), new ArrayList<>()) {
+                                    @Override
+                                    public Position getParentStart() {
+                                        return Position.pos(pos.line, columnStart);
+                                    }
+                                });
+                    }
+                });
+            }
         });
         return parentBlocks;
+    }
+
+    private static int getStartingLine(IfStmt ifStmt) {
+        return ifStmt.getThenStmt().getEnd().get().line;
     }
 
     private static void addToListIfOneLiner(List<ParentBlock> parentBlocks, NodeWithBody<?> nodeWithBody, Node node) {
@@ -123,7 +142,7 @@ public class ParentBlock {
     private static SinglePosition getIndexNext(String content, String match, int fromLine) {
         Scanner scanner = new Scanner(content);
         int currentLine = 1;
-        for(int i = 0; i < fromLine && scanner.hasNextLine(); ++i) {
+        for(int i = 1; i < fromLine && scanner.hasNextLine(); ++i) {
             scanner.nextLine();
             currentLine++;
         }
@@ -137,6 +156,11 @@ public class ParentBlock {
         }
         scanner.close();
         return null;
+    }
+
+    private static int getIndexFirstElementLine(String content, int line) {
+        String lineContent = content.split(System.lineSeparator())[line-1];
+        return lineContent.indexOf(lineContent.trim()) + 1;
     }
 
     @Override
