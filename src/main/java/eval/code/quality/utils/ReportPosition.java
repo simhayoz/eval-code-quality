@@ -53,6 +53,14 @@ public class ReportPosition extends Error {
         return ReportPosition.at(position, "expected: " + expected + ", was: " + was);
     }
 
+    public static ReportPosition at(Position position, String description, String expected, String was) {
+        Preconditions.checkArg(position != null, "Position can not be null");
+        Preconditions.checkArg(description != null, "Description can not be null");
+        Preconditions.checkArg(expected != null, "Expected string can not be null");
+        Preconditions.checkArg(was != null, "Was string can not be null");
+        return ReportPosition.at(position, description + " expected: " + expected + ", was: " + was);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

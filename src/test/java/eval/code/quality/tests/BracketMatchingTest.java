@@ -389,6 +389,19 @@ public class BracketMatchingTest {
                         hasSize(2)));
     }
 
+    @Test void annotationDoesNotCauseError() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("public class Test {")
+                .addLn("@Override", 4)
+                .addLn("public String toString() {", 4)
+                .addLn("return \"a string\";", 8)
+                .addLn("}", 4)
+                .addLn("}");
+        Report r = new BracketMatching(new StringProvider("For tests", builder.toString())).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(), is(empty()));
+    }
+
     private String wrap(String s) {
         String[] arr = {s};
         return wrap(arr);

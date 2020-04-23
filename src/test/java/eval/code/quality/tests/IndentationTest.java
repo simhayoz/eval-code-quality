@@ -250,12 +250,12 @@ class IndentationTest {
         String wrapper = wrap(builder.toString());
         Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
         MultiplePosition multiplePosition = new MultiplePosition();
-        multiplePosition.add(new SinglePosition(5, 14));
-        multiplePosition.add(new SinglePosition(7, 14));
+        multiplePosition.add(new NamePosition("For tests", new SinglePosition(5, 14)));
+        multiplePosition.add(new NamePosition("For tests", new SinglePosition(7, 14)));
         assertThat(wrapper, r.getWarnings(), is(empty()));
         assertThat(wrapper, r.getErrors(),
                 Matchers.<Collection<Error>>allOf(
-                        hasItem(is(ReportPosition.at(new NamePosition("For tests", multiplePosition)))),
+                        hasItem(is(ReportPosition.at(multiplePosition))),
                         hasSize(1)));
     }
 
@@ -347,7 +347,6 @@ class IndentationTest {
         assertThat(r.getErrors(), is(empty()));
     }
 
-    // ------------------------ Test bug fix ----------------------------------
     @Test void elseIfBracketWillWork() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("if(true) {")
@@ -387,12 +386,11 @@ class IndentationTest {
                 .addLn("return true;", 4)
                 .addLn("}");
         String wrapper = wrap(builder.toString());
-        System.out.println(wrapper);
         Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(),
                 Matchers.<Collection<Error>>allOf(
-                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(6, 13))))),
+                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(6, 14))))),
                         hasSize(1)));
     }
 
@@ -409,7 +407,25 @@ class IndentationTest {
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(),
                 Matchers.<Collection<Error>>allOf(
-                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(6, 13))))),
+                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(6, 14))))),
+                        hasSize(1)));
+    }
+
+    @Test void innerClassThrowsErrorWhenMisaligned() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("public class Test {")
+                .addLn("public static boolean test() {", 4)
+                .addLn("return true;", 8)
+                .addLn("}", 4)
+                .addLn("public enum Test2 {", 4)
+                .addLn(" MISALIGNED", 8)
+                .addLn("}", 4)
+                .addLn("}");
+        Report r = new Indentation(new StringProvider("For tests", builder.toString())).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(),
+                Matchers.<Collection<Error>>allOf(
+                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(6, 10))))),
                         hasSize(1)));
     }
 

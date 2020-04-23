@@ -3,7 +3,11 @@ package eval.code.quality.utils;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.AnnotationDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.EnumDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithBody;
 import com.github.javaparser.ast.stmt.*;
 import eval.code.quality.position.Position;
@@ -11,20 +15,21 @@ import eval.code.quality.position.Range;
 import eval.code.quality.position.SinglePosition;
 import eval.code.quality.tests.BracketMatching;
 
+import javax.swing.plaf.nimbus.State;
 import java.util.*;
 
 public class ParentBlock {
 
     public final Node parent;
     public final Range bracketPosition;
-    public final List<Statement> childStatements;
+    public final List<? extends Node> childStatements;
     public final List<ChildBlock> childBlocks;
 
-    private ParentBlock(Node parent, List<Statement> childStatements, List<ChildBlock> childBlocks) {
+    private ParentBlock(Node parent, List<? extends Node> childStatements, List<ChildBlock> childBlocks) {
         this(parent, null, childStatements, childBlocks);
     }
 
-    private ParentBlock(Node parent, Range bracketPosition, List<Statement> childStatements, List<ChildBlock> childBlocks) {
+    private ParentBlock(Node parent, Range bracketPosition, List<? extends Node> childStatements, List<ChildBlock> childBlocks) {
         this.parent = parent;
         this.bracketPosition = bracketPosition;
         this.childStatements = childStatements;
@@ -33,20 +38,22 @@ public class ParentBlock {
 
     public static List<ParentBlock> getFor(CompilationUnit compilationUnit, String content) {
         List<ParentBlock> parentBlocks = new ArrayList<>();
-//        compilationUnit.getTypes().forEach(typeDeclaration -> {
-////            checkBlock(typeDeclaration, typeDeclaration.getMembers(), "multiple method and/or field declaration misaligned, expected all indented at one of: ");
-////            typeDeclaration.findAll(MethodDeclaration.class).forEach(this::visitChildStatement);
-//            parentBlocks.add(new ParentBlock(typeDeclaration, typeDeclaration., typeDeclaration.getMembers(), null));
-//        });
+        compilationUnit.findAll(AnnotationDeclaration.class).forEach(annotationDeclaration ->
+                parentBlocks.add(new ParentBlock(annotationDeclaration, annotationDeclaration.getMembers(), new ArrayList<>())));
+        compilationUnit.findAll(ClassOrInterfaceDeclaration.class).forEach(classOrInterfaceDeclaration ->
+                parentBlocks.add(new ParentBlock(classOrInterfaceDeclaration, classOrInterfaceDeclaration.getMembers(), new ArrayList<>())));
+        compilationUnit.findAll(EnumDeclaration.class).forEach(enumDeclaration ->
+                parentBlocks.add(new ParentBlock(enumDeclaration, enumDeclaration.getEntries(), new ArrayList<>())));
         compilationUnit.findAll(SwitchEntry.class).forEach(parent -> {
-            parentBlocks.add(new ParentBlock(parent, parent.getStatements(), null));
+            parentBlocks.add(new ParentBlock(parent, parent.getStatements(), new ArrayList<>()));
         });
         compilationUnit.findAll(BlockStmt.class).forEach(b -> b.getParentNode().ifPresent(parentNode -> {
             if(!(parentNode instanceof IfStmt)
                     && !(parentNode instanceof TryStmt)
                     && !(parentNode instanceof CatchClause)
-                    && !(parentNode instanceof DoStmt)) {
-                parentBlocks.add(new ParentBlock(parentNode instanceof BlockStmt ? b : parentNode, Range.from(b.getRange().get()), b.getStatements(), null));// TODO isBlockStatement?
+                    && !(parentNode instanceof DoStmt)
+                    && !(parentNode instanceof LambdaExpr)) {
+                parentBlocks.add(new ParentBlock(parentNode instanceof BlockStmt ? b : parentNode, Range.from(b.getRange().get()), b.getStatements(), new ArrayList<>()));// TODO isBlockStatement?
             }
         }));
         compilationUnit.findAll(TryStmt.class).forEach(tryStmt -> {
@@ -85,14 +92,17 @@ public class ParentBlock {
             parentBlocks.add(new ParentBlock(doStmt,
                     getRangeOrNull(doStmt.getBody()),
                     getStatements(doStmt.getBody()),
-                    Collections.singletonList(new ChildBlock(getIndexNext(content, "while", doStmt.getBegin().get().line), null, null))));
+                    Collections.singletonList(new ChildBlock(getIndexNext(content, "while", doStmt.getBegin().get().line), null, new ArrayList<>()))));
+        });
+        compilationUnit.findAll(LambdaExpr.class).forEach(lambdaExpr -> {
+            // TODO this
         });
         return parentBlocks;
     }
 
     private static void addToListIfOneLiner(List<ParentBlock> parentBlocks, NodeWithBody<?> nodeWithBody, Node node) {
         if(!nodeWithBody.getBody().isBlockStmt()) {
-            parentBlocks.add(new ParentBlock(node, null, Collections.singletonList(nodeWithBody.getBody()), null));
+            parentBlocks.add(new ParentBlock(node, null, Collections.singletonList(nodeWithBody.getBody()), new ArrayList<>()));
         }
     }
 

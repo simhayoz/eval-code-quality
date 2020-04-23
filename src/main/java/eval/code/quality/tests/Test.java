@@ -1,13 +1,10 @@
 package eval.code.quality.tests;
 
-import eval.code.quality.position.MultiplePosition;
 import eval.code.quality.position.Position;
+import eval.code.quality.utils.*;
 import eval.code.quality.utils.Error;
-import eval.code.quality.utils.MultiplePossibility;
-import eval.code.quality.utils.ReportPosition;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -39,12 +36,12 @@ public abstract class Test {
         return report;
     }
 
-    protected void addError(Error error) {
+    public void addError(Error error) {
         printError(error);
         report.addError(error);
     }
 
-    protected void addWarning(Error warning) {
+    public void addWarning(Error warning) {
         printWarning(warning);
         report.addWarning(warning);
     }
@@ -74,46 +71,28 @@ public abstract class Test {
         printLine(" > (" + getName() + ") warning:" + e.toString());
     }
 
-    public <T> void reportWith(Map<T, List<Position>> map, Function<T, String> func, String type) {
-        reportWith(map, func, func, type, true);
+    public <T> void checkAndReport(Map<T, List<Position>> map, boolean shouldReport) {
+        checkAndReport(map, new ExpectedReporter<>(), new NotExpectedReporter<>(), shouldReport);
     }
 
-    public <T> void reportWith(Map<T, List<Position>> map, Function<T, String> wasFor, Function<T, String> notExpected, String type, boolean reportWrong) {
+    public <T> void checkAndReport(Map<T, List<Position>> map, String name, boolean shouldReport) {
+        checkAndReport(map, new NamedExpectedReporter<>(name), new NamedNotExpectedReporter<>(name), shouldReport);
+    }
+
+    public <T> void checkAndReport(Map<T, List<Position>> map, ExpectedReporter<T> expectedReporter, NotExpectedReporter<T> notExpectedReporter, boolean shouldReport) {
         if(map.size() > 1) {
             List<T> goodList = new ArrayList<>();
             List<T> wrongList = new ArrayList<>();
             setGoodAndWrongList(map, goodList, wrongList);
             if(goodList.size() > 1) {
-                reportIfMultiplePossibility(map, goodList, wasFor, type);
-            }
-            reportNotExpected(map, goodList, wrongList, wasFor, notExpected);
-        }
-    }
-
-    public <T> void reportIfMultiplePossibility(Map<T, List<Position>> map, List<T> goodList, Function<T, String> wasFor, String type) {
-        Map<Position, String> intended = new HashMap<>();
-        goodList.forEach(i -> {
-            if(!map.get(i).isEmpty()) {
-                intended.put(
-                        (map.get(i).size() > 1 ? new MultiplePosition(map.get(i)) : map.get(i).get(0)), wasFor.apply(i));
-            }
-        });
-        if(!intended.isEmpty()) {
-            addError(MultiplePossibility.at(intended, "Multiple possible properties for " + type + ", should be all the same"));
-        }
-    }
-
-    public <T> void reportNotExpected(Map<T, List<Position>> map, List<T> goodList, List<T> wrongList, Function<T, String> expectedFor, Function<T, String> notExpected) {
-        String expected = goodList.size() == 1 ? expectedFor.apply(goodList.get(0)) : goodList.stream().map(expectedFor).collect(Collectors.toList()).toString();
-        for (T element : wrongList) {
-            if(!map.get(element).isEmpty()) {
-                if (map.get(element).size() > 1) {
-                    MultiplePosition positions = new MultiplePosition();
-                    map.get(element).forEach(positions::add);
-                    addError(ReportPosition.at(positions, expected, notExpected.apply(element)));
-                } else {
-                    addError(ReportPosition.at(map.get(element).get(0), expected, notExpected.apply(element)));
+                addIfNotNull(expectedReporter.reportMultipleExpected(map, goodList));
+                if(shouldReport) {
+                    notExpectedReporter.reportNotExpected(map, goodList, wrongList).forEach(this::addError);
                 }
+            } else {
+                expectedReporter.doOnUniqueExpected(map, goodList.get(0));
+                notExpectedReporter.reportNotExpected(map, goodList, wrongList).forEach(this::addError);
+                notExpectedReporter.doOnNotExpected(map, goodList, wrongList);
             }
         }
     }
@@ -123,6 +102,12 @@ public abstract class Test {
                 Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
         int maxNumberOfElement = Collections.max(indentationCount.values());
         indentationCount.forEach((key, value) -> (value == maxNumberOfElement ? goodList : wrongList).add(key));
+    }
+
+    private void addIfNotNull(Error error) {
+        if(error != null) {
+            addError(error);
+        }
     }
 
     @Override
