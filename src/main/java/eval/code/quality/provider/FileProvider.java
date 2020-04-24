@@ -9,6 +9,7 @@ import eval.code.quality.utils.Preconditions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -31,7 +32,7 @@ public class FileProvider extends ContentProvider {
         this.content = new Lazy<>(() -> {
             try {
                 return FileToString.fromFile(file);
-            } catch (FileNotFoundException e) {
+            } catch (IOException e) {
                 return "";
             }
         });
