@@ -58,14 +58,9 @@ public class BracketMatching extends CompilationUnitTest {
         int parentLine = parentBlock.getParentStart().line;
         int parentColumn = parentBlock.getParentStart().column;
         if(parentBlock.bracketPosition != null) {
-            if(bracketHasElementBefore(context.getContentProvider().getString(), parentBlock.bracketPosition.begin)) {
-                // Specific check for multiple line header (method declaration with @annotation, if on multiple line, etc)
-                addToMap(BracketProperty.SAME_LINE, null, context.getPos(parentBlock.parent));
-            } else {
-                addToMap(getOpeningType(parentLine, parentColumn, parentBlock.bracketPosition.begin), null, context.getPos(parentBlock.parent));
-                if(parentBlock.bracketPosition.end.column.get() != parentColumn && !parentBlock.childStatements.isEmpty()) {
-                    addError(ReportPosition.at(context.getPos(parentBlock.bracketPosition.end), "Closing bracket is not aligned with parent"));
-                }
+            addToMap(getOpeningType(parentLine, parentColumn, parentBlock.bracketPosition.begin), null, context.getPos(parentBlock.parent));
+            if(parentBlock.bracketPosition.end.column.get() != parentColumn && !parentBlock.childStatements.isEmpty()) { // TODO enum on same line should not be an error
+                addError(ReportPosition.at(context.getPos(parentBlock.bracketPosition.end), "Closing bracket is not aligned with parent"));
             }
         }
         Range prevBlock = parentBlock.bracketPosition;
@@ -109,7 +104,8 @@ public class BracketMatching extends CompilationUnitTest {
     }
 
     private BracketProperty getOpeningType(int parentLine, int parentColumn, SinglePosition bracketPos) {
-        if(bracketPos.line == parentLine) {
+        if(bracketHasElementBefore(context.getContentProvider().getString(), bracketPos) || bracketPos.line == parentLine) {
+            // Specific check for multiple line header (method declaration with @annotation, if on multiple line, etc)
             return BracketProperty.SAME_LINE;
         } else if(bracketPos.line == parentLine + 1) {
             if(bracketPos.column.get() != parentColumn) {
