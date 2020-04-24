@@ -1,15 +1,13 @@
 package eval.code.quality.tests;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.*;
 import eval.code.quality.position.Position;
 import eval.code.quality.position.Range;
 import eval.code.quality.position.SinglePosition;
 import eval.code.quality.provider.ContentProvider;
-import eval.code.quality.utils.ReportPosition;
-import eval.code.quality.utils.Tuple;
+import eval.code.quality.utils.*;
 
 import java.util.*;
 
@@ -29,125 +27,70 @@ public class BracketMatching extends CompilationUnitTest {
     @Override
     protected void testFor(ContentProvider contentProvider) {
         CompilationUnit compilationUnit = contentProvider.getCompilationUnit();
-        compilationUnit.findAll(BlockStmt.class).forEach(b -> b.getParentNode().ifPresent(parentNode -> {
-            if(!(parentNode instanceof BlockStmt)) {
-                if(!(parentNode instanceof IfStmt) && !(parentNode instanceof TryStmt) && !(parentNode instanceof CatchClause) && !(parentNode instanceof DoStmt)) {
-                    if(parentNode instanceof MethodDeclaration) {
-                        System.out.println("--" + (((MethodDeclaration) parentNode).getAnnotations())); // TODO javaparser get position without annotation
-                    }
-                    checkCurrentBlocks(parentNode, new BracketPos(b));
-                }
-            }
-        }));
-       compilationUnit.findAll(TryStmt.class).forEach(tryStmt -> {
-           List<Tuple<SinglePosition, BracketPos>> bracketPosMap = new ArrayList<>();
-           for(CatchClause catchClause: tryStmt.getCatchClauses()) {
-               bracketPosMap.add(new Tuple<>(SinglePosition.from(catchClause.getBegin().get()), new BracketPos(catchClause.getBody())));
-           }
-           checkCurrentBlocks(tryStmt, new BracketPos(tryStmt.getTryBlock()), bracketPosMap);
-       });
+        ParentBlock.getFor(compilationUnit, contentProvider.getString()).forEach(this::checkCurrentBlocks);
         compilationUnit.findAll(IfStmt.class).forEach(ifStmt -> {
-            if(ifStmt.getParentNode().isEmpty() || !(ifStmt.getParentNode().get() instanceof IfStmt)) {
-                List<Tuple<SinglePosition, BracketPos>> bracketPosMap = new ArrayList<>();
-                IfStmt temp = ifStmt;
-                IfStmt prev = ifStmt;
-                while(temp.hasCascadingIfStmt()) {
-                    temp = temp.getElseStmt().get().asIfStmt();
-                    if(temp.hasThenBlock()) {
-                        bracketPosMap.add(new Tuple<>(getIndexNext(contentProvider.getString(), "else", prev.getBegin().get().line),
-                                new BracketPos(temp.getThenStmt().asBlockStmt())));
-                    } else {
-                        bracketPosMap.add(new Tuple<>(getIndexNext(contentProvider.getString(), "else", prev.getBegin().get().line), null));
-                    }
-                    prev = temp;
-                    addIfOneLiner(temp.getThenStmt());
+            addIfOneLiner(ifStmt.getThenStmt());
+            ifStmt.getElseStmt().ifPresent(elseStmt -> {
+                if(!elseStmt.isIfStmt()) {
+                    addIfOneLiner(elseStmt);
                 }
-                if(temp.hasElseBranch()) {
-                    if(temp.hasElseBlock()) {
-                        bracketPosMap.add(new Tuple<>(getIndexNext(contentProvider.getString(), "else", temp.getBegin().get().line),
-                                new BracketPos(temp.getElseStmt().get().asBlockStmt())));
-                    } else {
-                        bracketPosMap.add(new Tuple<>(getIndexNext(contentProvider.getString(), "else", temp.getBegin().get().line), null));
-                    }
-                    addIfOneLiner(temp.getElseStmt().get());
-                }
-                if(ifStmt.hasThenBlock()) {
-                    checkCurrentBlocks(ifStmt, new BracketPos(ifStmt.getThenStmt().asBlockStmt()), bracketPosMap);
-                } else {
-                    checkCurrentBlocks(ifStmt, null, bracketPosMap);
-                }
-                addIfOneLiner(ifStmt.getThenStmt());
-            }
+            });
         });
         compilationUnit.findAll(ForStmt.class).forEach(forStmt -> addIfOneLiner(forStmt.getBody()));
         compilationUnit.findAll(ForEachStmt.class).forEach(forEachStmt -> addIfOneLiner(forEachStmt.getBody()));
-        compilationUnit.findAll(DoStmt.class).forEach(doStmt -> {
-            if(doStmt.getBody().isBlockStmt()) {
-                List<Tuple<SinglePosition, BracketPos>> bracketPosMap = new ArrayList<>();
-                bracketPosMap.add(new Tuple<>(getIndexNext(contentProvider.getString(), "while", doStmt.getBegin().get().line), null));
-                checkCurrentBlocks(doStmt, new BracketPos(doStmt.getBody().asBlockStmt()), bracketPosMap);
-            }
-            addIfOneLiner(doStmt.getBody());
-        });
+        compilationUnit.findAll(DoStmt.class).forEach(doStmt -> addIfOneLiner(doStmt.getBody()));
         compilationUnit.findAll(WhileStmt.class).forEach(whileStmt -> addIfOneLiner(whileStmt.getBody()));
     }
 
     @Override
     protected void afterTests() {
         checkSameStyleBracket();
-        reportWith(isOneLinerBlock, (isBlock) -> "one liner " + (isBlock ? "with" : "without") + " block", "one liner type");
+        checkAndReport(isOneLinerBlock, "one liner block with bracket", true);
     }
 
     private void checkSameStyleBracket() {
-        reportWith(openingProperties, bracketProperty -> printWithType("opening bracket", "parent", bracketProperty), "opening bracket and parent");
-        reportWith(dualProperties, (tuple) ->
-                "child bracket property: (" +
-                        printWithType("opening bracket", "parent", tuple._1) + ", " +
-                        printWithType("child", "closing bracket", tuple._2) + ")", "child between opening and closing bracket");
-        reportWith(closingProperties, bracketProperty -> printWithType("child", "closing bracket", bracketProperty), "closing bracket and child");
+        checkAndReport(openingProperties, "bracket position next block", true);
+        checkAndReport(dualProperties, "bracket position (next block, previous block)", true);
+        checkAndReport(closingProperties, "bracket position previous block", true);
     }
 
-    private String printWithType(String type1, String type2, BracketProperty bracketProperty) {
-        return bracketProperty == BracketProperty.NEXT_LINE ?
-                type1 + " on the line after " + type2 : type1 + " on the same line than " + type2;
-    }
-
-    public void checkCurrentBlocks(Node parent, BracketPos bracketsPosition) {
-        checkCurrentBlocks(parent, bracketsPosition, new ArrayList<>());
-    }
-
-    public void checkCurrentBlocks(Node parent, BracketPos bracketsPosition, List<Tuple<SinglePosition, BracketPos>> bracketPosMap) {
-        int parentLine = parent.getBegin().get().line;
-        int parentColumn = parent.getBegin().get().column;
-        if(bracketsPosition != null) {
-            addToMap(getOpeningType(parentLine, parentColumn, bracketsPosition.range.begin), null, context.getPos(parent));
-            if(bracketsPosition.range.end.column.get() != parentColumn) { // TODO check non empty too
-                addError(ReportPosition.at(bracketsPosition.namedClosingPosition, "Closing bracket is not aligned with parent"));
+    public void checkCurrentBlocks(ParentBlock parentBlock) {
+        int parentLine = parentBlock.getParentStart().line;
+        int parentColumn = parentBlock.getParentStart().column;
+        if(parentBlock.bracketPosition != null) {
+            if(bracketHasElementBefore(context.getContentProvider().getString(), parentBlock.bracketPosition.begin)) {
+                // Specific check for multiple line header (method declaration with @annotation, if on multiple line, etc)
+                addToMap(BracketProperty.SAME_LINE, null, context.getPos(parentBlock.parent));
+            } else {
+                addToMap(getOpeningType(parentLine, parentColumn, parentBlock.bracketPosition.begin), null, context.getPos(parentBlock.parent));
+                if(parentBlock.bracketPosition.end.column.get() != parentColumn && !parentBlock.childStatements.isEmpty()) {
+                    addError(ReportPosition.at(context.getPos(parentBlock.bracketPosition.end), "Closing bracket is not aligned with parent"));
+                }
             }
         }
-        BracketPos prevBlock = bracketsPosition;
-        for(Tuple<SinglePosition, BracketPos> tuple: bracketPosMap) {
-            SinglePosition child = tuple._1;
-            BracketPos currBlock = tuple._2;
+        Range prevBlock = parentBlock.bracketPosition;
+        for(ChildBlock childBlock: parentBlock.childBlocks) {
+            SinglePosition child = childBlock.parent;
+            Range currBlock = childBlock.bracketPosition;
             if(prevBlock == null) {
                 if(child.column.get() != parentColumn) {
                     addError(ReportPosition.at(context.getPos(child), "Child is not aligned with parent"));
                 }
                 if(currBlock != null) {
-                    addToMap(getOpeningType(child.line, parentColumn, currBlock.range.begin), null, context.getPos(parent));
-                    if(currBlock.range.end.column.get() !=  parentColumn) {// TODO check non empty too
-                        addError(ReportPosition.at(currBlock.namedClosingPosition, "Closing bracket is not aligned with parent"));
+                    addToMap(getOpeningType(child.line, parentColumn, currBlock.begin), null, context.getPos(parentBlock.parent));
+                    if(currBlock.end.column.get() !=  parentColumn && !childBlock.childStatements.isEmpty()) {
+                        addError(ReportPosition.at(context.getPos(currBlock.end), "Closing bracket is not aligned with parent"));
                     }
                 }
             } else {
                 if(currBlock == null) {
-                    addToMap(null, getClosingType(parentColumn, prevBlock.range.end, child), context.getPos(child));
+                    addToMap(null, getClosingType(parentColumn, prevBlock.end, child), context.getPos(child));
                 } else {
-                    addToMap(getOpeningType(child.line, parentColumn, currBlock.range.begin),
-                            getClosingType(parentColumn, prevBlock.range.end, child), context.getPos(child));
+                    addToMap(getOpeningType(child.line, parentColumn, currBlock.begin),
+                            getClosingType(parentColumn, prevBlock.end, child), context.getPos(child));
                 }
             }
-            prevBlock = tuple._2;
+            prevBlock = childBlock.bracketPosition;
         }
     }
 
@@ -209,43 +152,17 @@ public class BracketMatching extends CompilationUnitTest {
         }
     }
 
-    private SinglePosition getIndexNext(String content, String match, int fromLine) {
-        Scanner scanner = new Scanner(content);
-        int currentLine = 1;
-        for(int i = 0; i < fromLine && scanner.hasNextLine(); ++i) {
-            scanner.nextLine();
-            currentLine++;
-        }
-        while(scanner.hasNextLine()) {
-            int result = scanner.nextLine().indexOf(match);
-            if(result != -1) {
-                scanner.close();
-                return new SinglePosition(currentLine, result + 1);
-            }
-            currentLine++;
-        }
-        scanner.close();
-        return null;
+    private static boolean bracketHasElementBefore(String content, SinglePosition bracketPos) {
+        return content.split(System.lineSeparator())[bracketPos.line-1].trim().charAt(0) != '{';
     }
 
     private enum BracketProperty {
-        SAME_LINE, NEXT_LINE
+        SAME_LINE,
+        NEXT_LINE
     }
 
     @Override
     protected String getName() {
         return "bracket matching";
-    }
-
-    private class BracketPos {
-        public final Position namedOpeningPosition;
-        public final Position namedClosingPosition;
-        public final Range range;
-
-        public BracketPos(BlockStmt blockStmt) {
-            this.range = Range.from(blockStmt.getRange().get());
-            this.namedOpeningPosition = context.getPos(range.begin);
-            this.namedClosingPosition = context.getPos(range.end);
-        }
     }
 }
