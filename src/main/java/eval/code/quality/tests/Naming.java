@@ -60,18 +60,17 @@ public class Naming extends CompilationUnitTest {
     private void testName(Modifiers modifiers, Map<NameProperty, List<Position>> map) {
         if(map.size() > 1) {
             List<Map.Entry<NameProperty, List<Position>>> orderedList = new ArrayList<>(map.entrySet());
-            orderedList.sort(Comparator.comparingInt(e -> e.getValue().size()));
+            orderedList.sort(Comparator.comparingInt(e -> -e.getValue().size()));
             List<Map.Entry<NameProperty, List<Position>>> sameSize = new ArrayList<>();
             List<Map.Entry<NameProperty, List<Position>>> smallerSize = new ArrayList<>();
-            int indexBiggestElement = orderedList.size()-1;
-            int maxSize = orderedList.get(indexBiggestElement).getValue().size();
+            int maxSize = orderedList.get(0).getValue().size();
             orderedList.forEach(e -> (e.getValue().size() == maxSize ? sameSize : smallerSize).add(e));
-            Node<NameProperty> root = NamePropertyTree.getCurrentNodeForTree(orderedList.get(indexBiggestElement).getKey());
+            Node<NameProperty> root = NamePropertyTree.getCurrentNodeForTree(orderedList.get(0).getKey());
             if(sameSize.size() > 1) {
                 Map<Position, NameProperty> accumulator = new HashMap<>();
                 checkIsInSameTreePath(sameSize.iterator(), root, accumulator);
                 if(!accumulator.isEmpty()) {
-                    accumulator.put(getSingleOrMultiplePosition(orderedList.get(indexBiggestElement).getValue()), orderedList.get(indexBiggestElement).getKey());
+                    accumulator.put(getSingleOrMultiplePosition(orderedList.get(0).getValue()), orderedList.get(0).getKey());
                     addError(MultiplePossibility.at(
                             accumulator.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toString())),
                             modifiers != null ? "Expected same naming convention for the same modifiers:" + modifiers : "Expected same naming convention"));
@@ -97,11 +96,11 @@ public class Naming extends CompilationUnitTest {
                     if(child == null) {
                         errorAccumulator.put(getSingleOrMultiplePosition(current.getValue()), current.getKey());
                     } else {
-                        checkIsInSameTreePath(iterator, child, errorAccumulator);
+                        return checkIsInSameTreePath(iterator, child, errorAccumulator);
                     }
                 }
             } else {
-                checkIsInSameTreePath(iterator, currentNode, errorAccumulator);
+                return checkIsInSameTreePath(iterator, currentNode, errorAccumulator);
             }
         }
         return currentNode.value;
