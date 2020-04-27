@@ -1,6 +1,7 @@
 package eval.code.quality.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -8,6 +9,9 @@ import java.util.List;
  * This is represented by the following tree:
  *
  *                                Empty
+ *                                 |
+ *                                 |
+ *                                Digit (special case for "_1", for example)
  *                                 |
  *                                 |
  *    +---------------------------------------------------------------------------+
@@ -29,15 +33,17 @@ public class NamePropertyTree {
 
     private NamePropertyTree(NameProperty nameProperty) {
         root = new Node<>(null, new NameProperty(new VariableProperty(VariableProperty.Property.Empty), nameProperty));
+        Node<NameProperty> digit = new Node<>(root, new NameProperty(new VariableProperty(VariableProperty.Property.Digit), nameProperty));
+        root.setChildren(Collections.singletonList(digit));
         List<Node<NameProperty>> list = new ArrayList<>();
-        list.add(new Node<>(root, new NameProperty(new VariableProperty(VariableProperty.Property.None), nameProperty)));
-        list.add(new Node<>(root, new NameProperty(new VariableProperty(VariableProperty.Property.Underscore), nameProperty)));
-        list.add(new Node<>(root, new NameProperty(new VariableProperty(VariableProperty.Property.Dollar), nameProperty)));
-        Node<NameProperty> allUpper = new Node<>(root, new NameProperty(new VariableProperty(VariableProperty.Property.AllUpper), nameProperty));
+        list.add(new Node<>(digit, new NameProperty(new VariableProperty(VariableProperty.Property.None), nameProperty)));
+        list.add(new Node<>(digit, new NameProperty(new VariableProperty(VariableProperty.Property.Underscore), nameProperty)));
+        list.add(new Node<>(digit, new NameProperty(new VariableProperty(VariableProperty.Property.Dollar), nameProperty)));
+        Node<NameProperty> allUpper = new Node<>(digit, new NameProperty(new VariableProperty(VariableProperty.Property.AllUpper), nameProperty));
         list.add(allUpper);
-        Node<NameProperty> allLower = new Node<>(root, new NameProperty(new VariableProperty(VariableProperty.Property.AllLower), nameProperty));
+        Node<NameProperty> allLower = new Node<>(digit, new NameProperty(new VariableProperty(VariableProperty.Property.AllLower), nameProperty));
         list.add(allLower);
-        root.setChildren(list);
+        digit.setChildren(list);
         List<Node<NameProperty>> listUpper = new ArrayList<>();
         listUpper.add(new Node<>(allUpper, new NameProperty(new VariableProperty(VariableProperty.Property.AllUpperUnderscore), nameProperty)));
         listUpper.add(new Node<>(allUpper, new NameProperty(new VariableProperty(VariableProperty.Property.AllUpperDollar), nameProperty)));

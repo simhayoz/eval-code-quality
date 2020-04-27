@@ -180,4 +180,35 @@ public class NamingTest {
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
     }
+
+    @Test void simplePropertyShouldNotTriggerError() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("class Class {")
+                .addLn("int mId;", 4)
+                .addLn("int mName;", 4)
+                .addLn("}");
+        Report r = new Naming(new StringProvider("tests", builder.toString())).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(), is(empty()));
+        builder = new MyStringBuilder();
+        builder.addLn("class Class { }")
+                .addLn("class Class2 { }")
+                .addLn("class Class2D { }");
+        r = new Naming(new StringProvider("tests", builder.toString())).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(), is(empty()));
+    }
+
+    @Test void shouldFailUpperClass() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("class Class { }")
+                .addLn("class Class1 { }")
+                .addLn("class Class2 { }")
+                .addLn("class class3 { }");
+        Report r = new Naming(new StringProvider("tests", builder.toString())).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(), Matchers.<Collection<Error>>allOf(
+                hasItem(is(ReportPosition.at(new NamePosition("tests", new SinglePosition(4, 1))))),
+                hasSize(1)));
+    }
 }

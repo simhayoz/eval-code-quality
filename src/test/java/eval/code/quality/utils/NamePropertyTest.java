@@ -15,13 +15,17 @@ class NamePropertyTest {
 
     @Test void singleOrTwoCharactersVariableThrowsNoError() {
         NameProperty nameProperty = new NameProperty("i");
-        assertEquals(CharacterProperty.Property.Lower, nameProperty.start_property.property);
-        assertEquals(CharacterProperty.Property.Lower, nameProperty.end_property.property);
-        assertEquals(VariableProperty.Property.Empty, nameProperty.full_property.property);
-        NameProperty nameProperty2 = new NameProperty("i2");
-        assertEquals(CharacterProperty.Property.Lower, nameProperty2.start_property.property);
-        assertEquals(CharacterProperty.Property.Digit, nameProperty2.end_property.property);
-        assertEquals(VariableProperty.Property.Empty, nameProperty2.full_property.property);
+        assertEquals(CharacterProperty.Property.Lower, nameProperty.startProperty.property);
+        assertTrue(nameProperty.endProperty.isOther());
+        assertEquals(VariableProperty.Property.Empty, nameProperty.fullProperty.property);
+        NameProperty nameProperty2 = new NameProperty("_2");
+        assertEquals(CharacterProperty.Property.Underscore, nameProperty2.startProperty.property);
+        assertTrue(nameProperty2.endProperty.isOther());
+        assertEquals(VariableProperty.Property.Digit, nameProperty2.fullProperty.property);
+        NameProperty nameProperty3 = new NameProperty("__");
+        assertEquals(CharacterProperty.Property.Underscore, nameProperty3.startProperty.property);
+        assertEquals(CharacterProperty.Property.Underscore, nameProperty3.endProperty.property);
+        assertEquals(VariableProperty.Property.Empty, nameProperty3.fullProperty.property);
     }
 
     @Test void equalityWorksForSimpleVariable() {
@@ -48,8 +52,8 @@ class NamePropertyTest {
     @Test void canCreateFromOtherProperty() {
         NameProperty nameProperty = new NameProperty(new VariableProperty(VariableProperty.Property.AllUpper),
                 new NameProperty("$test1"));
-        assertEquals(VariableProperty.Property.AllUpper, nameProperty.full_property.property);
-        assertEquals(CharacterProperty.Property.Dollar, nameProperty.start_property.property);
-        assertEquals(CharacterProperty.Property.Digit, nameProperty.end_property.property);
+        assertEquals(VariableProperty.Property.AllUpper, nameProperty.fullProperty.property);
+        assertEquals(CharacterProperty.Property.Dollar, nameProperty.startProperty.property);
+        assertTrue(nameProperty.endProperty.isOther());
     }
 }

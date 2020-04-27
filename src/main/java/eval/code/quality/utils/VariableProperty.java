@@ -1,5 +1,7 @@
 package eval.code.quality.utils;
 
+import java.util.regex.Pattern;
+
 /**
  * Represents the property of a variable as described in the {@code Property} enum.
  * <p>The property does not consider the first and last character as it can be different from the overall style of
@@ -17,6 +19,7 @@ public class VariableProperty {
         AllLowerDollar(false, true, false, true), // eg: this$is$a$variable
         Underscore(false, false, true, false), // eg: this_Is_A_Variable
         Dollar(false, false, false, true), // eg: this$Is$A$Variable
+        Digit(),
         Empty(),
         None(); // Follow none of the previous convention
 
@@ -45,6 +48,10 @@ public class VariableProperty {
         public static Property getFor(String s) {
             if (s.isEmpty()) {
                 return Empty;
+            }
+            Pattern pattern = Pattern.compile("\\d+");
+            if(pattern.matcher(s).matches()) {
+                return Digit;
             }
             for (Property property : Property.values()) {
                 if (testProperty(s, property)) {
