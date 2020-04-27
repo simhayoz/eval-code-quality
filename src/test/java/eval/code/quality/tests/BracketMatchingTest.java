@@ -103,12 +103,9 @@ public class BracketMatchingTest {
 
     @Test void notAlignedChildThrowsError() {
         MyStringBuilder builder = new MyStringBuilder();
-        builder.addLn("public class Test")
-                .addLn("{")
-                .addLn("public static boolean test()", 4)
-                .addLn("{", 4)
-                .addLn("if(true) ", 8)
-                .addLn("{", 8)
+        builder.addLn("public class Test {")
+                .addLn("public static boolean test() {", 4)
+                .addLn("if(true) {", 8)
                 .addLn("return true;", 12)
                 .addLn("}", 8)
                 .addLn(" else if(false) {", 8)
@@ -123,7 +120,7 @@ public class BracketMatchingTest {
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(),
                 Matchers.<Collection<Error>>allOf(
-                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(9, 10))))),
+                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(6, 10))))),
                         hasSize(1)));
     }
 
@@ -168,10 +165,12 @@ public class BracketMatchingTest {
                 .addLn("{", 8)
                 .addLn("return true;", 12)
                 .addLn("}", 8)
-                .addLn("else if(false) {", 8)
+                .addLn("else if(false)", 8)
+                .addLn("{", 8)
                 .addLn("return false;", 12)
                 .addLn("}", 8)
-                .addLn("else {", 8)
+                .addLn("else", 8)
+                .addLn("{", 8)
                 .addLn("return true;", 12)
                 .addLn("}", 8)
                 .addLn("}", 4)
@@ -201,7 +200,8 @@ public class BracketMatchingTest {
                 .addLn("{", 8)
                 .addLn("return false;", 12)
                 .addLn("}", 8)
-                .addLn("else {", 8)
+                .addLn("else", 8)
+                .addLn("{", 8)
                 .addLn("return true;", 12)
                 .addLn("}", 8)
                 .addLn("}", 4)
@@ -325,7 +325,7 @@ public class BracketMatchingTest {
                         hasSize(1)));
     }
 
-    @Test void differentDualPropertiesThrowsError() {
+    @Test void differentPropertiesThrowsError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("if(true) {")
                 .addLn("return true;", 4)
@@ -400,6 +400,27 @@ public class BracketMatchingTest {
         Report r = new BracketMatching(new StringProvider("For tests", builder.toString())).run();
         assertThat(r.getWarnings(), is(empty()));
         assertThat(r.getErrors(), is(empty()));
+    }
+
+    @Test void simpleIfElseTestTriggerError() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("class Class {")
+                .addLn("void m() {", 4)
+                .addLn("if (true) {", 8)
+                .addLn("System.out.println(\"True\");", 12)
+                .addLn("}", 8)
+                .addLn("else // mismatched style with the rest of the class", 8)
+                .addLn("{", 8)
+                .addLn("System.out.println(\"False\");", 12)
+                .addLn("}", 8)
+                .addLn("}", 4)
+                .addLn("}");
+        Report r = new BracketMatching(new StringProvider("For tests", builder.toString())).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(),
+                Matchers.<Collection<Error>>allOf(
+                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(6, 9))))),
+                        hasSize(1)));
     }
 
     private String wrap(String s) {
