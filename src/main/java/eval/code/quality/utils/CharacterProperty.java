@@ -57,6 +57,12 @@ public class CharacterProperty {
         this.property = property;
     }
 
+    public boolean isOther() {
+        return property == Property.Upper
+                || property == Property.Lower
+                || property == Property.Digit;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

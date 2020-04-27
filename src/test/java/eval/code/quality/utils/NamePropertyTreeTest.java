@@ -21,13 +21,14 @@ public class NamePropertyTreeTest {
     }
 
     @Test void printFromNodesPrintTheRightTree() {
-        NameProperty nameProperty = new NameProperty("i");
+        NameProperty nameProperty = new NameProperty("__");
         Node<NameProperty> node = NamePropertyTree.getCurrentNodeForTree(nameProperty);
-        assertThat(node.toString(), equalTo("{start:Lower,end:Lower,property:Empty}" +
-                "{{start:Lower,end:Lower,property:None}, {start:Lower,end:Lower,property:Underscore}, " +
-                "{start:Lower,end:Lower,property:Dollar}, {start:Lower,end:Lower,property:AllUpper}" +
-                "{{start:Lower,end:Lower,property:AllUpperUnderscore}, {start:Lower,end:Lower,property:AllUpperDollar}}, " +
-                "{start:Lower,end:Lower,property:AllLower}{{start:Lower,end:Lower,property:AllLowerUnderscore}, " +
-                "{start:Lower,end:Lower,property:AllLowerDollar}, {start:Lower,end:Lower,property:CamelCase}}}"));
+        assertThat(node.toString(), equalTo("{start:Underscore,end:Underscore,property:Empty}" +
+                "{{start:Underscore,end:Underscore,property:Digit}" +
+                "{{start:Underscore,end:Underscore,property:None}, {start:Underscore,end:Underscore,property:Underscore}, " +
+                "{start:Underscore,end:Underscore,property:Dollar}, {start:Underscore,end:Underscore,property:AllUpper}" +
+                "{{start:Underscore,end:Underscore,property:AllUpperUnderscore}, {start:Underscore,end:Underscore,property:AllUpperDollar}}, " +
+                "{start:Underscore,end:Underscore,property:AllLower}{{start:Underscore,end:Underscore,property:AllLowerUnderscore}, " +
+                "{start:Underscore,end:Underscore,property:AllLowerDollar}, {start:Underscore,end:Underscore,property:CamelCase}}}}"));
     }
 }
