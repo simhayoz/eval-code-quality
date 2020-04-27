@@ -402,6 +402,27 @@ public class BracketMatchingTest {
         assertThat(r.getErrors(), is(empty()));
     }
 
+    @Test void simpleIfElseTestTriggerError() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("class Class {")
+                .addLn("void m() {", 4)
+                .addLn("if (true) {", 8)
+                .addLn("System.out.println(\"True\");", 12)
+                .addLn("}", 8)
+                .addLn("else // mismatched style with the rest of the class", 8)
+                .addLn("{", 8)
+                .addLn("System.out.println(\"False\");", 12)
+                .addLn("}", 8)
+                .addLn("}", 4)
+                .addLn("}");
+        Report r = new BracketMatching(new StringProvider("For tests", builder.toString())).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(),
+                Matchers.<Collection<Error>>allOf(
+                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(6, 9))))),
+                        hasSize(1)));
+    }
+
     private String wrap(String s) {
         String[] arr = {s};
         return wrap(arr);
