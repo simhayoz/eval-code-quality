@@ -14,7 +14,6 @@ import java.util.*;
 public class BracketMatching extends CompilationUnitTest {
 
     private Map<BracketProperty, List<Position>> openingProperties = new HashMap<>();
-    private Map<Tuple<BracketProperty, BracketProperty>, List<Position>> dualProperties = new HashMap<>();
     private Map<BracketProperty, List<Position>> closingProperties = new HashMap<>();
     private Map<Boolean, List<Position>> isOneLinerBlock = new HashMap<>();
 
@@ -50,7 +49,6 @@ public class BracketMatching extends CompilationUnitTest {
 
     private void checkSameStyleBracket() {
         checkAndReport(openingProperties, "bracket position next block", true);
-        checkAndReport(dualProperties, "bracket position (next block, previous block)", true);
         checkAndReport(closingProperties, "bracket position previous block", true);
     }
 
@@ -119,12 +117,8 @@ public class BracketMatching extends CompilationUnitTest {
     }
 
     private void addToMap(BracketProperty openingProperty, BracketProperty closingProperty, Position position) {
-        if(openingProperty != null && closingProperty != null) {
-            add(dualProperties, new Tuple<>(openingProperty, closingProperty), position);
-        } else {
             add(openingProperties, openingProperty, position);
             add(closingProperties, closingProperty, position);
-        }
     }
 
     private <T> void add(Map<T, List<Position>> map, T bracketProperty, Position position) {
