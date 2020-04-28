@@ -109,11 +109,14 @@ public class Naming extends CompilationUnitTest {
     private void addToMap(Map<Modifiers, Map<NameProperty, List<Position>>> map, NodeList<Modifier> modifierList, Position position, String name) {
         Modifiers modifiers = new Modifiers();
         modifierList.forEach(e -> modifiers.modifiers.add(e.getKeyword()));
-        NameProperty nameProperty = new NameProperty(name);
-        if(map.containsKey(modifiers)) {
-            map.replace(modifiers, addToNameProperty(map.get(modifiers), nameProperty, position));
-        } else {
-            map.put(modifiers, addToNameProperty(new HashMap<>(), nameProperty, position));
+        // Special checks for Serializable (see https://github.com/simhayoz/eval-code-quality/issues/16)
+        if(!name.equals("serialVersionUID")) {
+            NameProperty nameProperty = new NameProperty(name);
+            if(map.containsKey(modifiers)) {
+                map.replace(modifiers, addToNameProperty(map.get(modifiers), nameProperty, position));
+            } else {
+                map.put(modifiers, addToNameProperty(new HashMap<>(), nameProperty, position));
+            }
         }
     }
 
