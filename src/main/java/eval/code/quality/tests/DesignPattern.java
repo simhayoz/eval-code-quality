@@ -1,7 +1,5 @@
 package eval.code.quality.tests;
 
-import eval.code.quality.provider.ContentProvider;
-import eval.code.quality.utils.Descriptor;
 import eval.code.quality.utils.Matcher;
 
 import java.util.List;
