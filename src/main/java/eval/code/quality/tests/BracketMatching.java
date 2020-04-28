@@ -57,7 +57,7 @@ public class BracketMatching extends CompilationUnitTest {
         int parentColumn = parentBlock.getParentStart().column;
         if(parentBlock.bracketPosition != null) {
             addToMap(getOpeningType(parentLine, parentColumn, parentBlock.bracketPosition.begin), null, context.getPos(parentBlock.parent));
-            if(parentBlock.bracketPosition.end.column.get() != parentColumn && !parentBlock.childStatements.isEmpty()) { // TODO enum on same line should not be an error
+            if(parentBlock.bracketPosition.end.column.get() != parentColumn && !parentBlock.childStatements.isEmpty()) {
                 addError(ReportPosition.at(context.getPos(parentBlock.bracketPosition.end), "Closing bracket is not aligned with parent"));
             }
         }
@@ -105,7 +105,7 @@ public class BracketMatching extends CompilationUnitTest {
         if(bracketHasElementBefore(context.getContentProvider().getString(), bracketPos) || bracketPos.line == parentLine) {
             // Specific check for multiple line header (method declaration with @annotation, if on multiple line, etc)
             return BracketProperty.SAME_LINE;
-        } else if(bracketPos.line == parentLine + 1) {
+        } else if(bracketPos.line == parentLine + 1) { // TODO should detect the same way than bracketHasElementBefore
             if(bracketPos.column.get() != parentColumn) {
                 addError(ReportPosition.at(context.getPos(bracketPos), "Opening bracket not aligned with parent"));
             }
