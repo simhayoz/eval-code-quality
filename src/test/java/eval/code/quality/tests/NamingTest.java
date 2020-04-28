@@ -211,4 +211,16 @@ public class NamingTest {
                 hasItem(is(ReportPosition.at(new NamePosition("tests", new SinglePosition(4, 1))))),
                 hasSize(1)));
     }
+
+    @Test void specialSerializableVariableDoesNotTriggerError() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("class Class {")
+                .addLn("int serialVersionUID;", 4)
+                .addLn("int other_naming_convention;", 4)
+                .addLn("int same_naming_convention;", 4)
+                .addLn("}");
+        Report r = new Naming(new StringProvider("tests", builder.toString())).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(), is(empty()));
+    }
 }
