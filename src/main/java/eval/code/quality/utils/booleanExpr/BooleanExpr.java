@@ -1,5 +1,7 @@
 package eval.code.quality.utils.booleanExpr;
 
+import eval.code.quality.tests.Report;
+
 import java.util.function.Supplier;
 
 public abstract class BooleanExpr {

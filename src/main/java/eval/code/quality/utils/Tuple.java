@@ -1,6 +1,9 @@
 package eval.code.quality.utils;
 
 import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Represents an immutable tuple.
@@ -15,6 +18,18 @@ public class Tuple<L, R> {
     public Tuple(L _1, R _2) {
         this._1 = _1;
         this._2 = _2;
+    }
+
+    public <T> void accept(BiConsumer<L, R> func) {
+        func.accept(_1, _2);
+    }
+
+    public <T> T apply(BiFunction<L, R, T> func) {
+        return func.apply(_1, _2);
+    }
+
+    public <T> Tuple<T, T> map(Function<L, T> func1, Function<R, T> func2) {
+        return new Tuple<>(func1.apply(_1), func2.apply(_2));
     }
 
     @Override

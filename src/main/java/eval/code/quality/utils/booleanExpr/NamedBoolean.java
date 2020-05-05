@@ -3,8 +3,8 @@ package eval.code.quality.utils.booleanExpr;
 import java.util.function.Supplier;
 
 public class NamedBoolean extends BooleanExpr {
-    public final Supplier<Boolean> value;
-    public final String errorMessage;
+    private final Supplier<Boolean> value;
+    private final String errorMessage;
 
     public NamedBoolean(Supplier<Boolean> value, String errorMessage) {
         this.value = value;
