@@ -1,6 +1,8 @@
 package eval.code.quality.utils;
 
-public abstract class Matcher<T> {
-    public abstract boolean matches(T actual);
-    public abstract void describeMismatch(T actual);
+import com.github.javaparser.ast.CompilationUnit;
+
+public abstract class Matcher {
+    public abstract boolean matches(CompilationUnit actual);
+    public abstract String describeMismatch(CompilationUnit actual);
 }

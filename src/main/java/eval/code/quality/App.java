@@ -1,22 +1,12 @@
 package eval.code.quality;
 
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import eval.code.quality.provider.*;
 import eval.code.quality.tests.*;
-import eval.code.quality.tests.pattern.BuilderPattern;
-import eval.code.quality.tests.pattern.SingletonPattern;
-import eval.code.quality.utils.Matcher;
-import eval.code.quality.utils.Tuple;
-import eval.code.quality.utils.booleanExpr.AndExpr;
-import eval.code.quality.utils.booleanExpr.BooleanExpr;
-import eval.code.quality.utils.booleanExpr.NamedBoolean;
-import eval.code.quality.utils.booleanExpr.OrExpr;
 
 import java.io.File;
-import java.util.Optional;
+import java.util.List;
 
-import static eval.code.quality.tests.DesignPattern.*;
-import static eval.code.quality.utils.booleanExpr.BooleanExpr.*;
+import static eval.code.quality.tests.DesignPatternTest.*;
 
 public class App {
 
@@ -30,22 +20,15 @@ public class App {
         testSuite.add(new Indentation(contentProvider));
         testSuite.add(new Naming(contentProvider));
         testSuite.add(new BracketMatching(contentProvider));
+        ContentProvider singletonProvider = new FileProvider(new File("assets/tests/ExampleSingletonPattern.java"));
+        testSuite.add(isSingletonPattern(singletonProvider, "IvoryTower"));
+        testSuite.add(isSingletonPattern(contentProvider, "Details"));
+        ContentProvider builderProvider = new FileProvider(new File("assets/tests/ExampleBuilderPattern.java"));
+        testSuite.add(isBuilderPattern(builderProvider, "Hero", "Builder"));
+        ContentProvider visitorProvider = new DirectoryProvider("assets/tests/ExampleVisitor");
+        List<String> childrenName = List.of("Book", "Fruit");
+        testSuite.add(isVisitorPattern(visitorProvider, "Item", childrenName, "Builder"));
         testSuite.runTests();
         System.out.println(testSuite);
-        contentProvider.findClassBy("Details").ifPresentOrElse((v) -> enforce(v, isSingletonPattern()), () -> {
-            throw new IllegalArgumentException("Class not found");
-        });
-
-        new Tuple<>(contentProvider.findClassBy("Details"), contentProvider.findClassBy("Details")).accept((l, r) -> {
-            if(l.isPresent() && r.isPresent()) {
-                enforce(new Tuple<>(l.get(), r.get()), isBuilderPattern());
-            }
-        });
-
-        //        BooleanExpr booleanExpr = and(or(expr(true, "true"), expr(false, "false")), not(expr(true, "will be false")));
-////                new AndExpr(new OrExpr(new NamedBoolean(false, "mismatch"), new NamedBoolean(false, "mismatch2")), new NamedBoolean(true, "no mismatch"));
-//        if(!booleanExpr.evaluate()) {
-//            System.out.println(booleanExpr.describeMismatch());
-//        }
     }
 }
