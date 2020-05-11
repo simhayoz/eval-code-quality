@@ -13,16 +13,12 @@ import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.tests.DesignPatternTest;
-import eval.code.quality.utils.StringError;
-import eval.code.quality.utils.booleanExpr.BooleanExpr;
 import eval.code.quality.utils.evaluator.*;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import static eval.code.quality.utils.booleanExpr.BooleanExpr.expr;
 
 /**
  * Check for a singleton design pattern.

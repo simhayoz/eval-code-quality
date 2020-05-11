@@ -3,8 +3,6 @@ package eval.code.quality.tests.pattern;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.tests.DesignPatternTest;
-import eval.code.quality.utils.StringError;
-import eval.code.quality.utils.booleanExpr.BooleanExpr;
 import eval.code.quality.utils.evaluator.BooleanEvaluator;
 import eval.code.quality.utils.evaluator.BooleanExpression;
 import eval.code.quality.utils.evaluator.BooleanOr;
@@ -12,8 +10,6 @@ import eval.code.quality.utils.evaluator.BooleanSimple;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static eval.code.quality.utils.booleanExpr.BooleanExpr.expr;
 
 /**
  * Check for a visitor design pattern.
