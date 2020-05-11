@@ -5,6 +5,10 @@ import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.tests.DesignPatternTest;
 import eval.code.quality.utils.StringError;
 import eval.code.quality.utils.booleanExpr.BooleanExpr;
+import eval.code.quality.utils.evaluator.BooleanEvaluator;
+import eval.code.quality.utils.evaluator.BooleanExpression;
+import eval.code.quality.utils.evaluator.BooleanOr;
+import eval.code.quality.utils.evaluator.BooleanSimple;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,8 +31,6 @@ public class VisitorPatternTest extends DesignPatternTest {
     private final List<String> childrenName;
     private final String visitorName;
 
-    private BooleanExpr booleanExpr;
-
     public VisitorPatternTest(ContentProvider contentProvider, String parentName, List<String> childrenName, String visitorName) {
         super(contentProvider);
         this.parentName = parentName;
@@ -37,10 +39,11 @@ public class VisitorPatternTest extends DesignPatternTest {
     }
 
     @Override
-    public boolean enforce(ContentProvider contentProvider) {
-        ClassOrInterfaceDeclaration parent = contentProvider.findClassBy(parentName).get();
+    protected BooleanEvaluator getEvaluator(ContentProvider contentProvider) throws ClassNotFoundException {
+        ClassOrInterfaceDeclaration parent = contentProvider.findClassBy(parentName).orElseThrow(() -> new ClassNotFoundException(parentName));
         List<ClassOrInterfaceDeclaration> children = childrenName.stream().map(cName -> contentProvider.findClassBy(cName).get()).collect(Collectors.toList());
-        ClassOrInterfaceDeclaration visitor = contentProvider.findClassBy(visitorName).get();
+        ClassOrInterfaceDeclaration visitor = contentProvider.findClassBy(visitorName).orElseThrow(() -> new ClassNotFoundException(visitorName));
+        BooleanEvaluator evaluator = new BooleanEvaluator();
         List<String> childrenSimpleName = childrenName.stream().map(this::getSimpleName).collect(Collectors.toList());
         List<String> visitorMethodsParametersName = visitor.getMethods().stream()
                 .filter(method -> method.getNameAsString().equals("visit"))
@@ -49,17 +52,11 @@ public class VisitorPatternTest extends DesignPatternTest {
                         .filter(childrenSimpleName::contains)
                         .findFirst().orElseThrow())
                 .collect(Collectors.toList());
-        BooleanExpr visitorHasVisitMethod = expr(() -> visitorMethodsParametersName.containsAll(childrenSimpleName), "visitor has a method \"visit\" for all child");
-        BooleanExpr parentHasAcceptMethod = expr(() -> hasAcceptMethodWithVisitor(parent), "Parent interface has accept method to be implemented by children");
-        BooleanExpr childrenAllImplementAccept = expr(() -> children.stream().allMatch(this::hasAcceptMethodWithVisitor), "Every children implements accept method");
-        booleanExpr = visitorHasVisitMethod.and(parentHasAcceptMethod.or(childrenAllImplementAccept));
-        return booleanExpr.evaluate();
-    }
-
-    @Override
-    public void describeMismatch() {
-        // TODO this
-        addError(new StringError(booleanExpr.describeMismatch()));
+        evaluator.add(() -> visitorMethodsParametersName.containsAll(childrenSimpleName), "visitor has a method \"visit\" for all child");
+        BooleanExpression hasAcceptMethodParent = new BooleanSimple(() -> hasAcceptMethodWithVisitor(parent), "Parent interface has accept method to be implemented by children");
+        BooleanExpression hasAcceptMethodChildren = new BooleanSimple(() -> children.stream().allMatch(this::hasAcceptMethodWithVisitor), "Every children implements accept method");
+        evaluator.add(new BooleanOr(hasAcceptMethodParent, hasAcceptMethodChildren));
+        return evaluator;
     }
 
     @Override
