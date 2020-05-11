@@ -23,6 +23,19 @@ import java.util.stream.Collectors;
 
 import static eval.code.quality.utils.booleanExpr.BooleanExpr.expr;
 
+/**
+ * Check for a singleton design pattern.
+ * <p>
+ *     Check the following properties:
+ *     <ul>
+ *         <li>There exists a unique constructor that is private</li>
+ *         <li>Singleton class has a unique variable static of type of the singleton class</li>
+ *         <li>This static variable is either accessible through a method or is public and final</li>
+ *         <li>If the variable is accessible through a method and is not final it is initialized through the method and only once,
+ *         namely the following check should be done before assigning the variable: <pre>var != null</pre></li>
+ *     </ul>
+ * </p>
+ */
 public class SingletonPatternTest extends DesignPatternTest {
 
     private final String className;
@@ -37,11 +50,11 @@ public class SingletonPatternTest extends DesignPatternTest {
     protected boolean enforce(ContentProvider contentProvider) {
         ClassOrInterfaceDeclaration classCU = contentProvider.findClassBy(className).get();
         List<ConstructorDeclaration> constructor = classCU.getConstructors();
-        List<MethodDeclaration> methods = classCU.getMethods().stream().filter(m -> m.hasModifier(Modifier.Keyword.STATIC) && m.hasModifier(Modifier.Keyword.PUBLIC) && m.getType().toString().equals(className)).collect(Collectors.toList());
-        List<FieldDeclaration> variables = classCU.getFields().stream().filter(v -> v.hasModifier(Modifier.Keyword.STATIC) && v.getVariables().stream().anyMatch(e -> e.getType().toString().equals(className))).collect(Collectors.toList());
+        List<MethodDeclaration> methods = classCU.getMethods().stream().filter(m -> m.hasModifier(Modifier.Keyword.STATIC) && m.hasModifier(Modifier.Keyword.PUBLIC) && m.getType().toString().equals(getSimpleName(className))).collect(Collectors.toList());
+        List<FieldDeclaration> variables = classCU.getFields().stream().filter(v -> v.hasModifier(Modifier.Keyword.STATIC) && v.getVariables().stream().anyMatch(e -> e.getType().toString().equals(getSimpleName(className)))).collect(Collectors.toList());
         BooleanExpr hasPrivateConstructor = expr(() -> !classCU.isInterface(), "class is not an interface")
                 .and(expr(() -> constructor.size() == 1 && constructor.get(0).hasModifier(Modifier.Keyword.PRIVATE), "constructor is unique and private"));
-        BooleanExpr hasStaticVariable = expr(() -> variables.size() == 1, "there exists a unique static variable of type: " + className);
+        BooleanExpr hasStaticVariable = expr(() -> variables.size() == 1, "there exists a unique static variable of type: " + getSimpleName(className));
         Supplier<Boolean> staticInit = () -> variables.get(0).hasModifier(Modifier.Keyword.FINAL)
                 && variables.get(0).getVariables().get(0).getInitializer().isPresent();
         Supplier<Boolean> lazyInit = () -> checkOnUnique(methods.get(0).findAll(AssignExpr.class).stream().filter(a -> a.getTarget().isNameExpr() && a.getTarget().asNameExpr().getName().equals(variables.get(0).getVariables().get(0).getName())).collect(Collectors.toList()),
@@ -50,6 +63,9 @@ public class SingletonPatternTest extends DesignPatternTest {
                 && expression.asNameExpr().getName().equals(variables.get(0).getVariables().get(0).getName())).orElse(false)));
         Supplier<Boolean> publicInstanceVariable = () -> variables.get(0).hasModifier(Modifier.Keyword.PUBLIC)
                 && staticInit.get();
+//        classCU.findAll(AssignExpr.class).forEach(a -> System.out.println(a.getTarget()));
+//        System.out.println(classCU); // TODO check unique "= new SingletonClass();"
+//        BooleanExpr canCreateMultipleTime = expr(() -> classCU.findAll(AssignExpr.class).stream().filter(a -> a.getTarget().isNameExpr() && a.getTarget().asNameExpr().getName().equals(variables.get(0).getVariables().get(0).getName())).collect(Collectors.toList())
         BooleanExpr canAccessInstance = expr(publicInstanceVariable, "static instance variable is publicly accessible and statically initialized")
                 .or(expr(publicStaticMethod, "static instance variable is accessible through a public static method").and(expr(staticInit, "instance variable is statically initialized")
                         .or(expr(lazyInit, "instance getter method only lazy init instance once")), "method accessible instance"));
@@ -59,7 +75,7 @@ public class SingletonPatternTest extends DesignPatternTest {
 
     @Override
     protected void describeMismatch() {
-        System.out.println("Singleton Pattern for the class " + className + ": expected: " + System.lineSeparator() + booleanExpr.describeMismatch().indent(2) + " but was false");
+//        System.out.println("Singleton Pattern for the class " + className + ": expected: " + System.lineSeparator() + booleanExpr.describeMismatch().indent(2) + " but was false");
         addError(new StringError(booleanExpr.describeMismatch()));
         // TODO this
     }

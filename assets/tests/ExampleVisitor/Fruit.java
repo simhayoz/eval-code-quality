@@ -30,7 +30,7 @@ public class Fruit implements Item {
     }
 
     @Override
-    public double accept(ShoppingCartVisitor visitor) {
+    public double accept(Visitor visitor) {
         return visitor.visit(this);
     }
 }

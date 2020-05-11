@@ -16,18 +16,18 @@ public class App {
         ContentProvider contentProvider = new FileProvider(new File("assets/manual/ManualTest.java"));
 //        ContentProvider contentProvider = new DirectoryProvider("src/main/java");
         TestSuite testSuite = new TestSuite();
-        testSuite.add(new BlankLines(contentProvider));
-        testSuite.add(new Indentation(contentProvider));
-        testSuite.add(new Naming(contentProvider));
-        testSuite.add(new BracketMatching(contentProvider));
+//        testSuite.add(new BlankLines(contentProvider));
+//        testSuite.add(new Indentation(contentProvider));
+//        testSuite.add(new Naming(contentProvider));
+//        testSuite.add(new BracketMatching(contentProvider));
         ContentProvider singletonProvider = new FileProvider(new File("assets/tests/ExampleSingletonPattern.java"));
         testSuite.add(isSingletonPattern(singletonProvider, "IvoryTower"));
-        testSuite.add(isSingletonPattern(contentProvider, "Details"));
+        testSuite.add(isSingletonPattern(contentProvider, "EvenOdd"));
         ContentProvider builderProvider = new FileProvider(new File("assets/tests/ExampleBuilderPattern.java"));
-        testSuite.add(isBuilderPattern(builderProvider, "Hero", "Builder"));
+        testSuite.add(isBuilderPattern(builderProvider, "Hero", "Hero$Builder"));
         ContentProvider visitorProvider = new DirectoryProvider("assets/tests/ExampleVisitor");
         List<String> childrenName = List.of("Book", "Fruit");
-        testSuite.add(isVisitorPattern(visitorProvider, "Item", childrenName, "Builder"));
+        testSuite.add(isVisitorPattern(visitorProvider, "Item", childrenName, "Visitor"));
         testSuite.runTests();
         System.out.println(testSuite);
     }

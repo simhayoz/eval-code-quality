@@ -6,6 +6,7 @@ import eval.code.quality.tests.pattern.SingletonPatternTest;
 import eval.code.quality.tests.pattern.VisitorPatternTest;
 import eval.code.quality.utils.Context;
 
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class DesignPatternTest extends Test {
@@ -30,6 +31,11 @@ public abstract class DesignPatternTest extends Test {
 
     protected String addChevrons(String stringContent) {
         return "<" + stringContent + ">";
+    }
+
+    protected String getSimpleName(String className) {
+        String[] names = className.split("\\$");
+        return names[names.length-1];
     }
 
     public static DesignPatternTest isSingletonPattern(ContentProvider contentProvider, String className) {
