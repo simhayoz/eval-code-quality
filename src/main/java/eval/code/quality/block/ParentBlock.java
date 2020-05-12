@@ -3,10 +3,7 @@ package eval.code.quality.block;
 import com.github.javaparser.Position;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.AnnotationDeclaration;
-import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.EnumDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.LambdaExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithBody;
 import com.github.javaparser.ast.stmt.*;
@@ -64,11 +61,11 @@ public class ParentBlock {
                     && !(parentNode instanceof CatchClause)
                     && !(parentNode instanceof DoStmt)
                     && !(parentNode instanceof LambdaExpr)
-                    && !(parentNode instanceof MethodDeclaration)) {
+                    && !(parentNode instanceof CallableDeclaration)) {
                 parentBlocks.add(new Block(parentNode, blockStmt));
             }
-            if(parentNode instanceof MethodDeclaration) {
-                parentBlocks.add(new MethodBlock((MethodDeclaration) parentNode, blockStmt, content));
+            if(parentNode instanceof CallableDeclaration) {
+                parentBlocks.add(new CallableBlock((CallableDeclaration<?>) parentNode, blockStmt, content));
             }
         }));
         compilationUnit.findAll(TryStmt.class).forEach(tryStmt -> parentBlocks.add(new TryBlock(tryStmt, content)));

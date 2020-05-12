@@ -456,6 +456,24 @@ public class BracketMatchingTest {
         assertThat(r.getErrors(), is(empty()));
     }
 
+    @Test void multiLineEndSameLineParametersDoesNotFail() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("public class Test")
+                .addLn("{")
+                .addLn("public Test(", 4)
+                .addLn("String s,", 8)
+                .addLn("String s2,", 8)
+                .addLn("String s3)", 8)
+                .addLn("{", 4)
+                .addLn("return \"a string\";", 8)
+                .addLn("}", 4)
+                .addLn("}");
+        System.out.println(builder);
+        Report r = new BracketMatching(new StringProvider("For tests", builder.toString())).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(), is(empty()));
+    }
+
     @Test void annotationBeforeClassDoesNotFail() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("@TODO(\"Test\")")
