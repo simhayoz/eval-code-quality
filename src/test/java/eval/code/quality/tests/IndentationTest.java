@@ -429,6 +429,31 @@ class IndentationTest {
                         hasSize(1)));
     }
 
+    @Test void enumOnSingleLineDoesNotFail() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("public class Test {")
+                .addLn("public static boolean test() {", 4)
+                .addLn("return true;", 8)
+                .addLn("}", 4)
+                .addLn("public enum Test2 {", 4)
+                .addLn("TEST, TEST2, TEST3, TEST4", 8)
+                .addLn("}", 4)
+                .addLn("}");
+        Report r = new Indentation(new StringProvider("For tests", builder.toString())).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(), is(empty()));
+    }
+
+    @Test void emptyMethodDoesNotFail() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("public abstract class Test {")
+                .addLn("public abstract boolean test();", 4)
+                .addLn("}");
+        Report r = new Indentation(new StringProvider("For tests", builder.toString())).run();
+        assertThat(r.getWarnings(), is(empty()));
+        assertThat(r.getErrors(), is(empty()));
+    }
+
     private String wrap(String s) {
         String[] arr = {s};
         return wrap(arr);
