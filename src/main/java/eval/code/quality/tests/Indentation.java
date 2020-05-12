@@ -3,6 +3,8 @@ package eval.code.quality.tests;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 
+import eval.code.quality.block.ChildBlock;
+import eval.code.quality.block.ParentBlock;
 import eval.code.quality.position.*;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.*;

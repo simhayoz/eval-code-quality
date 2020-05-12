@@ -1,4 +1,4 @@
-package eval.code.quality.utils;
+package eval.code.quality.block;
 
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.stmt.Statement;
