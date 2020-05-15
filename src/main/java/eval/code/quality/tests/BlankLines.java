@@ -2,7 +2,8 @@ package eval.code.quality.tests;
 
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.Context;
-import eval.code.quality.utils.ReportPosition;
+import eval.code.quality.utils.description.DescriptionBuilder;
+import eval.code.quality.utils.description.Descriptor;
 
 import java.util.Scanner;
 
@@ -46,7 +47,9 @@ public class BlankLines extends Test {
                 ++count_empty_line;
             } else {
                 if (count_empty_line > 1) {
-                    addError(ReportPosition.at(context.getRange(line - count_empty_line + 1, line), count_empty_line + " empty lines in a row"));
+                    addError(new DescriptionBuilder()
+                            .addPosition(context.getRange(line - count_empty_line + 1, line),
+                                    new Descriptor().addToDescription(count_empty_line + " empty lines in a row")));
                 }
                 count_empty_line = 0;
             }

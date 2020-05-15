@@ -3,6 +3,9 @@ package eval.code.quality.tests;
 import eval.code.quality.position.Position;
 import eval.code.quality.utils.*;
 import eval.code.quality.utils.Error;
+import eval.code.quality.utils.description.Description;
+import eval.code.quality.utils.description.DescriptionBuilder;
+import eval.code.quality.utils.reporter.InferMapProperty;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,8 +14,9 @@ import java.util.stream.Collectors;
  * Base class for tests.
  */
 public abstract class Test {
-    private final Report report = new Report();
+    private Report report;
     private boolean verbose;
+    protected InferMapProperty inferMapProperty = new InferMapProperty(this);
 
     /**
      * Run the current test and get the report of any errors and warnings found.
@@ -29,6 +33,7 @@ public abstract class Test {
      * @param verbose whether to print error or not
      */
     public Report run(boolean verbose) {
+        report = new Report();
         this.verbose = verbose;
         printLine("------------- Starting test: " + getName() + " -------------");
         test();
@@ -36,13 +41,25 @@ public abstract class Test {
         return report;
     }
 
-    public void addError(Error error) {
-        printError(error);
+    public void addError(DescriptionBuilder builder) {
+        Description error = builder.build();
+        printDebugError(error);
         report.addError(error);
     }
 
-    public void addWarning(Error warning) {
-        printWarning(warning);
+    public void addError(Description error) {
+        printDebugError(error);
+        report.addError(error);
+    }
+
+    public void addWarning(DescriptionBuilder builder) {
+        Description warning = builder.build();
+        printDebugWarning(warning);
+        report.addWarning(warning);
+    }
+
+    public void addWarning(Description warning) {
+        printDebugWarning(warning);
         report.addWarning(warning);
     }
 
@@ -63,51 +80,12 @@ public abstract class Test {
             System.out.println(s);
     }
 
-    private void printError(Error e) {
+    private void printDebugError(Description e) {
         printLine(" > (" + getName() + ") error:" + e.toString());
     }
 
-    private void printWarning(Error e) {
+    private void printDebugWarning(Description e) {
         printLine(" > (" + getName() + ") warning:" + e.toString());
-    }
-
-    public <T> void checkAndReport(Map<T, List<Position>> map, boolean shouldReport) {
-        checkAndReport(map, new ExpectedReporter<>(), new NotExpectedReporter<>(), shouldReport);
-    }
-
-    public <T> void checkAndReport(Map<T, List<Position>> map, String name, boolean shouldReport) {
-        checkAndReport(map, new NamedExpectedReporter<>(name), new NamedNotExpectedReporter<>(name), shouldReport);
-    }
-
-    public <T> void checkAndReport(Map<T, List<Position>> map, ExpectedReporter<T> expectedReporter, NotExpectedReporter<T> notExpectedReporter, boolean shouldReport) {
-        if(map.size() > 1) {
-            List<T> goodList = new ArrayList<>();
-            List<T> wrongList = new ArrayList<>();
-            setGoodAndWrongList(map, goodList, wrongList);
-            if(goodList.size() > 1) {
-                addIfNotNull(expectedReporter.reportMultipleExpected(map, goodList));
-                if(shouldReport) {
-                    notExpectedReporter.reportNotExpected(map, goodList, wrongList).forEach(this::addError);
-                }
-            } else {
-                expectedReporter.doOnUniqueExpected(map, goodList.get(0));
-                notExpectedReporter.reportNotExpected(map, goodList, wrongList).forEach(this::addError);
-                notExpectedReporter.doOnNotExpected(map, goodList, wrongList);
-            }
-        }
-    }
-
-    public <T> void setGoodAndWrongList(Map<T, List<Position>> map, List<T> goodList, List<T> wrongList) {
-        Map<T, Integer> indentationCount = map.entrySet().stream().collect(
-                Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
-        int maxNumberOfElement = Collections.max(indentationCount.values());
-        indentationCount.forEach((key, value) -> (value == maxNumberOfElement ? goodList : wrongList).add(key));
-    }
-
-    private void addIfNotNull(Error error) {
-        if(error != null) {
-            addError(error);
-        }
     }
 
     @Override

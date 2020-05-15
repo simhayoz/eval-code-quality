@@ -1,7 +1,9 @@
 package eval.code.quality.tests;
 
+import eval.code.quality.TestUtils;
 import eval.code.quality.position.SinglePosition;
 import eval.code.quality.utils.ReportPosition;
+import eval.code.quality.utils.description.DescriptionBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ public class TestSuiteTest {
         tests.add(new eval.code.quality.tests.Test() {
             @Override
             protected void test() {
-                addError(ReportPosition.at(new SinglePosition(1)));
+                addError(new DescriptionBuilder().addPosition(new SinglePosition(1)));
             }
 
             @Override
@@ -46,12 +48,12 @@ public class TestSuiteTest {
         Map<String, Report> report = testSuite.runTests();
         assertThat(report.get("First").getErrors(), is(empty()));
         assertThat(report.get("First").getWarnings(), is(empty()));
-        assertThat(report.get("Second").getErrors(), hasItem(ReportPosition.at(new SinglePosition(1))));
+        TestUtils.reportContainsOnlyPositions(report.get("Second"), new SinglePosition(1));
         assertThat(report.get("Second").getWarnings(), is(empty()));
         report = testSuite.runTests(true);
         assertThat(report.get("First").getErrors(), is(empty()));
         assertThat(report.get("First").getWarnings(), is(empty()));
-        assertThat(report.get("Second").getErrors(), hasItem(ReportPosition.at(new SinglePosition(1))));
+        TestUtils.reportContainsOnlyPositions(report.get("Second"), new SinglePosition(1));
         assertThat(report.get("Second").getWarnings(), is(empty()));
     }
 
@@ -71,7 +73,7 @@ public class TestSuiteTest {
         testSuite.add(new eval.code.quality.tests.Test() {
             @Override
             protected void test() {
-                addError(ReportPosition.at(new SinglePosition(1)));
+                addError(new DescriptionBuilder().addPosition(new SinglePosition(1)));
             }
 
             @Override
@@ -82,12 +84,12 @@ public class TestSuiteTest {
         Map<String, Report> report = testSuite.runTests();
         assertThat(report.get("First").getErrors(), is(empty()));
         assertThat(report.get("First").getWarnings(), is(empty()));
-        assertThat(report.get("Second").getErrors(), hasItem(ReportPosition.at(new SinglePosition(1))));
+        TestUtils.reportContainsOnlyPositions(report.get("Second"), new SinglePosition(1));
         assertThat(report.get("Second").getWarnings(), is(empty()));
         report = testSuite.runTests(true);
         assertThat(report.get("First").getErrors(), is(empty()));
         assertThat(report.get("First").getWarnings(), is(empty()));
-        assertThat(report.get("Second").getErrors(), hasItem(ReportPosition.at(new SinglePosition(1))));
+        TestUtils.reportContainsOnlyPositions(report.get("Second"), new SinglePosition(1));
         assertThat(report.get("Second").getWarnings(), is(empty()));
     }
 
@@ -107,7 +109,7 @@ public class TestSuiteTest {
         tests.add(new eval.code.quality.tests.Test() {
             @Override
             protected void test() {
-                addError(ReportPosition.at(new SinglePosition(1)));
+                addError(new DescriptionBuilder().addPosition(new SinglePosition(1)));
             }
 
             @Override
@@ -121,7 +123,7 @@ public class TestSuiteTest {
         assertThat(testSuite.toString(), equalTo("TestSuite: \n" +
                 " Test for Second: \n" +
                 "  Error(s) reported: \n" +
-                "   (line 1): \n" +
+                "   (line 1)\n" +
                 "  \n" +
                 "  Warning(s) reported: \n" +
                 "   no warning found \n" +

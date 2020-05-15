@@ -2,6 +2,7 @@ package eval.code.quality.utils.evaluator;
 
 import eval.code.quality.tests.Test;
 import eval.code.quality.utils.StringError;
+import eval.code.quality.utils.description.DescriptionBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,10 +86,10 @@ public class BooleanEvaluator {
         for (BooleanExpression expression : booleanExpressions) {
             if (shouldReportNext) {
                 if (!expression.evaluate() && expression.isError()) {
-                    test.addError(new StringError(expression.describeMismatch()));
+                    test.addError(new DescriptionBuilder().addToDescription(expression.describeMismatch()).build());
                     shouldReportNext = false;
                 } else if (!expression.evaluate()) {
-                    test.addWarning(new StringError(expression.describeMismatch()));
+                    test.addWarning(new DescriptionBuilder().addToDescription(expression.describeMismatch()).build());
                 }
             }
 

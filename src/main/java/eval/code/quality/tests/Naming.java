@@ -10,6 +10,8 @@ import eval.code.quality.position.MultiplePosition;
 import eval.code.quality.position.Position;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.*;
+import eval.code.quality.utils.description.DescriptionBuilder;
+import eval.code.quality.utils.description.Descriptor;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -71,16 +73,17 @@ public class Naming extends CompilationUnitTest {
                 checkIsInSameTreePath(sameSize.iterator(), root, accumulator);
                 if(!accumulator.isEmpty()) {
                     accumulator.put(getSingleOrMultiplePosition(orderedList.get(0).getValue()), orderedList.get(0).getKey());
-                    addError(MultiplePossibility.at(
-                            accumulator.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toString())),
-                            modifiers != null ? "Expected same naming convention for the same modifiers:" + modifiers : "Expected same naming convention"));
+                    DescriptionBuilder builder = new DescriptionBuilder();
+                    accumulator.forEach((pos, nameProperty) -> builder.addPosition(pos, new Descriptor().setWas(nameProperty.toString())));
+                    builder.setExpected(modifiers != null ? "same naming convention for the same modifiers: " + modifiers : "same naming convention");
+                    addError(builder);
                 }
             }
             if(!smallerSize.isEmpty()) {
                 Map<Position, NameProperty> accumulator = new HashMap<>();
                 NameProperty expected = checkIsInSameTreePath(smallerSize.iterator(), root, accumulator);
-                accumulator.forEach((k, v) -> addError(ReportPosition.at(k,
-                        (modifiers != null ? "for the modifiers: " + modifiers + ": " : "") + expected, v.toString())));
+                accumulator.forEach((k, v) -> addError(new DescriptionBuilder()
+                        .addPosition(k, new Descriptor().setExpected((modifiers != null ? "for the modifiers: " + modifiers + ": " : "") + expected).setWas(v.toString()))));
             }
         }
     }
