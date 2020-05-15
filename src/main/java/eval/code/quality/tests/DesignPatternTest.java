@@ -5,11 +5,9 @@ import eval.code.quality.tests.pattern.BuilderPatternTest;
 import eval.code.quality.tests.pattern.SingletonPatternTest;
 import eval.code.quality.tests.pattern.VisitorPatternTest;
 import eval.code.quality.utils.Context;
-import eval.code.quality.utils.StringError;
 import eval.code.quality.utils.description.DescriptionBuilder;
 import eval.code.quality.utils.evaluator.BooleanEvaluator;
 
-import java.util.Arrays;
 import java.util.List;
 
 public abstract class DesignPatternTest extends Test {

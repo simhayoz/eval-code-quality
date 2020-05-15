@@ -24,6 +24,9 @@ public class NamedExpectedReporter<T> extends ExpectedReporter<T> {
                 builder.addPosition((map.get(property).size() > 1 ? new MultiplePosition(map.get(property)) : map.get(property).get(0)), new Descriptor().setWas(property.toString()));
             }
         });
+        if(builder.build().getPositions().isEmpty()) {
+            return null;
+        }
         builder.setExpected(properties + " to be all the same for: " + name);
         return builder.build();
     }

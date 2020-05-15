@@ -7,13 +7,10 @@ import eval.code.quality.block.ChildBlock;
 import eval.code.quality.block.ParentBlock;
 import eval.code.quality.position.*;
 import eval.code.quality.provider.ContentProvider;
-import eval.code.quality.utils.*;
-import eval.code.quality.utils.Error;
 import eval.code.quality.utils.description.Description;
 import eval.code.quality.utils.description.DescriptionBuilder;
 import eval.code.quality.utils.description.Descriptor;
 import eval.code.quality.utils.reporter.ExpectedReporter;
-import eval.code.quality.utils.reporter.InferMapProperty;
 import eval.code.quality.utils.reporter.NotExpectedReporter;
 
 import java.util.*;

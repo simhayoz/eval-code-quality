@@ -2,7 +2,6 @@ package eval.code.quality.tests;
 
 import eval.code.quality.TestUtils;
 import eval.code.quality.position.SinglePosition;
-import eval.code.quality.utils.ReportPosition;
 import eval.code.quality.utils.description.DescriptionBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -48,12 +47,12 @@ public class TestSuiteTest {
         Map<String, Report> report = testSuite.runTests();
         assertThat(report.get("First").getErrors(), is(empty()));
         assertThat(report.get("First").getWarnings(), is(empty()));
-        TestUtils.reportContainsOnlyPositions(report.get("Second"), new SinglePosition(1));
+        TestUtils.reportContainsOnlyPositions(report.get("Second").getErrors(), new SinglePosition(1));
         assertThat(report.get("Second").getWarnings(), is(empty()));
         report = testSuite.runTests(true);
         assertThat(report.get("First").getErrors(), is(empty()));
         assertThat(report.get("First").getWarnings(), is(empty()));
-        TestUtils.reportContainsOnlyPositions(report.get("Second"), new SinglePosition(1));
+        TestUtils.reportContainsOnlyPositions(report.get("Second").getErrors(), new SinglePosition(1));
         assertThat(report.get("Second").getWarnings(), is(empty()));
     }
 
@@ -84,12 +83,12 @@ public class TestSuiteTest {
         Map<String, Report> report = testSuite.runTests();
         assertThat(report.get("First").getErrors(), is(empty()));
         assertThat(report.get("First").getWarnings(), is(empty()));
-        TestUtils.reportContainsOnlyPositions(report.get("Second"), new SinglePosition(1));
+        TestUtils.reportContainsOnlyPositions(report.get("Second").getErrors(), new SinglePosition(1));
         assertThat(report.get("Second").getWarnings(), is(empty()));
         report = testSuite.runTests(true);
         assertThat(report.get("First").getErrors(), is(empty()));
         assertThat(report.get("First").getWarnings(), is(empty()));
-        TestUtils.reportContainsOnlyPositions(report.get("Second"), new SinglePosition(1));
+        TestUtils.reportContainsOnlyPositions(report.get("Second").getErrors(), new SinglePosition(1));
         assertThat(report.get("Second").getWarnings(), is(empty()));
     }
 

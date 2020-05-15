@@ -1,14 +1,8 @@
 package eval.code.quality.tests;
 
-import eval.code.quality.position.Position;
-import eval.code.quality.utils.*;
-import eval.code.quality.utils.Error;
 import eval.code.quality.utils.description.Description;
 import eval.code.quality.utils.description.DescriptionBuilder;
 import eval.code.quality.utils.reporter.InferMapProperty;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Base class for tests.

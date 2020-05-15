@@ -1,7 +1,6 @@
 package eval.code.quality.utils.evaluator;
 
 import eval.code.quality.tests.Test;
-import eval.code.quality.utils.StringError;
 import eval.code.quality.utils.description.DescriptionBuilder;
 
 import java.util.ArrayList;
