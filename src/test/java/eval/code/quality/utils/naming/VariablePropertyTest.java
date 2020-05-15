@@ -1,5 +1,6 @@
-package eval.code.quality.utils;
+package eval.code.quality.utils.naming;
 
+import eval.code.quality.utils.naming.VariableProperty;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

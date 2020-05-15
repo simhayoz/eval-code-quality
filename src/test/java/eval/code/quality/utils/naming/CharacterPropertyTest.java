@@ -1,5 +1,6 @@
-package eval.code.quality.utils;
+package eval.code.quality.utils.naming;
 
+import eval.code.quality.utils.naming.CharacterProperty;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;

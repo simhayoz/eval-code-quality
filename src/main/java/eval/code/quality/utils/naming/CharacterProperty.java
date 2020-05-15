@@ -1,4 +1,4 @@
-package eval.code.quality.utils;
+package eval.code.quality.utils.naming;
 
 import java.util.NoSuchElementException;
 import java.util.function.Function;

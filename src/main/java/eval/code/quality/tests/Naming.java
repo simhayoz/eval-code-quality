@@ -12,9 +12,10 @@ import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.*;
 import eval.code.quality.utils.description.DescriptionBuilder;
 import eval.code.quality.utils.description.Descriptor;
+import eval.code.quality.utils.naming.NameProperty;
+import eval.code.quality.utils.naming.NamePropertyTree;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Check that name for class, method, enum, variable, etc use the same naming convention for the same set of modifiers.

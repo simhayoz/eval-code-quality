@@ -1,4 +1,6 @@
-package eval.code.quality.utils;
+package eval.code.quality.utils.naming;
+
+import eval.code.quality.utils.Preconditions;
 
 import java.util.Objects;
 

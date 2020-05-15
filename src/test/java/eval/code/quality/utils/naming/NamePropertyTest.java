@@ -1,9 +1,12 @@
-package eval.code.quality.utils;
+package eval.code.quality.utils.naming;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import eval.code.quality.utils.naming.CharacterProperty;
+import eval.code.quality.utils.naming.NameProperty;
+import eval.code.quality.utils.naming.VariableProperty;
 import org.junit.jupiter.api.Test;
 
 class NamePropertyTest {
