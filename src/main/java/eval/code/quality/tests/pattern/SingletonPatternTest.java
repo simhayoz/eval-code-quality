@@ -60,12 +60,12 @@ public class SingletonPatternTest extends DesignPatternTest {
                 && expression.asNameExpr().getName().equals(variables.get(0).getVariables().get(0).getName())).orElse(false)));
         Supplier<Boolean>  publicInstanceVariable = () -> variables.get(0).hasModifier(Modifier.Keyword.PUBLIC)
                 && staticInit.get();
-//        classCU.findAll(AssignExpr.class).forEach(a -> System.out.println(a.getTarget()));
-//        System.out.println(classCU); // TODO check unique "= new SingletonClass();"
-//        BooleanExpr canCreateMultipleTime = expr(() -> classCU.findAll(AssignExpr.class).stream().filter(a -> a.getTarget().isNameExpr() && a.getTarget().asNameExpr().getName().equals(variables.get(0).getVariables().get(0).getName())).collect(Collectors.toList())
-       evaluator.add(new BooleanOr(new BooleanSimple(publicInstanceVariable, "static instance variable is publicly accessible and statically initialized"),
-        new BooleanAnd(new BooleanSimple(publicStaticMethod, "static instance variable is accessible through a public static method"),
-                new BooleanOr(new BooleanSimple(staticInit, "instance variable is statically initialized"), new BooleanSimple(lazyInit, "instance getter method only lazy init instance once")))));
+        Supplier<Long> numberInitialization = () -> classCU.findAll(AssignExpr.class).stream().filter(a -> a.getTarget().isNameExpr() && a.getTarget().asNameExpr().getName().equals(variables.get(0).getVariables().get(0).getName())).count();
+        BooleanExpression isInitialized = new BooleanSimple(() -> (staticInit.get() && numberInitialization.get() == 0) || numberInitialization.get() == 1, "Static variable of class should be initialized exactly once");
+        evaluator.add(isInitialized);
+        evaluator.add(new BooleanOr(new BooleanSimple(publicInstanceVariable, "static instance variable is publicly accessible and statically initialized"),
+                new BooleanAnd(new BooleanSimple(publicStaticMethod, "static instance variable is accessible through a public static method"),
+                        new BooleanOr(new BooleanSimple(staticInit, "instance variable is statically initialized"), new BooleanSimple(lazyInit, "instance getter method only lazy init instance once")))));
         return evaluator;
     }
 
