@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -27,6 +28,14 @@ public class TestUtils {
 
     public static void checkIsWarningEmpty(Report report) {
         assertThat(report.getWarnings(), is(empty()));
+    }
+
+    public static void checkNotIsErrorEmpty(Report report) {
+        assertThat(report.getErrors(), is(not(empty())));
+    }
+
+    public static void checkNotIsWarningEmpty(Report report) {
+        assertThat(report.getWarnings(), is(not(empty())));
     }
 
     public static List<List<Position>> getPositionFromReport(List<Description> report) {
