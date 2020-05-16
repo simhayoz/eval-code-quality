@@ -1,6 +1,7 @@
 package eval.code.quality.utils.evaluator;
 
 import eval.code.quality.tests.Test;
+import eval.code.quality.utils.Preconditions;
 import eval.code.quality.utils.description.DescriptionBuilder;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class BooleanEvaluator {
      * @param booleanExpressions expressions to put in the evaluator
      */
     public BooleanEvaluator(List<BooleanExpression> booleanExpressions) {
+        Preconditions.checkArg(booleanExpressions != null, "Boolean expression can not be null");
         this.booleanExpressions = booleanExpressions;
     }
 

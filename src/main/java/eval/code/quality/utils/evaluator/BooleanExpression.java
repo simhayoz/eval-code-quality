@@ -1,5 +1,8 @@
 package eval.code.quality.utils.evaluator;
 
+/**
+ * Represents a boolean expression for easier error message on failing expression.
+ */
 public abstract class BooleanExpression {
 
     /**
