@@ -1,4 +1,4 @@
-package eval.code.quality.tests;
+package eval.code.quality.checks;
 
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.Context;
@@ -10,7 +10,7 @@ import java.util.Scanner;
 /**
  * Check for multiple blank lines in a row.
  */
-public class BlankLines extends Test {
+public class BlankLines extends Check {
     private final ContentProvider contentProvider;
     private Context context;
 
@@ -24,14 +24,14 @@ public class BlankLines extends Test {
     }
 
     @Override
-    protected void test() {
+    protected void check() {
         context = new Context(contentProvider);
         while (context.hasNext()) {
-            testFor(context.next());
+            checkFor(context.next());
         }
     }
 
-    private void testFor(ContentProvider contentProvider) {
+    private void checkFor(ContentProvider contentProvider) {
         Scanner scanner = new Scanner(contentProvider.getString());
         if (scanner.hasNextLine()) {
             iterateOverScanner(scanner);

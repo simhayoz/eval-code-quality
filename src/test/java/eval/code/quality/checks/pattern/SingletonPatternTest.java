@@ -1,25 +1,25 @@
-package eval.code.quality.tests.pattern;
+package eval.code.quality.checks.pattern;
 
 import eval.code.quality.MyStringBuilder;
 import eval.code.quality.TestUtils;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.provider.FileProvider;
 import eval.code.quality.provider.StringProvider;
-import eval.code.quality.tests.Report;
+import eval.code.quality.checks.Report;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 
-public class SingletonPatternCheckTest {
+public class SingletonPatternTest {
 
     @Test void singletonPatternDoesNotFail() {
         ContentProvider singletonProvider = new FileProvider(new File("assets/tests/ExampleSingletonPattern.java"));
-        TestUtils.checkIsEmptyReport(new SingletonPatternTest(singletonProvider, "IvoryTower").run());
+        TestUtils.checkIsEmptyReport(new SingletonPattern(singletonProvider, "IvoryTower").run());
     }
 
     @Test void singletonPatternWithLazyEvalDoesNotFail() {
         ContentProvider singletonProvider = new FileProvider(new File("assets/tests/ExampleSingletonPatternWithLazyEval.java"));
-        TestUtils.checkIsEmptyReport(new SingletonPatternTest(singletonProvider, "IvoryTower").run());
+        TestUtils.checkIsEmptyReport(new SingletonPattern(singletonProvider, "IvoryTower").run());
     }
 
     @Test void basicClassesFails() {
@@ -30,7 +30,7 @@ public class SingletonPatternCheckTest {
                 .addLn("}", 4)
                 .addLn("}");
         ContentProvider contentProvider = new StringProvider("For tests", builder.toString());
-        Report r = new SingletonPatternTest(contentProvider, "Test").run();
+        Report r = new SingletonPattern(contentProvider, "Test").run();
         TestUtils.checkIsWarningEmpty(r);
         TestUtils.checkNotIsErrorEmpty(r);
     }

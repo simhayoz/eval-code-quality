@@ -1,4 +1,4 @@
-package eval.code.quality.tests;
+package eval.code.quality.checks;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -25,7 +25,7 @@ import java.util.*;
  * <li>Blocks have the same indentation difference everywhere
  * </ul>
  */
-public class Indentation extends CompilationUnitTest {
+public class Indentation extends CompilationUnitCheck {
     private final Map<Integer, List<Position>> blockIndentations = new HashMap<>();
 
     public Indentation(ContentProvider contentProvider) {
@@ -33,7 +33,7 @@ public class Indentation extends CompilationUnitTest {
     }
 
     @Override
-    protected void testFor(ContentProvider contentProvider) {
+    protected void checkFor(ContentProvider contentProvider) {
         CompilationUnit compilationUnit = contentProvider.getCompilationUnit();
         compilationUnit.getImports().forEach(this::checkAlignLeft);
         compilationUnit.getPackageDeclaration().ifPresent(this::checkAlignLeft);
@@ -47,7 +47,7 @@ public class Indentation extends CompilationUnitTest {
     }
 
     @Override
-    protected void afterTests() {
+    protected void afterChecks() {
         inferMapProperty.checkAndReport(blockIndentations, true);
     }
 

@@ -1,12 +1,12 @@
 package eval.code.quality;
 
 import eval.code.quality.provider.*;
-import eval.code.quality.tests.*;
+import eval.code.quality.checks.*;
 
 import java.io.File;
 import java.util.List;
 
-import static eval.code.quality.tests.DesignPatternTest.*;
+import static eval.code.quality.checks.DesignPattern.*;
 
 public class App {
 
@@ -19,7 +19,7 @@ public class App {
         testSuite.add(new BlankLines(contentProvider));
         testSuite.add(new Indentation(contentProvider));
         testSuite.add(new Naming(contentProvider));
-        testSuite.add(new BracketMatching(contentProvider));
+        testSuite.add(new Braces(contentProvider));
         ContentProvider singletonProvider = new FileProvider(new File("assets/tests/ExampleSingletonPattern.java"));
         testSuite.add(isSingletonPattern(singletonProvider, "IvoryTower"));
         testSuite.add(isSingletonPattern(contentProvider, "Details"));
@@ -28,7 +28,7 @@ public class App {
         ContentProvider visitorProvider = new DirectoryProvider("assets/tests/ExampleVisitor");
         List<String> childrenName = List.of("Book", "Fruit");
         testSuite.add(isVisitorPattern(visitorProvider, "Item", childrenName, "Visitor"));
-        testSuite.runTests();
+        testSuite.runChecks();
         System.out.println(testSuite);
     }
 }

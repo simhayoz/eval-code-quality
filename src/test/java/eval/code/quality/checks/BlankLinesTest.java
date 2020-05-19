@@ -1,4 +1,4 @@
-package eval.code.quality.tests;
+package eval.code.quality.checks;
 
 import eval.code.quality.MyStringBuilder;
 import eval.code.quality.TestUtils;
@@ -11,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import java.io.FileNotFoundException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
 
 public class BlankLinesTest {
     @Test

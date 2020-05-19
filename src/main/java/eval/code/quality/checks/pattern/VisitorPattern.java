@@ -1,8 +1,8 @@
-package eval.code.quality.tests.pattern;
+package eval.code.quality.checks.pattern;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import eval.code.quality.provider.ContentProvider;
-import eval.code.quality.tests.DesignPatternTest;
+import eval.code.quality.checks.DesignPattern;
 import eval.code.quality.utils.evaluator.BooleanEvaluator;
 import eval.code.quality.utils.evaluator.BooleanExpression;
 import eval.code.quality.utils.evaluator.BooleanOr;
@@ -21,13 +21,13 @@ import java.util.stream.Collectors;
  *     </ul>
  * </p>
  */
-public class VisitorPatternTest extends DesignPatternTest {
+public class VisitorPattern extends DesignPattern {
 
     private final String parentName;
     private final List<String> childrenName;
     private final String visitorName;
 
-    public VisitorPatternTest(ContentProvider contentProvider, String parentName, List<String> childrenName, String visitorName) {
+    public VisitorPattern(ContentProvider contentProvider, String parentName, List<String> childrenName, String visitorName) {
         super(contentProvider);
         this.parentName = parentName;
         this.childrenName = childrenName;

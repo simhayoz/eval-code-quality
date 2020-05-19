@@ -1,4 +1,4 @@
-package eval.code.quality.tests;
+package eval.code.quality.checks;
 
 import eval.code.quality.TestUtils;
 import eval.code.quality.position.SinglePosition;

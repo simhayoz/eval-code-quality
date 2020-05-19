@@ -1,11 +1,11 @@
-package eval.code.quality.tests.pattern;
+package eval.code.quality.checks.pattern;
 
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import eval.code.quality.provider.ContentProvider;
-import eval.code.quality.tests.DesignPatternTest;
+import eval.code.quality.checks.DesignPattern;
 import eval.code.quality.utils.evaluator.BooleanEvaluator;
 import eval.code.quality.utils.evaluator.BooleanSimple;
 
@@ -21,12 +21,12 @@ import java.util.function.Supplier;
  *     </ul>
  * </p>
  */
-public class BuilderPatternTest extends DesignPatternTest {
+public class BuilderPattern extends DesignPattern {
 
     private final String productName;
     private final String builderName;
 
-    public BuilderPatternTest(ContentProvider contentProvider, String productName, String builderName) {
+    public BuilderPattern(ContentProvider contentProvider, String productName, String builderName) {
         super(contentProvider);
         this.productName = productName;
         this.builderName = builderName;

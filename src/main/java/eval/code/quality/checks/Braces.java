@@ -1,4 +1,4 @@
-package eval.code.quality.tests;
+package eval.code.quality.checks;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.stmt.*;
@@ -13,20 +13,20 @@ import eval.code.quality.utils.description.Descriptor;
 
 import java.util.*;
 
-public class BracketMatching extends CompilationUnitTest {
+public class Braces extends CompilationUnitCheck {
 
     private Map<BracketProperty, List<Position>> openingProperties = new HashMap<>();
     private Map<BracketProperty, List<Position>> closingProperties = new HashMap<>();
     private Map<Boolean, List<Position>> isOneLinerBlock = new HashMap<>();
 
-    public BracketMatching(ContentProvider contentProvider) {
+    public Braces(ContentProvider contentProvider) {
         super(contentProvider);
         isOneLinerBlock.put(true, new ArrayList<>());
         isOneLinerBlock.put(false, new ArrayList<>());
     }
 
     @Override
-    protected void testFor(ContentProvider contentProvider) {
+    protected void checkFor(ContentProvider contentProvider) {
         CompilationUnit compilationUnit = contentProvider.getCompilationUnit();
         ParentBlock.getFor(compilationUnit, contentProvider.getString()).forEach(this::checkCurrentBlocks);
         compilationUnit.findAll(IfStmt.class).forEach(ifStmt -> {
@@ -44,7 +44,7 @@ public class BracketMatching extends CompilationUnitTest {
     }
 
     @Override
-    protected void afterTests() {
+    protected void afterChecks() {
         checkSameStyleBracket();
         inferMapProperty.checkAndReport(isOneLinerBlock, "one liner block with bracket", true);
     }
