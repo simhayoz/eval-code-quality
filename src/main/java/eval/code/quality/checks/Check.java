@@ -1,37 +1,37 @@
-package eval.code.quality.tests;
+package eval.code.quality.checks;
 
 import eval.code.quality.utils.description.Description;
 import eval.code.quality.utils.description.DescriptionBuilder;
 import eval.code.quality.utils.reporter.InferMapProperty;
 
 /**
- * Base class for tests.
+ * Base class for checks.
  */
-public abstract class Test {
+public abstract class Check {
     private Report report;
     private boolean verbose;
     protected InferMapProperty inferMapProperty = new InferMapProperty(this);
 
     /**
-     * Run the current test and get the report of any errors and warnings found.
+     * Run the current check and get the report of any errors and warnings found.
      *
-     * @return the {@code Report} of the current test
+     * @return the {@code Report} of the current check
      */
     public Report run() {
         return run(false);
     }
 
     /**
-     * Runs the current test with standard output if needed (verbose).
+     * Runs the current check with standard output if needed (verbose).
      *
      * @param verbose whether to print error or not
      */
     public Report run(boolean verbose) {
         report = new Report();
         this.verbose = verbose;
-        printLine("------------- Starting test: " + getName() + " -------------");
-        test();
-        printLine("-------------   End test: " + getName() + "    -------------" + System.lineSeparator());
+        printLine("------------- Starting check: " + getName() + " -------------");
+        check();
+        printLine("-------------   End check: " + getName() + "    -------------" + System.lineSeparator());
         return report;
     }
 
@@ -58,14 +58,14 @@ public abstract class Test {
     }
 
     /**
-     * Run the current test.
+     * Run the current check.
      */
-    protected abstract void test();
+    protected abstract void check();
 
     /**
-     * Get the name of the current test.
+     * Get the name of the current check.
      *
-     * @return the name of the current test
+     * @return the name of the current check
      */
     protected abstract String getName();
 

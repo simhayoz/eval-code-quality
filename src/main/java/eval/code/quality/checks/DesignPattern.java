@@ -1,26 +1,26 @@
-package eval.code.quality.tests;
+package eval.code.quality.checks;
 
 import eval.code.quality.provider.ContentProvider;
-import eval.code.quality.tests.pattern.BuilderPatternTest;
-import eval.code.quality.tests.pattern.SingletonPatternTest;
-import eval.code.quality.tests.pattern.VisitorPatternTest;
+import eval.code.quality.checks.pattern.BuilderPattern;
+import eval.code.quality.checks.pattern.SingletonPattern;
+import eval.code.quality.checks.pattern.VisitorPattern;
 import eval.code.quality.utils.Context;
 import eval.code.quality.utils.description.DescriptionBuilder;
 import eval.code.quality.utils.evaluator.BooleanEvaluator;
 
 import java.util.List;
 
-public abstract class DesignPatternTest extends Test {
+public abstract class DesignPattern extends Check {
 
     private final ContentProvider contentProvider;
     protected Context context;
 
-    public DesignPatternTest(ContentProvider contentProvider) {
+    public DesignPattern(ContentProvider contentProvider) {
         this.contentProvider = contentProvider;
     }
 
     @Override
-    protected void test() {
+    protected void check() {
         try {
             BooleanEvaluator booleanEvaluator = getEvaluator(contentProvider);
             booleanEvaluator.reportMismatches(this);
@@ -40,15 +40,15 @@ public abstract class DesignPatternTest extends Test {
         return names[names.length-1];
     }
 
-    public static DesignPatternTest isSingletonPattern(ContentProvider contentProvider, String className) {
-        return new SingletonPatternTest(contentProvider, className);
+    public static DesignPattern isSingletonPattern(ContentProvider contentProvider, String className) {
+        return new SingletonPattern(contentProvider, className);
     }
 
-    public static DesignPatternTest isBuilderPattern(ContentProvider contentProvider, String productName, String builderName) {
-        return new BuilderPatternTest(contentProvider, productName, builderName);
+    public static DesignPattern isBuilderPattern(ContentProvider contentProvider, String productName, String builderName) {
+        return new BuilderPattern(contentProvider, productName, builderName);
     }
 
-    public static DesignPatternTest isVisitorPattern(ContentProvider contentProvider, String parentName, List<String> childrenName, String visitorName) {
-        return new VisitorPatternTest(contentProvider, parentName, childrenName, visitorName);
+    public static DesignPattern isVisitorPattern(ContentProvider contentProvider, String parentName, List<String> childrenName, String visitorName) {
+        return new VisitorPattern(contentProvider, parentName, childrenName, visitorName);
     }
 }

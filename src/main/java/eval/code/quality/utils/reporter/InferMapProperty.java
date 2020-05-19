@@ -1,7 +1,7 @@
 package eval.code.quality.utils.reporter;
 
 import eval.code.quality.position.Position;
-import eval.code.quality.tests.Test;
+import eval.code.quality.checks.Check;
 import eval.code.quality.utils.description.Description;
 
 import java.util.ArrayList;
@@ -22,15 +22,15 @@ import java.util.stream.Collectors;
  */
 public class InferMapProperty {
 
-    private final Test test;
+    private final Check check;
 
     /**
-     * Create a new {@code InferMapProperty} to test and report error.
+     * Create a new {@code InferMapProperty} to check and report error.
      *
-     * @param test the test to report error to
+     * @param check the check to report error to
      */
-    public InferMapProperty(Test test) {
-        this.test = test;
+    public InferMapProperty(Check check) {
+        this.check = check;
     }
 
     /**
@@ -48,7 +48,7 @@ public class InferMapProperty {
      * Check and report the {@code map}.
      *
      * @param map          the map to report
-     * @param name         the name of the tested property
+     * @param name         the name of the checked property
      * @param shouldReport whether it should report smaller property if it can not infer a unique property
      * @param <T>          the type of the property
      */
@@ -73,11 +73,11 @@ public class InferMapProperty {
             if (goodList.size() > 1) {
                 addIfNotNull(expectedReporter.reportMultipleExpected(map, goodList));
                 if (shouldReport) {
-                    notExpectedReporter.reportNotExpected(map, goodList, wrongList).forEach(test::addError);
+                    notExpectedReporter.reportNotExpected(map, goodList, wrongList).forEach(check::addError);
                 }
             } else {
                 expectedReporter.doOnUniqueExpected(map, goodList.get(0));
-                notExpectedReporter.reportNotExpected(map, goodList, wrongList).forEach(test::addError);
+                notExpectedReporter.reportNotExpected(map, goodList, wrongList).forEach(check::addError);
                 notExpectedReporter.doOnNotExpected(map, goodList, wrongList);
             }
         }
@@ -100,7 +100,7 @@ public class InferMapProperty {
 
     private void addIfNotNull(Description error) {
         if (error != null) {
-            test.addError(error);
+            check.addError(error);
         }
     }
 

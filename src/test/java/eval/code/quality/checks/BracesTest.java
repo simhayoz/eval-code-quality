@@ -1,4 +1,4 @@
-package eval.code.quality.tests;
+package eval.code.quality.checks;
 
 import eval.code.quality.MyStringBuilder;
 import eval.code.quality.TestUtils;
@@ -7,11 +7,11 @@ import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.provider.StringProvider;
 import org.junit.jupiter.api.Test;
 
-public class BracketMatchingTest {
+public class BracesTest {
 
     @Test void emptyCUReportNoError() {
         ContentProvider contentProvider = new StringProvider("Empty String", "");
-        TestUtils.checkIsEmptyReport(new BracketMatching(contentProvider).run());
+        TestUtils.checkIsEmptyReport(new Braces(contentProvider).run());
     }
 
     @Test void simpleBlocksThrowsNoError() {
@@ -47,7 +47,7 @@ public class BracketMatchingTest {
                 .addLn("break;", 8)
                 .addLn("}");
         String wrapper = wrap(builder.toString());
-        TestUtils.checkIsEmptyReport(new BracketMatching(new StringProvider("For tests", wrapper)).run());
+        TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", wrapper)).run());
     }
 
     @Test void simpleTryForEachAndDoStmtThrowsNoError() {
@@ -67,7 +67,7 @@ public class BracketMatchingTest {
                 .addLn("System.out.println(c);", 4)
                 .addLn("}");
         String wrapper = wrap(builder.toString());
-        TestUtils.checkIsEmptyReport(new BracketMatching(new StringProvider("For tests", wrapper)).run());
+        TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", wrapper)).run());
     }
 
     @Test void elseIfNoBracketWillWork() {
@@ -79,7 +79,7 @@ public class BracketMatchingTest {
                 .addLn("else")
                 .addLn("return true;", 4);
         String wrapper = wrap(builder.toString());
-        TestUtils.checkIsEmptyReport(new BracketMatching(new StringProvider("For tests", wrapper)).run());
+        TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", wrapper)).run());
     }
 
     @Test void notAlignedChildThrowsError() {
@@ -97,7 +97,7 @@ public class BracketMatchingTest {
                 .addLn("}", 8)
                 .addLn("}", 4)
                 .addLn("}");
-        Report r = new BracketMatching(new StringProvider("For tests", builder.toString())).run();
+        Report r = new Braces(new StringProvider("For tests", builder.toString())).run();
         TestUtils.checkIsWarningEmpty(r);
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(6, 10)));
     }
@@ -119,7 +119,7 @@ public class BracketMatchingTest {
                 .addLn("if(true)")
                 .addLn("return true;", 4);
         String wrapper = wrap(builder.toString());
-        Report r = new BracketMatching(new StringProvider("For tests", wrapper)).run();
+        Report r = new Braces(new StringProvider("For tests", wrapper)).run();
         MultiplePosition multiplePosition = new MultiplePosition();
         multiplePosition.add(new NamePosition("For tests", new SinglePosition(14, 13)));
         multiplePosition.add(new NamePosition("For tests", new SinglePosition(16, 13)));
@@ -150,7 +150,7 @@ public class BracketMatchingTest {
                 .addLn("}", 8)
                 .addLn("}", 4)
                 .addLn("}");
-        Report r = new BracketMatching(new StringProvider("For tests", builder.toString())).run();
+        Report r = new Braces(new StringProvider("For tests", builder.toString())).run();
         TestUtils.checkIsWarningEmpty(r);
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(9, 9)));
     }
@@ -178,7 +178,7 @@ public class BracketMatchingTest {
                 .addLn("}", 8)
                 .addLn("}", 4)
                 .addLn("}");
-        Report r = new BracketMatching(new StringProvider("For tests", builder.toString())).run();
+        Report r = new Braces(new StringProvider("For tests", builder.toString())).run();
         TestUtils.checkIsWarningEmpty(r);
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(12, 9)));
     }
@@ -199,7 +199,7 @@ public class BracketMatchingTest {
                 .addLn("if(true)")
                 .addLn("return true;", 4);
         String wrapper = wrap(builder.toString());
-        Report r = new BracketMatching(new StringProvider("For tests", wrapper)).run();
+        Report r = new Braces(new StringProvider("For tests", wrapper)).run();
         MultiplePosition multiplePosition1 = new MultiplePosition();
         multiplePosition1.add(new NamePosition("For tests", new SinglePosition(3, 34)));
         multiplePosition1.add(new NamePosition("For tests", new SinglePosition(6, 18)));
@@ -232,7 +232,7 @@ public class BracketMatchingTest {
                 .addLn("return true;", 4)
                 .addLn("}");
         String wrapper = wrap(builder.toString());
-        Report r = new BracketMatching(new StringProvider("For tests", wrapper)).run();
+        Report r = new Braces(new StringProvider("For tests", wrapper)).run();
         TestUtils.checkIsWarningEmpty(r);
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(6, 9)));
     }
@@ -253,7 +253,7 @@ public class BracketMatchingTest {
                 .addLn("}", 8)
                 .addLn("}", 4)
                 .addLn("}");
-        Report r = new BracketMatching(new StringProvider("For tests", builder.toString())).run();
+        Report r = new Braces(new StringProvider("For tests", builder.toString())).run();
         TestUtils.checkIsWarningEmpty(r);
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(6, 10)));
     }
@@ -274,7 +274,7 @@ public class BracketMatchingTest {
                 .addLn("}", 8)
                 .addLn("}", 4)
                 .addLn("}");
-        Report r = new BracketMatching(new StringProvider("For tests", builder.toString())).run();
+        Report r = new Braces(new StringProvider("For tests", builder.toString())).run();
         TestUtils.checkIsWarningEmpty(r);
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(8, 10)));
     }
@@ -304,7 +304,7 @@ public class BracketMatchingTest {
                 .addLn("return true;", 4)
                 .addLn("}");
         String wrapper = wrap(builder.toString());
-        Report r = new BracketMatching(new StringProvider("For tests", wrapper)).run();
+        Report r = new Braces(new StringProvider("For tests", wrapper)).run();
         TestUtils.checkIsWarningEmpty(r);
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(12, 11)));
     }
@@ -332,7 +332,7 @@ public class BracketMatchingTest {
                 .addLn("else")
                 .addLn("return true;", 4);
         String wrapper = wrap(builder.toString());
-        Report r = new BracketMatching(new StringProvider("For tests", wrapper)).run();
+        Report r = new Braces(new StringProvider("For tests", wrapper)).run();
         TestUtils.checkIsWarningEmpty(r);
         TestUtils.reportContainsPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(7, 11)));
     }
@@ -345,7 +345,7 @@ public class BracketMatchingTest {
                 .addLn("return \"a string\";", 8)
                 .addLn("}", 4)
                 .addLn("}");
-        TestUtils.checkIsEmptyReport(new BracketMatching(new StringProvider("For tests", builder.toString())).run());
+        TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", builder.toString())).run());
     }
 
     @Test void simpleIfElseTestTriggerError() {
@@ -361,7 +361,7 @@ public class BracketMatchingTest {
                 .addLn("}", 8)
                 .addLn("}", 4)
                 .addLn("}");
-        Report r = new BracketMatching(new StringProvider("For tests", builder.toString())).run();
+        Report r = new Braces(new StringProvider("For tests", builder.toString())).run();
         TestUtils.checkIsWarningEmpty(r);
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(6, 9)));
     }
@@ -376,7 +376,7 @@ public class BracketMatchingTest {
                 .addLn("return \"a string\";", 8)
                 .addLn("}", 4)
                 .addLn("}");
-        TestUtils.checkIsEmptyReport(new BracketMatching(new StringProvider("For tests", builder.toString())).run());
+        TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", builder.toString())).run());
     }
 
     @Test void multiLineParametersDoesNotFail() {
@@ -392,7 +392,7 @@ public class BracketMatchingTest {
                 .addLn("}", 4)
                 .addLn("}");
         System.out.println(builder);
-        TestUtils.checkIsEmptyReport(new BracketMatching(new StringProvider("For tests", builder.toString())).run());
+        TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", builder.toString())).run());
     }
 
     @Test void multiLineEndSameLineParametersDoesNotFail() {
@@ -408,7 +408,7 @@ public class BracketMatchingTest {
                 .addLn("}", 4)
                 .addLn("}");
         System.out.println(builder);
-        TestUtils.checkIsEmptyReport(new BracketMatching(new StringProvider("For tests", builder.toString())).run());
+        TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", builder.toString())).run());
     }
 
     @Test void annotationBeforeClassDoesNotFail() {
@@ -421,7 +421,7 @@ public class BracketMatchingTest {
                 .addLn("return \"a string\";", 8)
                 .addLn("}", 4)
                 .addLn("}");
-        TestUtils.checkIsEmptyReport(new BracketMatching(new StringProvider("For tests", builder.toString())).run());
+        TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", builder.toString())).run());
     }
 
     private String wrap(String s) {

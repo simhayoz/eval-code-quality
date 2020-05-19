@@ -1,6 +1,7 @@
 package eval.code.quality.utils.evaluator;
 
-import eval.code.quality.tests.Report;
+import eval.code.quality.checks.Check;
+import eval.code.quality.checks.Report;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,9 +22,9 @@ public class BooleanEvaluatorTest {
          booleanEvaluator.add(new BooleanSimple(() -> false, "error2"));
          booleanEvaluator.add(() -> true, "error3");
          assertFalse(booleanEvaluator.evaluate());
-         eval.code.quality.tests.Test test = new eval.code.quality.tests.Test() {
+         Check check = new Check() {
              @Override
-             protected void test() {
+             protected void check() {
                  booleanEvaluator.reportMismatches(this);
              }
 
@@ -32,7 +33,7 @@ public class BooleanEvaluatorTest {
                  return null;
              }
          };
-         Report r = test.run();
+         Report r = check.run();
          assertThat(r.getWarnings(), hasSize(1));
          assertTrue(r.getWarnings().get(0).getDescription().isPresent());
          assertThat(r.getWarnings().get(0).getDescription().get(), is("<error1>"));

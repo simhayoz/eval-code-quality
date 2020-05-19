@@ -1,4 +1,4 @@
-package eval.code.quality.tests;
+package eval.code.quality.checks;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Modifier;
@@ -20,7 +20,7 @@ import java.util.*;
 /**
  * Check that name for class, method, enum, variable, etc use the same naming convention for the same set of modifiers.
  */
-public class Naming extends CompilationUnitTest {
+public class Naming extends CompilationUnitCheck {
     private final Map<Modifiers, Map<NameProperty, List<Position>>> classDeclarations = new HashMap<>();
     private final Map<Modifiers, Map<NameProperty, List<Position>>> enumDeclarations = new HashMap<>();
     private final Map<Modifiers, Map<NameProperty, List<Position>>> enumValues = new HashMap<>();
@@ -35,7 +35,7 @@ public class Naming extends CompilationUnitTest {
     }
 
     @Override
-    protected void testFor(ContentProvider contentProvider) {
+    protected void checkFor(ContentProvider contentProvider) {
         CompilationUnit compilationUnit = contentProvider.getCompilationUnit();
         compilationUnit.findAll(ClassOrInterfaceDeclaration.class).forEach(type -> addToMap(classDeclarations, type.getModifiers(), context.getPos(type), type.getNameAsString()));
         compilationUnit.findAll(EnumDeclaration.class).forEach(type -> addToMap(enumDeclarations, type.getModifiers(), context.getPos(type), type.getNameAsString()));
@@ -50,17 +50,17 @@ public class Naming extends CompilationUnitTest {
     }
 
     @Override
-    protected void afterTests() {
-        classDeclarations.forEach(this::testName);
-        enumDeclarations.forEach(this::testName);
-        enumValues.forEach(this::testName);
-        annotationDeclarations.forEach(this::testName);
-        methodDeclarations.forEach(this::testName);
-        fieldDeclarations.forEach(this::testName);
-        variableDeclarations.forEach(this::testName);
+    protected void afterChecks() {
+        classDeclarations.forEach(this::checkName);
+        enumDeclarations.forEach(this::checkName);
+        enumValues.forEach(this::checkName);
+        annotationDeclarations.forEach(this::checkName);
+        methodDeclarations.forEach(this::checkName);
+        fieldDeclarations.forEach(this::checkName);
+        variableDeclarations.forEach(this::checkName);
     }
 
-    private void testName(Modifiers modifiers, Map<NameProperty, List<Position>> map) {
+    private void checkName(Modifiers modifiers, Map<NameProperty, List<Position>> map) {
         if(map.size() > 1) {
             List<Map.Entry<NameProperty, List<Position>>> orderedList = new ArrayList<>(map.entrySet());
             orderedList.sort(Comparator.comparingInt(e -> -e.getValue().size()));

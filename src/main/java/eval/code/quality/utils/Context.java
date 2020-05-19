@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * Represents the context of the test.
- * <p>It allows to iterate over the different {@code ContentProvider} to launch every tests and report position with the current context</p>
+ * Represents the context of the check.
+ * <p>It allows to iterate over the different {@code ContentProvider} to launch every checks and report position with the current context</p>
  */
 public class Context implements Iterator<ContentProvider> {
     private Iterator<ContentProvider> itContentProvider;

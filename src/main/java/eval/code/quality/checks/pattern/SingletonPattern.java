@@ -1,4 +1,4 @@
-package eval.code.quality.tests.pattern;
+package eval.code.quality.checks.pattern;
 
 import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -12,7 +12,7 @@ import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import eval.code.quality.provider.ContentProvider;
-import eval.code.quality.tests.DesignPatternTest;
+import eval.code.quality.checks.DesignPattern;
 import eval.code.quality.utils.evaluator.*;
 
 import java.util.List;
@@ -33,11 +33,11 @@ import java.util.stream.Collectors;
  *     </ul>
  * </p>
  */
-public class SingletonPatternTest extends DesignPatternTest {
+public class SingletonPattern extends DesignPattern {
 
     private final String className;
 
-    public SingletonPatternTest(ContentProvider contentProvider, String className) {
+    public SingletonPattern(ContentProvider contentProvider, String className) {
         super(contentProvider);
         this.className = className;
     }

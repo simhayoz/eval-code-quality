@@ -1,4 +1,4 @@
-package eval.code.quality.tests;
+package eval.code.quality.checks;
 
 import eval.code.quality.TestUtils;
 import eval.code.quality.position.SinglePosition;
@@ -20,10 +20,10 @@ public class TestSuiteTest {
     }
 
     @Test void canCreateSimpleTestSuite() {
-        List<eval.code.quality.tests.Test> tests = new ArrayList<>();
-        tests.add(new eval.code.quality.tests.Test() {
+        List<Check> checks = new ArrayList<>();
+        checks.add(new Check() {
             @Override
-            protected void test() {
+            protected void check() {
                 // Do nothing
             }
 
@@ -32,9 +32,9 @@ public class TestSuiteTest {
                 return "First";
             }
         });
-        tests.add(new eval.code.quality.tests.Test() {
+        checks.add(new Check() {
             @Override
-            protected void test() {
+            protected void check() {
                 addError(new DescriptionBuilder().addPosition(new SinglePosition(1)));
             }
 
@@ -43,13 +43,13 @@ public class TestSuiteTest {
                 return "Second";
             }
         });
-        TestSuite testSuite = new TestSuite(tests);
-        Map<String, Report> report = testSuite.runTests();
+        TestSuite testSuite = new TestSuite(checks);
+        Map<String, Report> report = testSuite.runChecks();
         assertThat(report.get("First").getErrors(), is(empty()));
         assertThat(report.get("First").getWarnings(), is(empty()));
         TestUtils.reportContainsOnlyPositions(report.get("Second").getErrors(), new SinglePosition(1));
         assertThat(report.get("Second").getWarnings(), is(empty()));
-        report = testSuite.runTests(true);
+        report = testSuite.runChecks(true);
         assertThat(report.get("First").getErrors(), is(empty()));
         assertThat(report.get("First").getWarnings(), is(empty()));
         TestUtils.reportContainsOnlyPositions(report.get("Second").getErrors(), new SinglePosition(1));
@@ -58,9 +58,9 @@ public class TestSuiteTest {
 
     @Test void canCreateEmptyTestSuite() {
         TestSuite testSuite = new TestSuite();
-        testSuite.add(new eval.code.quality.tests.Test() {
+        testSuite.add(new Check() {
             @Override
-            protected void test() {
+            protected void check() {
                 // Do nothing
             }
 
@@ -69,9 +69,9 @@ public class TestSuiteTest {
                 return "First";
             }
         });
-        testSuite.add(new eval.code.quality.tests.Test() {
+        testSuite.add(new Check() {
             @Override
-            protected void test() {
+            protected void check() {
                 addError(new DescriptionBuilder().addPosition(new SinglePosition(1)));
             }
 
@@ -80,12 +80,12 @@ public class TestSuiteTest {
                 return "Second";
             }
         });
-        Map<String, Report> report = testSuite.runTests();
+        Map<String, Report> report = testSuite.runChecks();
         assertThat(report.get("First").getErrors(), is(empty()));
         assertThat(report.get("First").getWarnings(), is(empty()));
         TestUtils.reportContainsOnlyPositions(report.get("Second").getErrors(), new SinglePosition(1));
         assertThat(report.get("Second").getWarnings(), is(empty()));
-        report = testSuite.runTests(true);
+        report = testSuite.runChecks(true);
         assertThat(report.get("First").getErrors(), is(empty()));
         assertThat(report.get("First").getWarnings(), is(empty()));
         TestUtils.reportContainsOnlyPositions(report.get("Second").getErrors(), new SinglePosition(1));
@@ -93,10 +93,10 @@ public class TestSuiteTest {
     }
 
     @Test void toStringWorksForSimpleReport() {
-        List<eval.code.quality.tests.Test> tests = new ArrayList<>();
-        tests.add(new eval.code.quality.tests.Test() {
+        List<Check> checks = new ArrayList<>();
+        checks.add(new Check() {
             @Override
-            protected void test() {
+            protected void check() {
                 // Do nothing
             }
 
@@ -105,9 +105,9 @@ public class TestSuiteTest {
                 return "First";
             }
         });
-        tests.add(new eval.code.quality.tests.Test() {
+        checks.add(new Check() {
             @Override
-            protected void test() {
+            protected void check() {
                 addError(new DescriptionBuilder().addPosition(new SinglePosition(1)));
             }
 
@@ -116,8 +116,8 @@ public class TestSuiteTest {
                 return "Second";
             }
         });
-        TestSuite testSuite = new TestSuite(tests);
-        testSuite.runTests();
+        TestSuite testSuite = new TestSuite(checks);
+        testSuite.runChecks();
         System.out.println(testSuite.toString());
         assertThat(testSuite.toString(), equalTo("TestSuite: \n" +
                 " Test for Second: \n" +

@@ -1,6 +1,6 @@
 package eval.code.quality.utils.evaluator;
 
-import eval.code.quality.tests.Test;
+import eval.code.quality.checks.Check;
 import eval.code.quality.utils.Preconditions;
 import eval.code.quality.utils.description.DescriptionBuilder;
 
@@ -78,19 +78,19 @@ public class BooleanEvaluator {
     }
 
     /**
-     * Report mismatches to the {@code Test} class.
+     * Report mismatches to the {@code Check} class.
      *
-     * @param test the class to report error and warning to
+     * @param check the class to report error and warning to
      */
-    public void reportMismatches(Test test) {
+    public void reportMismatches(Check check) {
         boolean shouldReportNext = true;
         for (BooleanExpression expression : booleanExpressions) {
             if (shouldReportNext) {
                 if (!expression.evaluate() && expression.isError()) {
-                    test.addError(new DescriptionBuilder().addToDescription(expression.describeMismatch()).build());
+                    check.addError(new DescriptionBuilder().addToDescription(expression.describeMismatch()).build());
                     shouldReportNext = false;
                 } else if (!expression.evaluate()) {
-                    test.addWarning(new DescriptionBuilder().addToDescription(expression.describeMismatch()).build());
+                    check.addWarning(new DescriptionBuilder().addToDescription(expression.describeMismatch()).build());
                 }
             }
 
