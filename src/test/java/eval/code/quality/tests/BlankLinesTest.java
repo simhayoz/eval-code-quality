@@ -1,17 +1,14 @@
 package eval.code.quality.tests;
 
 import eval.code.quality.MyStringBuilder;
+import eval.code.quality.TestUtils;
 import eval.code.quality.position.NamePosition;
 import eval.code.quality.position.Range;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.provider.StringProvider;
-import eval.code.quality.utils.Error;
-import eval.code.quality.utils.ReportPosition;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
-import java.util.Collection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -27,9 +24,8 @@ public class BlankLinesTest {
         s.addLn("test");
         ContentProvider contentProvider = new StringProvider("oneLiner", s.toString());
         Report r = new BlankLines(contentProvider).run();
-        assertThat(r.getWarnings(), is(empty()));
-        assertThat(r.getErrors(), Matchers.<Collection<Error>>allOf(
-                hasItem(is(ReportPosition.at(new NamePosition("oneLiner", new Range(1, 32))))), hasSize(1)));
+        TestUtils.checkIsWarningEmpty(r);
+        TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("oneLiner", new Range(1, 32)));
     }
 
     @Test
@@ -46,23 +42,17 @@ public class BlankLinesTest {
                 .addLn("test");
         ContentProvider contentProvider = new StringProvider("For tests", s.toString());
         Report r = new BlankLines(contentProvider).run();
-        assertThat(r.getWarnings(), is(empty()));
-        assertThat(r.getErrors(),
-                Matchers.<Collection<Error>>allOf(
-                        hasItems(is(ReportPosition.at(new NamePosition("For tests", new Range(2, 3)))),
-                                is(ReportPosition.at(new NamePosition("For tests", new Range(6, 8))))),
-                        hasSize(2)));
+        TestUtils.checkIsWarningEmpty(r);
+        TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new Range(2, 3)), new NamePosition("For tests", new Range(6, 8)));
     }
 
     @Test
     void emptyStringOrNoBreakStringIsSuccessful() {
         ContentProvider contentProvider = new StringProvider("EmptyString", "");
         Report r = new BlankLines(contentProvider).run();
-        assertThat(r.getErrors(), is(empty()));
-        assertThat(r.getWarnings(), is(empty()));
+        TestUtils.checkIsEmptyReport(r);
         contentProvider = new StringProvider("For tests", "Test on a unique line");
         r = new BlankLines(contentProvider).run();
-        assertThat(r.getErrors(), is(empty()));
-        assertThat(r.getWarnings(), is(empty()));
+        TestUtils.checkIsEmptyReport(r);
     }
 }

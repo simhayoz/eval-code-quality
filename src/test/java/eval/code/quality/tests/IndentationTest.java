@@ -1,30 +1,21 @@
 package eval.code.quality.tests;
 
 import eval.code.quality.MyStringBuilder;
+import eval.code.quality.TestUtils;
 import eval.code.quality.position.*;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.provider.StringProvider;
-import eval.code.quality.utils.Error;
-import eval.code.quality.utils.MultiplePossibility;
-import eval.code.quality.utils.ReportPosition;
 import org.junit.jupiter.api.Test;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 import java.util.*;
 import java.util.Map.Entry;
-
-import org.hamcrest.Matchers;
 
 class IndentationTest {
 
     @Test
     void emptyCUReportNoError() {
         ContentProvider contentProvider = new StringProvider("Empty String", "");
-        Report r = new Indentation(contentProvider).run();
-        assertThat(r.getWarnings(), is(empty()));
-        assertThat(r.getErrors(), is(empty()));
+        TestUtils.checkIsEmptyReport(new Indentation(contentProvider).run());
     }
 
     @Test void typeOrImportNotAlignedLeftFails() {
@@ -36,11 +27,10 @@ class IndentationTest {
                 .addBlankLine()
                 .addLn("}");
         Report r = new Indentation(new StringProvider("For tests", builder.toString())).run();
-        assertThat(r.getWarnings(), is(empty()));
-        assertThat(r.getErrors(), Matchers.<Collection<Error>>allOf(
-                hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(2, 2))))),
-                hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(4, 2))))),
-                hasSize(2)));
+        TestUtils.checkIsWarningEmpty(r);
+        TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests",
+                new SinglePosition(2, 2)),
+                new NamePosition("For tests", new SinglePosition(4, 2)));
     }
 
     @Test
@@ -88,9 +78,7 @@ class IndentationTest {
         blocks_to_test[4] = builder.toString();
         for (String s : blocks_to_test) {
             String wrapper = wrap(s);
-            Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
-            assertThat(r.getWarnings(), is(empty()));
-            assertThat(r.getErrors(), is(empty()));
+            TestUtils.checkIsEmptyReport(new Indentation(new StringProvider("For tests", wrapper)).run());
         }
     }
 
@@ -145,9 +133,8 @@ class IndentationTest {
         for (Entry<String, Position> s : blocks_to_test.entrySet()) {
             String wrapper = wrap(s.getKey());
             Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
-            assertThat(wrapper, r.getWarnings(), is(empty()));
-            assertThat(wrapper, r.getErrors(), Matchers
-                    .<Collection<Error>>allOf(hasItem(is(ReportPosition.at(s.getValue()))), hasSize(1)));
+            TestUtils.checkIsWarningEmpty(r);
+            TestUtils.reportContainsOnlyPositions(r.getErrors(), s.getValue());
         }
     }
 
@@ -186,9 +173,7 @@ class IndentationTest {
         blocks_to_test[2] = builder.toString();
         for (String s : blocks_to_test) {
             String wrapper = wrap(s);
-            Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
-            assertThat(wrapper, r.getWarnings(), is(empty()));
-            assertThat(wrapper, r.getErrors(), is(empty()));
+            TestUtils.checkIsEmptyReport(new Indentation(new StringProvider("For tests", wrapper)).run());
         }
     }
 
@@ -207,9 +192,8 @@ class IndentationTest {
         for (Entry<String, Position> s : blocks_to_test.entrySet()) {
             String wrapper = wrap(s.getKey());
             Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
-            assertThat(wrapper, r.getWarnings(), is(empty()));
-            assertThat(wrapper, r.getErrors(), Matchers
-                    .<Collection<Error>>allOf(hasItem(is(ReportPosition.at(s.getValue()))), hasSize(1)));
+            TestUtils.checkIsWarningEmpty(r);
+            TestUtils.reportContainsOnlyPositions(r.getErrors(), s.getValue());
         }
     }
 
@@ -229,12 +213,9 @@ class IndentationTest {
                 .addLn("}");
         String wrapper = wrap(new String[]{b1.toString(), b2.toString()});
         Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
-        assertThat(wrapper, r.getWarnings(), is(empty()));
-        assertThat(wrapper, r.getErrors(),
-                Matchers.<Collection<Error>>allOf(
-                        hasItem(is(ReportPosition.at(
-                                new NamePosition("For tests", new Range(new SinglePosition(10, 17), new SinglePosition(11, 17)))))),
-                        hasSize(1)));
+        TestUtils.checkIsWarningEmpty(r);
+        TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests",
+                new Range(new SinglePosition(10, 17), new SinglePosition(11, 17))));
     }
 
     @Test void blockWithSomeWrongIndentationFails() {
@@ -252,11 +233,8 @@ class IndentationTest {
         MultiplePosition multiplePosition = new MultiplePosition();
         multiplePosition.add(new NamePosition("For tests", new SinglePosition(5, 14)));
         multiplePosition.add(new NamePosition("For tests", new SinglePosition(7, 14)));
-        assertThat(wrapper, r.getWarnings(), is(empty()));
-        assertThat(wrapper, r.getErrors(),
-                Matchers.<Collection<Error>>allOf(
-                        hasItem(is(ReportPosition.at(multiplePosition))),
-                        hasSize(1)));
+        TestUtils.checkIsWarningEmpty(r);
+        TestUtils.reportContainsOnlyPositions(r.getErrors(), multiplePosition);
     }
 
     @Test void cannotInferBlockDiffWhenDifferentBlocks() {
@@ -265,14 +243,10 @@ class IndentationTest {
             .addLn("return true;", 4);
         String wrapper = wrap(builder.toString());
         Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
-        Map<Position, String> map = new HashMap<>();
-        map.put(new NamePosition("For tests", new SinglePosition(2, 5)), 4+"");
-        map.put(new NamePosition("For tests", new Range(new SinglePosition(3, 13), new SinglePosition(4, 13))), ""+8);
-        assertThat(wrapper, r.getWarnings(), is(empty()));
-        assertThat(wrapper, r.getErrors(),
-                Matchers.<Collection<Error>>allOf(
-                        hasItem(is(MultiplePossibility.at(map))),
-                        hasSize(1)));
+        TestUtils.checkIsWarningEmpty(r);
+        TestUtils.reportContainsOnlyPositions(r.getErrors(),
+                new NamePosition("For tests", new SinglePosition(2, 5)),
+                new NamePosition("For tests", new Range(new SinglePosition(3, 13), new SinglePosition(4, 13))));
     }
 
     @Test void cannotInferBlockDiffWhenMultipleDifferentBlocks() {
@@ -285,20 +259,14 @@ class IndentationTest {
                 .addLn("return true;", 4);
         String wrapper = wrap(builder.toString());
         Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
-        Map<Position, String> map = new HashMap<>();
         MultiplePosition multiplePosition1 = new MultiplePosition();
         multiplePosition1.add(new NamePosition("For tests", new SinglePosition(2, 5)));
         multiplePosition1.add(new NamePosition("For tests", new SinglePosition(4, 17)));
         MultiplePosition multiplePosition2 = new MultiplePosition();
         multiplePosition2.add(new NamePosition("For tests", new Range(new SinglePosition(3, 13), new SinglePosition(8, 13))));
         multiplePosition2.add(new NamePosition("For tests", new SinglePosition(5, 25)));
-        map.put(multiplePosition1, 4+"");
-        map.put(multiplePosition2, ""+8);
-        assertThat(wrapper, r.getWarnings(), is(empty()));
-        assertThat(wrapper, r.getErrors(),
-                Matchers.<Collection<Error>>allOf(
-                        hasItem(is(MultiplePossibility.at(map))),
-                        hasSize(1)));
+        TestUtils.checkIsWarningEmpty(r);
+        TestUtils.reportContainsOnlyPositions(r.getErrors(), multiplePosition1, multiplePosition2);
     }
 
     @Test void multipleWrongBlocksReportError() {
@@ -318,11 +286,8 @@ class IndentationTest {
         MultiplePosition multiplePosition = new MultiplePosition();
         multiplePosition.add(new NamePosition("For tests", new Range(5, 25, 7, 25)));
         multiplePosition.add(new NamePosition("For tests", new SinglePosition(8, 37)));
-        assertThat(wrapper, r.getWarnings(), is(empty()));
-        assertThat(wrapper, r.getErrors(),
-                Matchers.<Collection<Error>>allOf(
-                        hasItem(is(ReportPosition.at(multiplePosition))),
-                        hasSize(1)));
+        TestUtils.checkIsWarningEmpty(r);
+        TestUtils.reportContainsOnlyPositions(r.getErrors(), multiplePosition);
     }
 
     @Test void cannotInferBlockTypeWhenMultiplePossibleIndentation() {
@@ -333,18 +298,15 @@ class IndentationTest {
             .addLn("return true;", 4);
         String wrapper = wrap(builder.toString());
         Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
-        assertThat(r.getWarnings(), is(empty()));
-        assertThat(r.getErrors(), Matchers.<Collection<Error>>allOf(
-                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new Range(new SinglePosition(3, 9), new SinglePosition(6, 13)))))),
-                        hasSize(1)));
+        TestUtils.checkIsWarningEmpty(r);
+        TestUtils.reportContainsOnlyPositions(r.getErrors(),
+                new NamePosition("For tests", new Range(new SinglePosition(3, 9), new SinglePosition(6, 13))));
     }
 
     @Test void emptyBlockDoesNotFail() {
         String wrapper = wrap("");
         ContentProvider contentProvider = new StringProvider("For tests", wrapper);
-        Report r = new Indentation(contentProvider).run();
-        assertThat(r.getWarnings(), is(empty()));
-        assertThat(r.getErrors(), is(empty()));
+        TestUtils.checkIsEmptyReport(new Indentation(contentProvider).run());
     }
 
     @Test void elseIfBracketWillWork() {
@@ -357,9 +319,7 @@ class IndentationTest {
                 .addLn("return true;", 4)
                 .addLn("}");
         String wrapper = wrap(builder.toString());
-        Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
-        assertThat(r.getWarnings(), is(empty()));
-        assertThat(r.getErrors(), is(empty()));
+        TestUtils.checkIsEmptyReport(new Indentation(new StringProvider("For tests", wrapper)).run());
     }
 
     @Test void elseIfNoBracketWillWork() {
@@ -371,9 +331,7 @@ class IndentationTest {
                 .addLn("else")
                 .addLn("return true;", 4);
         String wrapper = wrap(builder.toString());
-        Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
-        assertThat(r.getWarnings(), is(empty()));
-        assertThat(r.getErrors(), is(empty()));
+        TestUtils.checkIsEmptyReport(new Indentation(new StringProvider("For tests", wrapper)).run());
     }
 
     @Test void elseIfBracketFailsForIndentError() {
@@ -387,11 +345,8 @@ class IndentationTest {
                 .addLn("}");
         String wrapper = wrap(builder.toString());
         Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
-        assertThat(r.getWarnings(), is(empty()));
-        assertThat(r.getErrors(),
-                Matchers.<Collection<Error>>allOf(
-                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(6, 14))))),
-                        hasSize(1)));
+        TestUtils.checkIsWarningEmpty(r);
+        TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(6, 14)));
     }
 
     @Test void elseIfNoBracketFailsForIndentError() {
@@ -404,11 +359,8 @@ class IndentationTest {
                 .addLn("return true;", 4);
         String wrapper = wrap(builder.toString());
         Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
-        assertThat(r.getWarnings(), is(empty()));
-        assertThat(r.getErrors(),
-                Matchers.<Collection<Error>>allOf(
-                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(6, 14))))),
-                        hasSize(1)));
+        TestUtils.checkIsWarningEmpty(r);
+        TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(6, 14)));
     }
 
     @Test void innerClassThrowsErrorWhenMisaligned() {
@@ -422,11 +374,8 @@ class IndentationTest {
                 .addLn("}", 4)
                 .addLn("}");
         Report r = new Indentation(new StringProvider("For tests", builder.toString())).run();
-        assertThat(r.getWarnings(), is(empty()));
-        assertThat(r.getErrors(),
-                Matchers.<Collection<Error>>allOf(
-                        hasItem(is(ReportPosition.at(new NamePosition("For tests", new SinglePosition(6, 10))))),
-                        hasSize(1)));
+        TestUtils.checkIsWarningEmpty(r);
+        TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(6, 10)));
     }
 
     @Test void enumOnSingleLineDoesNotFail() {
@@ -439,9 +388,7 @@ class IndentationTest {
                 .addLn("TEST, TEST2, TEST3, TEST4", 8)
                 .addLn("}", 4)
                 .addLn("}");
-        Report r = new Indentation(new StringProvider("For tests", builder.toString())).run();
-        assertThat(r.getWarnings(), is(empty()));
-        assertThat(r.getErrors(), is(empty()));
+        TestUtils.checkIsEmptyReport(new Indentation(new StringProvider("For tests", builder.toString())).run());
     }
 
     @Test void emptyMethodDoesNotFail() {
@@ -449,9 +396,7 @@ class IndentationTest {
         builder.addLn("public abstract class Test {")
                 .addLn("public abstract boolean test();", 4)
                 .addLn("}");
-        Report r = new Indentation(new StringProvider("For tests", builder.toString())).run();
-        assertThat(r.getWarnings(), is(empty()));
-        assertThat(r.getErrors(), is(empty()));
+        TestUtils.checkIsEmptyReport(new Indentation(new StringProvider("For tests", builder.toString())).run());
     }
 
     private String wrap(String s) {

@@ -8,7 +8,8 @@ import eval.code.quality.position.Position;
 import eval.code.quality.position.Range;
 import eval.code.quality.position.SinglePosition;
 import eval.code.quality.provider.ContentProvider;
-import eval.code.quality.utils.*;
+import eval.code.quality.utils.description.DescriptionBuilder;
+import eval.code.quality.utils.description.Descriptor;
 
 import java.util.*;
 
@@ -45,12 +46,12 @@ public class BracketMatching extends CompilationUnitTest {
     @Override
     protected void afterTests() {
         checkSameStyleBracket();
-        checkAndReport(isOneLinerBlock, "one liner block with bracket", true);
+        inferMapProperty.checkAndReport(isOneLinerBlock, "one liner block with bracket", true);
     }
 
     private void checkSameStyleBracket() {
-        checkAndReport(openingProperties, "bracket position next block", true);
-        checkAndReport(closingProperties, "bracket position previous block", true);
+        inferMapProperty.checkAndReport(openingProperties, "bracket position next block", true);
+        inferMapProperty.checkAndReport(closingProperties, "bracket position previous block", true);
     }
 
     public void checkCurrentBlocks(ParentBlock parentBlock) {
@@ -58,7 +59,8 @@ public class BracketMatching extends CompilationUnitTest {
         if(parentBlock.bracketPosition != null) {
             addToMap(getOpeningType(parentBlock.getParentLineEnd(), parentColumn, parentBlock.bracketPosition.begin), null, context.getPos(parentBlock.parent));
             if(parentBlock.bracketPosition.end.column.get() != parentColumn && !parentBlock.childStatements.isEmpty()) {
-                addError(ReportPosition.at(context.getPos(parentBlock.bracketPosition.end), "Closing bracket is not aligned with parent"));
+                addError(new DescriptionBuilder()
+                        .addPosition(context.getPos(parentBlock.bracketPosition.end), new Descriptor().addToDescription("Closing bracket is not aligned with parent")));
             }
         }
         Range prevBlock = parentBlock.bracketPosition;
@@ -67,12 +69,14 @@ public class BracketMatching extends CompilationUnitTest {
             Range currBlock = childBlock.bracketPosition;
             if(prevBlock == null) {
                 if(child.column.get() != parentColumn) {
-                    addError(ReportPosition.at(context.getPos(child), "Child is not aligned with parent"));
+                    addError(new DescriptionBuilder()
+                            .addPosition(context.getPos(child), new Descriptor().addToDescription("Child is not aligned with parent")));
                 }
                 if(currBlock != null) {
                     addToMap(getOpeningType(child.line, parentColumn, currBlock.begin), null, context.getPos(parentBlock.parent));
                     if(currBlock.end.column.get() !=  parentColumn && !childBlock.childStatements.isEmpty()) {
-                        addError(ReportPosition.at(context.getPos(currBlock.end), "Closing bracket is not aligned with parent"));
+                        addError(new DescriptionBuilder()
+                                .addPosition(context.getPos(currBlock.end), new Descriptor().addToDescription("Closing bracket is not aligned with parent")));
                     }
                 }
             } else {
@@ -92,11 +96,13 @@ public class BracketMatching extends CompilationUnitTest {
             return BracketProperty.SAME_LINE;
         } else if(prevBracketPos.line + 1 == childPos.line) {
             if(childPos.column.get() != parentColumn) {
-                addError(ReportPosition.at(context.getPos(childPos), "Child not aligned with parent"));
+                addError(new DescriptionBuilder()
+                        .addPosition(context.getPos(childPos), new Descriptor().addToDescription("Child is not aligned with parent")));
             }
             return BracketProperty.NEXT_LINE;
         } else {
-            addError(ReportPosition.at(context.getPos(childPos), "Child was more than one line after closing bracket of previous element"));
+            addError(new DescriptionBuilder()
+                    .addPosition(context.getPos(childPos), new Descriptor().addToDescription("Child was more than one line after closing bracket of previous element")));
             return null;
         }
     }
@@ -107,11 +113,13 @@ public class BracketMatching extends CompilationUnitTest {
             return BracketProperty.SAME_LINE;
         } else if(bracketPos.line == parentLine + 1) {
             if(bracketPos.column.get() != parentColumn) {
-                addError(ReportPosition.at(context.getPos(bracketPos), "Opening bracket not aligned with parent"));
+                addError(new DescriptionBuilder()
+                        .addPosition(context.getPos(bracketPos), new Descriptor().addToDescription("Opening bracket is not aligned with parent")));
             }
             return BracketProperty.NEXT_LINE;
         } else {
-            addError(ReportPosition.at(context.getPos(bracketPos), "Opening bracket was more than one line after parent"));
+            addError(new DescriptionBuilder()
+                    .addPosition(context.getPos(bracketPos), new Descriptor().addToDescription("Opening bracket was more than one line after parent")));
             return null;
         }
     }

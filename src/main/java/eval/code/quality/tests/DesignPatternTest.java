@@ -5,10 +5,9 @@ import eval.code.quality.tests.pattern.BuilderPatternTest;
 import eval.code.quality.tests.pattern.SingletonPatternTest;
 import eval.code.quality.tests.pattern.VisitorPatternTest;
 import eval.code.quality.utils.Context;
-import eval.code.quality.utils.StringError;
+import eval.code.quality.utils.description.DescriptionBuilder;
 import eval.code.quality.utils.evaluator.BooleanEvaluator;
 
-import java.util.Arrays;
 import java.util.List;
 
 public abstract class DesignPatternTest extends Test {
@@ -26,7 +25,7 @@ public abstract class DesignPatternTest extends Test {
             BooleanEvaluator booleanEvaluator = getEvaluator(contentProvider);
             booleanEvaluator.reportMismatches(this);
         } catch (ClassNotFoundException e) {
-            addError(new StringError("Class not found: " + e.getMessage()));
+            addError(new DescriptionBuilder().addToDescription("Class not found: " + e.getMessage()).build());
         }
     }
 

@@ -1,6 +1,6 @@
 package eval.code.quality.tests;
 
-import eval.code.quality.utils.Error;
+import eval.code.quality.utils.description.Description;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,15 +12,15 @@ import java.util.stream.Collectors;
  */
 public class Report {
 
-    private final List<Error> errors = new ArrayList<>();
-    private final List<Error> warnings = new ArrayList<>();
+    private final List<Description> errors = new ArrayList<>();
+    private final List<Description> warnings = new ArrayList<>();
 
     /**
      * Add an error to the report.
      *
      * @param error the error to add
      */
-    public void addError(Error error) {
+    public void addError(Description error) {
         errors.add(error);
     }
 
@@ -29,7 +29,7 @@ public class Report {
      *
      * @param warning the warning to add
      */
-    public void addWarning(Error warning) {
+    public void addWarning(Description warning) {
         warnings.add(warning);
     }
 
@@ -38,7 +38,7 @@ public class Report {
      *
      * @return the unmodifiable list of errors
      */
-    public List<Error> getErrors() {
+    public List<Description> getErrors() {
         return Collections.unmodifiableList(errors);
     }
 
@@ -47,11 +47,11 @@ public class Report {
      *
      * @return the unmodifiable list of warnings
      */
-    public List<Error> getWarnings() {
+    public List<Description> getWarnings() {
         return Collections.unmodifiableList(warnings);
     }
 
-    private String prettyPrintList(List<Error> list) {
+    private <T> String prettyPrintList(List<T> list) {
         return list.stream().map(e -> e.toString().indent(1)).collect(Collectors.joining());
     }
 

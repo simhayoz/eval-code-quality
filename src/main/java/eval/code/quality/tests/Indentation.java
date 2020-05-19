@@ -7,8 +7,11 @@ import eval.code.quality.block.ChildBlock;
 import eval.code.quality.block.ParentBlock;
 import eval.code.quality.position.*;
 import eval.code.quality.provider.ContentProvider;
-import eval.code.quality.utils.*;
-import eval.code.quality.utils.Error;
+import eval.code.quality.utils.description.Description;
+import eval.code.quality.utils.description.DescriptionBuilder;
+import eval.code.quality.utils.description.Descriptor;
+import eval.code.quality.utils.reporter.ExpectedReporter;
+import eval.code.quality.utils.reporter.NotExpectedReporter;
 
 import java.util.*;
 
@@ -45,14 +48,15 @@ public class Indentation extends CompilationUnitTest {
 
     @Override
     protected void afterTests() {
-        checkAndReport(blockIndentations, true);
+        inferMapProperty.checkAndReport(blockIndentations, true);
     }
 
     private void checkAlignLeft(Node node) {
         node.getRange().ifPresent(e -> {
             SinglePosition position = SinglePosition.from(e.begin);
             if (e.begin.column != 1) {
-                addError(ReportPosition.at(context.getPos(position), "element is not aligned left"));
+                addError(new DescriptionBuilder()
+                        .addPosition(context.getPos(position), new Descriptor().addToDescription("element is not aligned left")));
             }
         });
     }
@@ -60,7 +64,7 @@ public class Indentation extends CompilationUnitTest {
     private void checkBlock(ParentBlock parentBlock, List<? extends Node> children) {
         if (!children.isEmpty()) {
             Position range = context.getRange(children);
-            checkIndentationMap(getIndentationMap(parentBlock.getParentStart(), children), range, "block misaligned, expected all indented at one of: ");
+            checkIndentationMap(getIndentationMap(parentBlock.getParentStart(), children), range);
         }
     }
 
@@ -74,23 +78,24 @@ public class Indentation extends CompilationUnitTest {
                         addToMap(indentationByDiff, diff, context.getPos(childPos));
                     }
                 } else {
-                    addError(ReportPosition.at(context.getPos(child), "less indented or equally indented than parent"));
+                    addError(new DescriptionBuilder()
+                            .addPosition(context.getPos(child), new Descriptor().addToDescription("less indented or equally indented than parent")));
                 }
             });
         }
         return indentationByDiff;
     }
 
-    public void checkIndentationMap(Map<Integer, List<Position>> indentationByDiff, Position blockRange, String blockExpectation) {
-        checkAndReport(indentationByDiff, new ExpectedReporter<>() {
+    public void checkIndentationMap(Map<Integer, List<Position>> indentationByDiff, Position blockRange) {
+        inferMapProperty.checkAndReport(indentationByDiff, new ExpectedReporter<>() {
             @Override
             public void doOnUniqueExpected(Map<Integer, List<Position>> map, Integer property) {
                 addToBlockIndentation(property, blockRange);
             }
 
             @Override
-            public Error reportMultipleExpected(Map<Integer, List<Position>> map, List<Integer> properties) {
-                return ReportPosition.at(blockRange, blockExpectation + properties);
+            public Description reportMultipleExpected(Map<Integer, List<Position>> map, List<Integer> properties) {
+                return new DescriptionBuilder().addPosition(blockRange, new Descriptor().setExpected("all indented at one of: " + properties.toString()).addToDescription("block misaligned")).build();
             }
         }, new NotExpectedReporter<>(), false);
         if (indentationByDiff.size() == 1) {

@@ -128,7 +128,6 @@ public class ParentBlock {
     protected static SinglePosition getIndexNext(String content, Pattern pattern, int fromLine) {
         List<String> contents = Arrays.asList(content.split(System.lineSeparator()));
         String smallerContent = contents.subList(fromLine-1, contents.size()).stream().collect(Collectors.joining(System.lineSeparator()));
-        System.out.println(smallerContent);
         Matcher matcher = pattern.matcher(smallerContent);
         if(matcher.find()) {
             int after = matcher.end();
