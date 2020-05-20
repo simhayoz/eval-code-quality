@@ -3,13 +3,16 @@ package eval.code.quality.utils.description;
 import eval.code.quality.position.Position;
 import eval.code.quality.utils.Preconditions;
 import eval.code.quality.utils.Tuple;
+import eval.code.quality.utils.XMLParsable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class Description {
+public class Description implements XMLParsable<Description> {
 
     private List<PositionDescription> positions;
     private Descriptor descriptor;
@@ -73,5 +76,26 @@ public class Description {
     @Override
     public String toString() {
         return prettyPrintError();
+    }
+
+    @Override
+    public Element getXMLElement(Document document) {
+        Element description = document.createElement("description");
+        getPositionsWithDescription().ifPresent(positionDescriptions -> {
+            for(PositionDescription positionDescription : positionDescriptions) {
+                Element childPos = positionDescription.getXMLElement(document);
+                description.appendChild(childPos);
+            }
+        });
+        Element descriptorElement = descriptor.getXMLElement(document);
+        if(descriptorElement != null) {
+            description.appendChild(descriptorElement);
+        }
+        return description;
+    }
+
+    @Override
+    public Description getFromXML(Element xmlElement) {
+        return null;
     }
 }

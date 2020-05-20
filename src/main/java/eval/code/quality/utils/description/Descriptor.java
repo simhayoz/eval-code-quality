@@ -1,8 +1,12 @@
 package eval.code.quality.utils.description;
 
+import eval.code.quality.utils.XMLParsable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import java.util.Optional;
 
-public class Descriptor {
+public class Descriptor implements XMLParsable<Descriptor> {
     private final StringBuilder description;
     private String was;
     private String expected;
@@ -58,6 +62,37 @@ public class Descriptor {
             builder.append(separator).append("expected: ").append(expected);
         }
         return builder.toString();
+    }
+
+    @Override
+    public Element getXMLElement(Document document) {
+        Element descriptor = document.createElement("descriptor");
+        boolean hasElement = false;
+        if(getDescription().isPresent()) {
+            Element descriptionNode = document.createElement("description");
+            descriptionNode.appendChild(document.createTextNode(description.toString()));
+            descriptor.appendChild(descriptionNode);
+            hasElement = true;
+        }
+        if(was != null) {
+            Element wasNode = document.createElement("was");
+            wasNode.appendChild(document.createTextNode(was));
+            descriptor.appendChild(wasNode);
+            hasElement = true;
+        }
+        if(expected != null) {
+            Element expectedNode = document.createElement("expected");
+            expectedNode.appendChild(document.createTextNode(expected));
+            descriptor.appendChild(expectedNode);
+            hasElement = true;
+        }
+        System.out.println(hasElement);
+        return hasElement ? descriptor : null;
+    }
+
+    @Override
+    public Descriptor getFromXML(Element xmlElement) {
+        return null;
     }
 
 //    public boolean isEmpty() {

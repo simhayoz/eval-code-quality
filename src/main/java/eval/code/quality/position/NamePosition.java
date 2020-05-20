@@ -1,6 +1,8 @@
 package eval.code.quality.position;
 
 import eval.code.quality.utils.Preconditions;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.util.Objects;
 
@@ -40,5 +42,19 @@ public class NamePosition extends Position {
     @Override
     public String toString() {
         return name + " " + position;
+    }
+
+    @Override
+    public Element getXMLElement(Document document) {
+        Element namedPosition = document.createElement("namedPosition");
+        namedPosition.setAttribute("name", name);
+        Element pos = position.getXMLElement(document);
+        namedPosition.appendChild(pos);
+        return namedPosition;
+    }
+
+    @Override
+    public Position getFromXML(Element xmlElement) {
+        return null;
     }
 }

@@ -1,6 +1,8 @@
 package eval.code.quality.position;
 
 import eval.code.quality.utils.Preconditions;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.util.Optional;
 
@@ -72,5 +74,18 @@ public class SinglePosition extends Position implements Comparable<SinglePositio
             return (p.column.isEmpty() ? 1 : 0) - (this.column.isEmpty() ? 1 : 0);
         }
         return Integer.compare(this.line, p.line);
+    }
+
+    @Override
+    public Element getXMLElement(Document document) {
+        Element position = document.createElement("position");
+        position.setAttribute("line", Integer.toString(line));
+        column.ifPresent(col -> position.setAttribute("col", Integer.toString(col)));
+        return position;
+    }
+
+    @Override
+    public Position getFromXML(Element xmlElement) {
+        return null;
     }
 }
