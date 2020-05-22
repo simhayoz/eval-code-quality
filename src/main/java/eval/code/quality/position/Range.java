@@ -1,6 +1,8 @@
 package eval.code.quality.position;
 
 import eval.code.quality.utils.Preconditions;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.util.Objects;
 
@@ -75,4 +77,19 @@ public class Range extends Position {
     public String toString() {
         return "(" + begin + " -> " + end + ")";
     }
+
+    @Override
+    public Element getXMLElement(Document document) {
+        Element range = document.createElement("range");
+        Element beginNode = document.createElement("begin");
+        Element endNode = document.createElement("end");
+        beginNode.setAttribute("line", Integer.toString(begin.line));
+        begin.column.ifPresent(col -> beginNode.setAttribute("col", Integer.toString(col)));
+        endNode.setAttribute("line", Integer.toString(end.line));
+        end.column.ifPresent(col -> endNode.setAttribute("col", Integer.toString(col)));
+        range.appendChild(beginNode);
+        range.appendChild(endNode);
+        return range;
+    }
+
 }

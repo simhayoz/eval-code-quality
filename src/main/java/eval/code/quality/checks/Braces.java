@@ -15,8 +15,8 @@ import java.util.*;
 
 public class Braces extends CompilationUnitCheck {
 
-    private Map<BracketProperty, List<Position>> openingProperties = new HashMap<>();
-    private Map<BracketProperty, List<Position>> closingProperties = new HashMap<>();
+    private Map<BracesProperty, List<Position>> openingProperties = new HashMap<>();
+    private Map<BracesProperty, List<Position>> closingProperties = new HashMap<>();
     private Map<Boolean, List<Position>> isOneLinerBlock = new HashMap<>();
 
     public Braces(ContentProvider contentProvider) {
@@ -45,28 +45,28 @@ public class Braces extends CompilationUnitCheck {
 
     @Override
     protected void afterChecks() {
-        checkSameStyleBracket();
-        inferMapProperty.checkAndReport(isOneLinerBlock, "one liner block with bracket", true);
+        checkSameStyleBrace();
+        inferMapProperty.checkAndReport(isOneLinerBlock, "one liner block with brace", true);
     }
 
-    private void checkSameStyleBracket() {
-        inferMapProperty.checkAndReport(openingProperties, "bracket position next block", true);
-        inferMapProperty.checkAndReport(closingProperties, "bracket position previous block", true);
+    private void checkSameStyleBrace() {
+        inferMapProperty.checkAndReport(openingProperties, "brace position next block", true);
+        inferMapProperty.checkAndReport(closingProperties, "brace position previous block", true);
     }
 
     public void checkCurrentBlocks(ParentBlock parentBlock) {
         int parentColumn = parentBlock.getParentStart().column;
-        if(parentBlock.bracketPosition != null) {
-            addToMap(getOpeningType(parentBlock.getParentLineEnd(), parentColumn, parentBlock.bracketPosition.begin), null, context.getPos(parentBlock.parent));
-            if(parentBlock.bracketPosition.end.column.get() != parentColumn && !parentBlock.childStatements.isEmpty()) {
+        if(parentBlock.bracesPosition != null) {
+            addToMap(getOpeningType(parentBlock.getParentLineEnd(), parentColumn, parentBlock.bracesPosition.begin), null, context.getPos(parentBlock.parent));
+            if(parentBlock.bracesPosition.end.column.get() != parentColumn && !parentBlock.childStatements.isEmpty()) {
                 addError(new DescriptionBuilder()
-                        .addPosition(context.getPos(parentBlock.bracketPosition.end), new Descriptor().addToDescription("Closing bracket is not aligned with parent")));
+                        .addPosition(context.getPos(parentBlock.bracesPosition.end), new Descriptor().addToDescription("Closing brace is not aligned with parent")));
             }
         }
-        Range prevBlock = parentBlock.bracketPosition;
+        Range prevBlock = parentBlock.bracesPosition;
         for(ChildBlock childBlock: parentBlock.childBlocks) {
             SinglePosition child = childBlock.parent;
-            Range currBlock = childBlock.bracketPosition;
+            Range currBlock = childBlock.bracesPosition;
             if(prevBlock == null) {
                 if(child.column.get() != parentColumn) {
                     addError(new DescriptionBuilder()
@@ -76,7 +76,7 @@ public class Braces extends CompilationUnitCheck {
                     addToMap(getOpeningType(child.line, parentColumn, currBlock.begin), null, context.getPos(parentBlock.parent));
                     if(currBlock.end.column.get() !=  parentColumn && !childBlock.childStatements.isEmpty()) {
                         addError(new DescriptionBuilder()
-                                .addPosition(context.getPos(currBlock.end), new Descriptor().addToDescription("Closing bracket is not aligned with parent")));
+                                .addPosition(context.getPos(currBlock.end), new Descriptor().addToDescription("Closing brace is not aligned with parent")));
                     }
                 }
             } else {
@@ -87,56 +87,56 @@ public class Braces extends CompilationUnitCheck {
                             getClosingType(parentColumn, prevBlock.end, child), context.getPos(child));
                 }
             }
-            prevBlock = childBlock.bracketPosition;
+            prevBlock = childBlock.bracesPosition;
         }
     }
 
-    private BracketProperty getClosingType(int parentColumn, SinglePosition prevBracketPos, SinglePosition childPos) {
-        if(prevBracketPos.line == childPos.line) {
-            return BracketProperty.SAME_LINE;
-        } else if(prevBracketPos.line + 1 == childPos.line) {
+    private BracesProperty getClosingType(int parentColumn, SinglePosition prevBracePos, SinglePosition childPos) {
+        if(prevBracePos.line == childPos.line) {
+            return BracesProperty.SAME_LINE;
+        } else if(prevBracePos.line + 1 == childPos.line) {
             if(childPos.column.get() != parentColumn) {
                 addError(new DescriptionBuilder()
                         .addPosition(context.getPos(childPos), new Descriptor().addToDescription("Child is not aligned with parent")));
             }
-            return BracketProperty.NEXT_LINE;
+            return BracesProperty.NEXT_LINE;
         } else {
             addError(new DescriptionBuilder()
-                    .addPosition(context.getPos(childPos), new Descriptor().addToDescription("Child was more than one line after closing bracket of previous element")));
+                    .addPosition(context.getPos(childPos), new Descriptor().addToDescription("Child was more than one line after closing brace of previous element")));
             return null;
         }
     }
 
-    private BracketProperty getOpeningType(int parentLine, int parentColumn, SinglePosition bracketPos) {
-        if(bracketHasElementBefore(context.getContentProvider().getString(), bracketPos) || bracketPos.line == parentLine) {
+    private BracesProperty getOpeningType(int parentLine, int parentColumn, SinglePosition bracePos) {
+        if(braceHasElementBefore(context.getContentProvider().getString(), bracePos) || bracePos.line == parentLine) {
             // Specific check for multiple line header (method declaration with @annotation, if on multiple line, etc)
-            return BracketProperty.SAME_LINE;
-        } else if(bracketPos.line == parentLine + 1) {
-            if(bracketPos.column.get() != parentColumn) {
+            return BracesProperty.SAME_LINE;
+        } else if(bracePos.line == parentLine + 1) {
+            if(bracePos.column.get() != parentColumn) {
                 addError(new DescriptionBuilder()
-                        .addPosition(context.getPos(bracketPos), new Descriptor().addToDescription("Opening bracket is not aligned with parent")));
+                        .addPosition(context.getPos(bracePos), new Descriptor().addToDescription("Opening brace is not aligned with parent")));
             }
-            return BracketProperty.NEXT_LINE;
+            return BracesProperty.NEXT_LINE;
         } else {
             addError(new DescriptionBuilder()
-                    .addPosition(context.getPos(bracketPos), new Descriptor().addToDescription("Opening bracket was more than one line after parent")));
+                    .addPosition(context.getPos(bracePos), new Descriptor().addToDescription("Opening brace was more than one line after parent")));
             return null;
         }
     }
 
-    private void addToMap(BracketProperty openingProperty, BracketProperty closingProperty, Position position) {
+    private void addToMap(BracesProperty openingProperty, BracesProperty closingProperty, Position position) {
             add(openingProperties, openingProperty, position);
             add(closingProperties, closingProperty, position);
     }
 
-    private <T> void add(Map<T, List<Position>> map, T bracketProperty, Position position) {
-        if(bracketProperty != null) {
-            if(map.containsKey(bracketProperty)) {
-                map.get(bracketProperty).add(position);
+    private <T> void add(Map<T, List<Position>> map, T braceProperty, Position position) {
+        if(braceProperty != null) {
+            if(map.containsKey(braceProperty)) {
+                map.get(braceProperty).add(position);
             } else {
                 List<Position> list = new ArrayList<>();
                 list.add(position);
-                map.put(bracketProperty, list);
+                map.put(braceProperty, list);
             }
         }
     }
@@ -150,17 +150,17 @@ public class Braces extends CompilationUnitCheck {
         }
     }
 
-    private static boolean bracketHasElementBefore(String content, SinglePosition bracketPos) {
-        return content.split(System.lineSeparator())[bracketPos.line-1].trim().charAt(0) != '{';
+    private static boolean braceHasElementBefore(String content, SinglePosition bracePos) {
+        return content.split(System.lineSeparator())[bracePos.line-1].trim().charAt(0) != '{';
     }
 
-    private enum BracketProperty {
+    private enum BracesProperty {
         SAME_LINE,
         NEXT_LINE
     }
 
     @Override
     protected String getName() {
-        return "bracket matching";
+        return "braces";
     }
 }

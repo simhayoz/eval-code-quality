@@ -1,6 +1,8 @@
 package eval.code.quality.position;
 
 import eval.code.quality.utils.Preconditions;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.util.*;
 
@@ -62,4 +64,15 @@ public class MultiplePosition extends Position {
     public String toString() {
         return positions.toString();
     }
+
+    @Override
+    public Element getXMLElement(Document document) {
+        Element multiplePositions = document.createElement("multiplePositions");
+        for(Position position : positions) {
+            Element pos = position.getXMLElement(document);
+            multiplePositions.appendChild(pos);
+        }
+        return multiplePositions;
+    }
+
 }

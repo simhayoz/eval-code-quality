@@ -1,6 +1,9 @@
 package eval.code.quality.checks;
 
 import eval.code.quality.utils.Preconditions;
+import eval.code.quality.utils.XMLParsable;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,7 +14,7 @@ import java.util.stream.Collectors;
 /**
  * Represents a test suite from multiple checks.
  */
-public class TestSuite {
+public class TestSuite implements XMLParsable<TestSuite> {
     private final List<Check> checks;
     private final Map<String, Report> checkResults;
 
@@ -74,4 +77,15 @@ public class TestSuite {
     public String toString() {
         return "TestSuite: " + System.lineSeparator() + mapToString().indent(1);
     }
+
+    @Override
+    public Element getXMLElement(Document document) {
+        Element testSuite = document.createElement("testSuite");
+        for(Check check : checks) {
+            Element checkNode = check.getXMLElement(document);
+            testSuite.appendChild(checkNode);
+        }
+        return testSuite;
+    }
+
 }

@@ -2,7 +2,15 @@ package eval.code.quality;
 
 import eval.code.quality.provider.*;
 import eval.code.quality.checks.*;
+import eval.code.quality.utils.XMLParser;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.util.List;
 
@@ -30,5 +38,12 @@ public class App {
         testSuite.add(isVisitorPattern(visitorProvider, "Item", childrenName, "Visitor"));
         testSuite.runChecks();
         System.out.println(testSuite);
+
+        try {
+            XMLParser.parse(testSuite, new File("test.xml"));
+        } catch (ParserConfigurationException | TransformerException e) {
+            e.printStackTrace();
+        }
+
     }
 }

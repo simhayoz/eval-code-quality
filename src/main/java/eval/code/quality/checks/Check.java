@@ -1,13 +1,16 @@
 package eval.code.quality.checks;
 
+import eval.code.quality.utils.XMLParsable;
 import eval.code.quality.utils.description.Description;
 import eval.code.quality.utils.description.DescriptionBuilder;
 import eval.code.quality.utils.reporter.InferMapProperty;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * Base class for checks.
  */
-public abstract class Check {
+public abstract class Check implements XMLParsable<Report> {
     private Report report;
     private boolean verbose;
     protected InferMapProperty inferMapProperty = new InferMapProperty(this);
@@ -80,6 +83,22 @@ public abstract class Check {
 
     private void printDebugWarning(Description e) {
         printLine(" > (" + getName() + ") warning:" + e.toString());
+    }
+
+    public Report getReport() {
+        return report;
+    }
+
+    @Override
+    public Element getXMLElement(Document document) {
+        if(report == null) {
+            run();
+        }
+        Element element = report.getXMLElement(document);
+        Element checkRoot = document.createElement("check");
+        checkRoot.setAttribute("name", getName());
+        checkRoot.appendChild(element);
+        return checkRoot;
     }
 
     @Override
