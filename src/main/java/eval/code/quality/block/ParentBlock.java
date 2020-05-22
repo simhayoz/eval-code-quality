@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class ParentBlock {
 
     public final Node parent;
-    public final Range bracketPosition;
+    public final Range bracesPosition;
     public final List<? extends Node> childStatements;
     public final List<ChildBlock> childBlocks;
 
@@ -26,9 +26,9 @@ public class ParentBlock {
         this(parent, null, childStatements, childBlocks);
     }
 
-    protected ParentBlock(Node parent, Range bracketPosition, List<? extends Node> childStatements, List<ChildBlock> childBlocks) {
+    protected ParentBlock(Node parent, Range bracesPosition, List<? extends Node> childStatements, List<ChildBlock> childBlocks) {
         this.parent = parent;
-        this.bracketPosition = bracketPosition;
+        this.bracesPosition = bracesPosition;
         this.childStatements = childStatements;
         this.childBlocks = childBlocks;
     }
@@ -157,7 +157,7 @@ public class ParentBlock {
     public String toString() {
         return "ParentBlock{\n" +
                 ("parent=" + parent + System.lineSeparator() +
-                        ("bracketPosition=" + bracketPosition).indent(2) + System.lineSeparator() +
+                        ("bracesPosition=" + bracesPosition).indent(2) + System.lineSeparator() +
                         ("childStatements=" + childStatements).indent(2) + System.lineSeparator() +
                         ("childBlocks=" + childBlocks).indent(2)).indent(2) + System.lineSeparator() +
                 '}';

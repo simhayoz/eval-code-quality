@@ -75,8 +75,4 @@ public class MultiplePosition extends Position {
         return multiplePositions;
     }
 
-    @Override
-    public Position getFromXML(Element xmlElement) {
-        return null;
-    }
 }

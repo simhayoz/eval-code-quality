@@ -84,8 +84,4 @@ public class SinglePosition extends Position implements Comparable<SinglePositio
         return position;
     }
 
-    @Override
-    public Position getFromXML(Element xmlElement) {
-        return null;
-    }
 }

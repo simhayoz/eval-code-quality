@@ -48,8 +48,4 @@ public class PositionDescription implements XMLParsable<PositionDescription> {
         return positionDescription;
     }
 
-    @Override
-    public PositionDescription getFromXML(Element xmlElement) {
-        return null;
-    }
 }

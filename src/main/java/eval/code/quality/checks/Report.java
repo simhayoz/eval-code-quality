@@ -5,8 +5,6 @@ import eval.code.quality.utils.description.Description;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -83,8 +81,4 @@ public class Report implements XMLParsable<Report> {
         return root;
     }
 
-    @Override
-    public Report getFromXML(Element xmlElement) {
-        return null;
-    }
 }

@@ -7,5 +7,4 @@ public interface XMLParsable<T> {
 
     Element getXMLElement(Document document);
 
-    T getFromXML(Element xmlElement);
 }

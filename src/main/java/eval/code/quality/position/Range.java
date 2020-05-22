@@ -83,17 +83,13 @@ public class Range extends Position {
         Element range = document.createElement("range");
         Element beginNode = document.createElement("begin");
         Element endNode = document.createElement("end");
-        Element beginPos = begin.getXMLElement(document);
-        Element endPos = end.getXMLElement(document);
-        beginNode.appendChild(beginPos);
-        endNode.appendChild(endPos);
+        beginNode.setAttribute("line", Integer.toString(begin.line));
+        begin.column.ifPresent(col -> beginNode.setAttribute("col", Integer.toString(col)));
+        endNode.setAttribute("line", Integer.toString(end.line));
+        end.column.ifPresent(col -> endNode.setAttribute("col", Integer.toString(col)));
         range.appendChild(beginNode);
         range.appendChild(endNode);
         return range;
     }
 
-    @Override
-    public Position getFromXML(Element xmlElement) {
-        return null;
-    }
 }

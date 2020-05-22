@@ -2,14 +2,12 @@ package eval.code.quality.utils.description;
 
 import eval.code.quality.position.Position;
 import eval.code.quality.utils.Preconditions;
-import eval.code.quality.utils.Tuple;
 import eval.code.quality.utils.XMLParsable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public class Description implements XMLParsable<Description> {
@@ -94,8 +92,4 @@ public class Description implements XMLParsable<Description> {
         return description;
     }
 
-    @Override
-    public Description getFromXML(Element xmlElement) {
-        return null;
-    }
 }

@@ -53,8 +53,4 @@ public class NamePosition extends Position {
         return namedPosition;
     }
 
-    @Override
-    public Position getFromXML(Element xmlElement) {
-        return null;
-    }
 }

@@ -85,6 +85,10 @@ public abstract class Check implements XMLParsable<Report> {
         printLine(" > (" + getName() + ") warning:" + e.toString());
     }
 
+    public Report getReport() {
+        return report;
+    }
+
     @Override
     public Element getXMLElement(Document document) {
         if(report == null) {
@@ -95,11 +99,6 @@ public abstract class Check implements XMLParsable<Report> {
         checkRoot.setAttribute("name", getName());
         checkRoot.appendChild(element);
         return checkRoot;
-    }
-
-    @Override
-    public Report getFromXML(Element xmlElement) {
-        return null;
     }
 
     @Override

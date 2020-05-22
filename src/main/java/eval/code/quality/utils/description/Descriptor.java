@@ -86,16 +86,10 @@ public class Descriptor implements XMLParsable<Descriptor> {
             descriptor.appendChild(expectedNode);
             hasElement = true;
         }
-        System.out.println(hasElement);
         return hasElement ? descriptor : null;
     }
 
-    @Override
-    public Descriptor getFromXML(Element xmlElement) {
-        return null;
-    }
-
-//    public boolean isEmpty() {
+    //    public boolean isEmpty() {
 //        return (getDescription().isEmpty() || description.length() == 0) && getExpected().isEmpty() && getWas().isEmpty();
 //    }
 }
