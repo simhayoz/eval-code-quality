@@ -70,7 +70,7 @@ public class SingletonPattern extends DesignPattern {
     }
 
     @Override
-    protected String getName() {
+    public String getName() {
         return "singleton pattern for class " + addChevrons(className);
     }
 

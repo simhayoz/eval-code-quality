@@ -29,7 +29,7 @@ public class BooleanEvaluatorTest {
              }
 
              @Override
-             protected String getName() {
+             public String getName() {
                  return null;
              }
          };

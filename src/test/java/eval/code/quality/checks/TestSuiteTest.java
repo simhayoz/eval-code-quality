@@ -16,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class TestSuiteTest {
 
     @Test void nullTestsThrowsIllegalArgument() {
+        assertThrows(IllegalArgumentException.class, () -> new TestSuite((List<Check>)null, "name"));
+        assertThrows(IllegalArgumentException.class, () -> new TestSuite(new ArrayList<>(), null));
         assertThrows(IllegalArgumentException.class, () -> new TestSuite(null));
     }
 
@@ -28,7 +30,7 @@ public class TestSuiteTest {
             }
 
             @Override
-            protected String getName() {
+            public String getName() {
                 return "First";
             }
         });
@@ -39,11 +41,11 @@ public class TestSuiteTest {
             }
 
             @Override
-            protected String getName() {
+            public String getName() {
                 return "Second";
             }
         });
-        TestSuite testSuite = new TestSuite(checks);
+        TestSuite testSuite = new TestSuite(checks, "testSuite");
         Map<String, Report> report = testSuite.runChecks();
         assertThat(report.get("First").getErrors(), is(empty()));
         assertThat(report.get("First").getWarnings(), is(empty()));
@@ -57,7 +59,7 @@ public class TestSuiteTest {
     }
 
     @Test void canCreateEmptyTestSuite() {
-        TestSuite testSuite = new TestSuite();
+        TestSuite testSuite = new TestSuite("testSuites");
         testSuite.add(new Check() {
             @Override
             protected void check() {
@@ -65,7 +67,7 @@ public class TestSuiteTest {
             }
 
             @Override
-            protected String getName() {
+            public String getName() {
                 return "First";
             }
         });
@@ -76,7 +78,7 @@ public class TestSuiteTest {
             }
 
             @Override
-            protected String getName() {
+            public String getName() {
                 return "Second";
             }
         });
@@ -101,7 +103,7 @@ public class TestSuiteTest {
             }
 
             @Override
-            protected String getName() {
+            public String getName() {
                 return "First";
             }
         });
@@ -112,14 +114,14 @@ public class TestSuiteTest {
             }
 
             @Override
-            protected String getName() {
+            public String getName() {
                 return "Second";
             }
         });
-        TestSuite testSuite = new TestSuite(checks);
+        TestSuite testSuite = new TestSuite(checks, "testSuite");
         testSuite.runChecks();
         System.out.println(testSuite.toString());
-        assertThat(testSuite.toString(), equalTo("TestSuite: \n" +
+        assertThat(testSuite.toString(), equalTo("TestSuite: testSuite\n" +
                 " Test for Second: \n" +
                 "  Error(s) reported: \n" +
                 "   (line 1)\n" +

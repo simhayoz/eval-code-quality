@@ -56,7 +56,7 @@ public class VisitorPattern extends DesignPattern {
     }
 
     @Override
-    protected String getName() {
+    public String getName() {
         return "visitor pattern for parent " + addChevrons(parentName) + ", children " + addChevrons(childrenName.toString()) + " and visitor " + addChevrons(visitorName);
     }
 

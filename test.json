@@ -1,0 +1,6 @@
+{
+  "name": "test",
+  "check": ["all"],
+  "directory": ["assets/manual", "assets/tests"],
+  "output": "test.xml"
+}

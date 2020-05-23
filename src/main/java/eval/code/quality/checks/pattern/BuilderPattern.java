@@ -47,7 +47,7 @@ public class BuilderPattern extends DesignPattern {
     }
 
     @Override
-    protected String getName() {
+    public String getName() {
         return "builder pattern for product " + addChevrons(productName) + " and builder " + addChevrons(builderName);
     }
 }

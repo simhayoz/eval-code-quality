@@ -70,7 +70,7 @@ public abstract class Check implements XMLParsable<Report> {
      *
      * @return the name of the current check
      */
-    protected abstract String getName();
+    public abstract String getName();
 
     private void printLine(String s) {
         if (verbose)
