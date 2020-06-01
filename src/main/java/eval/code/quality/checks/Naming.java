@@ -140,7 +140,7 @@ public class Naming extends CompilationUnitCheck {
     }
 
     @Override
-    protected String getName() {
+    public String getName() {
         return "naming";
     }
 

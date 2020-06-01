@@ -118,7 +118,7 @@ public class Indentation extends CompilationUnitCheck {
     }
 
     @Override
-    protected String getName() {
+    public String getName() {
         return "indentation";
     }
 }

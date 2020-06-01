@@ -58,7 +58,7 @@ public class BlankLines extends Check {
     }
 
     @Override
-    protected String getName() {
+    public String getName() {
         return "blank lines";
     }
 }

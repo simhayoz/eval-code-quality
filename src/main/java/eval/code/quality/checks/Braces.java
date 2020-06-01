@@ -160,7 +160,7 @@ public class Braces extends CompilationUnitCheck {
     }
 
     @Override
-    protected String getName() {
+    public String getName() {
         return "braces";
     }
 }

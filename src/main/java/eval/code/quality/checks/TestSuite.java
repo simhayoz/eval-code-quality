@@ -1,10 +1,12 @@
 package eval.code.quality.checks;
 
+import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.Preconditions;
 import eval.code.quality.utils.XMLParsable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,12 +19,29 @@ import java.util.stream.Collectors;
 public class TestSuite implements XMLParsable<TestSuite> {
     private final List<Check> checks;
     private final Map<String, Report> checkResults;
+    private final String name;
 
     /**
      * Create a new empty test suite.
      */
-    public TestSuite() {
-        this(new ArrayList<>());
+    public TestSuite(String name) {
+        this(new ArrayList<>(), name);
+    }
+
+    /**
+     * Create a new test suite from a list of check class.
+     *
+     * @param checks the list of class of check
+     */
+    public TestSuite(List<Class<? extends Check>> checks, String name, ContentProvider contentProvider) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        Preconditions.checkArg(checks != null, "The test suite can not be null");
+        Preconditions.checkArg(name != null, "The test suite name can not be null");
+        this.checks = new ArrayList<>();
+        for(Class<? extends Check> c : checks) {
+            this.checks.add(c.getConstructor(ContentProvider.class).newInstance(contentProvider));
+        }
+        this.checkResults = new HashMap<>();
+        this.name = name;
     }
 
     /**
@@ -30,10 +49,12 @@ public class TestSuite implements XMLParsable<TestSuite> {
      *
      * @param checks the list of test
      */
-    public TestSuite(List<Check> checks) {
+    public TestSuite(List<Check> checks, String name) {
         Preconditions.checkArg(checks != null, "The test suite can not be null");
+        Preconditions.checkArg(name != null, "The test suite name can not be null");
         this.checks = checks;
         this.checkResults = new HashMap<>();
+        this.name = name;
     }
 
     /**
@@ -73,14 +94,19 @@ public class TestSuite implements XMLParsable<TestSuite> {
         return checkResults.entrySet().stream().map(e -> "Test for " + e.getKey() + ": " + System.lineSeparator() + e.getValue().toString().indent(1)).collect(Collectors.joining(System.lineSeparator()));
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public String toString() {
-        return "TestSuite: " + System.lineSeparator() + mapToString().indent(1);
+        return "TestSuite: " + name + System.lineSeparator() + mapToString().indent(1);
     }
 
     @Override
     public Element getXMLElement(Document document) {
         Element testSuite = document.createElement("testSuite");
+        testSuite.setAttribute("name", name);
         for(Check check : checks) {
             Element checkNode = check.getXMLElement(document);
             testSuite.appendChild(checkNode);

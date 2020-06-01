@@ -70,7 +70,7 @@ public abstract class Check implements XMLParsable<Report> {
      *
      * @return the name of the current check
      */
-    protected abstract String getName();
+    public abstract String getName();
 
     private void printLine(String s) {
         if (verbose)
@@ -103,6 +103,10 @@ public abstract class Check implements XMLParsable<Report> {
 
     @Override
     public String toString() {
-        return "Result for " + getName() + ":" + System.lineSeparator() + report.toString().indent(1);
+        if(report != null) {
+            return "Result for " + getName() + ":" + System.lineSeparator() + report.toString().indent(1);
+        } else {
+            return getName();
+        }
     }
 }
