@@ -43,6 +43,8 @@ public class BuilderPattern extends DesignPattern {
         Supplier<Boolean> hasBuildMethod = () -> builder.getMethods().stream().anyMatch(m -> m.hasModifier(Modifier.Keyword.PUBLIC)
                 && m.getType().toString().equals(getSimpleName(productName)));
         evaluator.add(new BooleanSimple(hasBuildMethod, "builder has a method that construct product"));
+        evaluator.add(new BooleanSimple(() -> builder.getMethods().stream().filter(m -> m.hasModifier(Modifier.Keyword.PUBLIC)
+                && m.getType().toString().equals(getSimpleName(productName))).anyMatch(m -> m.getNameAsString().equals("build") || m.getNameAsString().equals("construct")), "method to construct product is called 'build' or 'construct' for easier reading", false));
         return evaluator;
     }
 

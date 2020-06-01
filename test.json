@@ -6,8 +6,8 @@
   "designPattern": {
     "singleton": "IvoryTower",
     "builder": {
-      "builder": "Hero",
-      "product": "Hero$Builder"
+      "product": "Hero",
+      "builder": "Hero$Builder"
     },
     "visitor": {
       "parent": "Item",
