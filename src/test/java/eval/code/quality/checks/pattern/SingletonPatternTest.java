@@ -19,7 +19,7 @@ public class SingletonPatternTest {
 
     @Test void singletonPatternWithLazyEvalDoesNotFail() {
         ContentProvider singletonProvider = new FileProvider(new File("assets/tests/ExampleSingletonPatternWithLazyEval.java"));
-        TestUtils.checkIsEmptyReport(new SingletonPattern(singletonProvider, "IvoryTower").run());
+        TestUtils.checkIsEmptyReport(new SingletonPattern(singletonProvider, "IvoryTower2").run());
     }
 
     @Test void basicClassesFails() {
