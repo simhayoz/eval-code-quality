@@ -40,6 +40,9 @@ public class ArgParser {
             if(cmd.hasOption("help")) {
                 formatter.printHelp("run", options);
                 System.exit(0);
+            } else if(cmd.hasOption("help-json")) {
+                RunParameter.printJsonDescription();
+                System.exit(0);
             } else {
                 JSONObject jsonObject = new JSONObject();
                 if(cmd.hasOption("json")) {
@@ -84,6 +87,9 @@ public class ArgParser {
     private void setOptions() {
         Option help = new Option("h", "help", false, "Display this help message and exit");
         options.addOption(help);
+
+        Option helpJson = new Option("hjson", "help-json", false, "Display help message for JSON config and exit");
+        options.addOption(helpJson);
 
         Option sysOut = new Option("s", "sysout", false, "If present will print report to the terminal");
         options.addOption(sysOut);

@@ -29,7 +29,7 @@ public abstract class RunParameter<T> {
         System.exit(1);
     }
 
-    protected void printJsonDescription() {
+    public static void printJsonDescription() {
         try(Scanner scanner = new Scanner(new FileInputStream("src/main/resources/JSONDescription.txt")).useDelimiter("\\A")) {
             System.out.println("JSON file description:");
             System.out.println(scanner.hasNext() ? scanner.next() : "");
