@@ -1,0 +1,20 @@
+{
+  "name": "required: name of the current test",
+  "check": ["list of checks to do from the following possibilities: 'blank lines', 'indentation', 'naming', 'braces', if not set or contains the value 'all' will run all the checks"],
+  "directory": ["path/to/directory", "..."],
+  "file": ["path/to/file.java", "..."],
+  "output": "specify output xml file",
+  "designPattern": {
+    "singleton": "name of the singleton class (for nested class use '$' for separation)",
+    "builder": {
+      "builder": "name of the builder class (for nested class use '$' for separation)",
+      "product": "name of the product class (for nested class use '$' for separation)"
+    },
+    "visitor": {
+      "parent": "name of the parent class (for nested class use '$' for separation)",
+      "children": ["list of name of children class (for nested class use '$' for separation)"],
+      "visitor": "name of the visitor class (for nested class use '$' for separation)"
+    }
+  },
+  "sysout": true or false (if true will print report to the terminal)
+}
