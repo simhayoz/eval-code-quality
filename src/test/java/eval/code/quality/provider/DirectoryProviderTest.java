@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.core.Is.is;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DirectoryProviderTest {
@@ -31,5 +32,9 @@ public class DirectoryProviderTest {
     @Test void canGetName() {
         ContentProvider contentProvider = new DirectoryProvider("assets/");
         assertThat(contentProvider.getName(), is("folder provider"));
+    }
+
+    @Test void tryingToListFileFails() {
+        assertThrows(IllegalArgumentException.class, () -> new DirectoryProvider("assets/tests/FileProvider.java"));
     }
 }

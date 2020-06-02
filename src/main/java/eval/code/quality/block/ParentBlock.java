@@ -196,11 +196,17 @@ public class ParentBlock {
         return null;
     }
 
+    /**
+     * Get braces range from body declaration.
+     *
+     * @param node the body declaration
+     * @return braces range from body declaration
+     */
     protected static Range getRangeFromBodyDeclaration(BodyDeclaration<?> node) {
         SinglePosition start;
         SinglePosition end = SinglePosition.from(node.getEnd().get());
-        for(JavaToken token : node.getTokenRange().get()) {
-            if(token.asString().equals("{")) {
+        for (JavaToken token : node.getTokenRange().get()) {
+            if (token.asString().equals("{")) {
                 return new Range(SinglePosition.from(token.getRange().get().begin), end);
             }
         }

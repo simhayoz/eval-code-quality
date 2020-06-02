@@ -33,7 +33,7 @@ public class TestRunner {
             System.out.println(testSuite);
         }
         if(xmlOutput != null) {
-            XMLParser.parse(testSuite, xmlOutput);
+            XMLParser.getInstance().parse(testSuite, xmlOutput);
         }
     }
 

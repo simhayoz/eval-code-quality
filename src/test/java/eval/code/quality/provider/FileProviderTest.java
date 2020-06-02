@@ -3,6 +3,7 @@ package eval.code.quality.provider;
 import com.github.javaparser.StaticJavaParser;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -12,6 +12,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
+import static eval.code.quality.utils.ThrowingSupplierWrapper.throwingSupplierWrapper;
+
 /**
  * Content provider represented by a {@code File}.
  */
@@ -29,20 +31,8 @@ public class FileProvider extends ContentProvider {
         Preconditions.checkArg(file != null, "File should not be null");
         Preconditions.checkArg(file.exists(), "File does not exist");
         this.file = file;
-        this.content = new Lazy<>(() -> {
-            try {
-                return FileToString.fromFile(file);
-            } catch (IOException e) {
-                return "";
-            }
-        });
-        this.compilationUnit = new Lazy<>(() -> {
-            try {
-                return StaticJavaParser.parse(file);
-            } catch (FileNotFoundException e) {
-                return new CompilationUnit();
-            }
-        });
+        this.content = new Lazy<>(throwingSupplierWrapper(() -> FileToString.fromFile(file)));
+        this.compilationUnit = new Lazy<>(throwingSupplierWrapper(() -> StaticJavaParser.parse(file)));
     }
 
     @Override

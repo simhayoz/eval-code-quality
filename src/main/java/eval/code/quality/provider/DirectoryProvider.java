@@ -26,6 +26,7 @@ public class DirectoryProvider extends MultipleContentProvider {
         Preconditions.checkArg(path != null, "Path to directory can not be null");
         File directory = new File(path);
         Preconditions.checkArg(directory.exists(), "Path to directory does not exist");
+        Preconditions.checkArg(directory.isDirectory(), "Path does not lead to a directory");
         List<File> acc = new ArrayList<>();
         findFileWithExtension(directory, acc);
         return acc.stream().map(FileProvider::new).collect(Collectors.toList());
