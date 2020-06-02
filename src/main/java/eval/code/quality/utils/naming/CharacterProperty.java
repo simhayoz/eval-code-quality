@@ -57,6 +57,11 @@ public class CharacterProperty {
         this.property = property;
     }
 
+    /**
+     * Check if property is other (i.e. basic property of lower, upper or digit).
+     *
+     * @return whether the property is other or not
+     */
     public boolean isOther() {
         return property == Property.Upper
                 || property == Property.Lower
