@@ -1,11 +1,16 @@
 package eval.code.quality.position;
 
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RangeTest {
@@ -73,5 +78,29 @@ public class RangeTest {
         Range rangeFrom = Range.from(range);
         assertThat(rangeFrom.begin, equalTo(new SinglePosition(1, 2)));
         assertThat(rangeFrom.end, equalTo(new SinglePosition(3, 4)));
+    }
+
+    @Test void canGetHashCode() {
+        SinglePosition p = new SinglePosition(1, 2);
+        SinglePosition p2 = new SinglePosition(4, 5);
+        Range r = new Range(p, p2);
+        assertThat(r.hashCode(), is(8460));
+    }
+
+    @Test void canParseSimpleRange() throws ParserConfigurationException {
+        SinglePosition p = new SinglePosition(1, 2);
+        SinglePosition p2 = new SinglePosition(4, 5);
+        Range r = new Range(p, p2);
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        Element element = r.getXMLElement(document);
+        assertThat(element.getTagName(), is("range"));
+        assertThat(element.getElementsByTagName("begin").getLength(), is(1));
+        assertThat(element.getElementsByTagName("begin").item(0).getAttributes().getLength(), is(2));
+        assertThat(element.getElementsByTagName("begin").item(0).getAttributes().getNamedItem("line").getNodeValue(), is("1"));
+        assertThat(element.getElementsByTagName("begin").item(0).getAttributes().getNamedItem("col").getNodeValue(), is("2"));
+        assertThat(element.getElementsByTagName("end").getLength(), is(1));
+        assertThat(element.getElementsByTagName("end").item(0).getAttributes().getLength(), is(2));
+        assertThat(element.getElementsByTagName("end").item(0).getAttributes().getNamedItem("line").getNodeValue(), is("4"));
+        assertThat(element.getElementsByTagName("end").item(0).getAttributes().getNamedItem("col").getNodeValue(), is("5"));
     }
 }
