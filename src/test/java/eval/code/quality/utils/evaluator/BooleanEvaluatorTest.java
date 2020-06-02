@@ -35,10 +35,10 @@ public class BooleanEvaluatorTest {
          };
          Report r = check.run();
          assertThat(r.getWarnings(), hasSize(1));
-         assertTrue(r.getWarnings().get(0).getDescription().isPresent());
-         assertThat(r.getWarnings().get(0).getDescription().get(), is("<error1>"));
+         assertTrue(r.getWarnings().get(0).getDescriptor().getDescription().isPresent());
+         assertThat(r.getWarnings().get(0).getDescriptor().getDescription().get(), is("<error1>"));
          assertThat(r.getErrors(), hasSize(1));
-         assertTrue(r.getErrors().get(0).getDescription().isPresent());
-         assertThat(r.getErrors().get(0).getDescription().get(), is("<error2>"));
+         assertTrue(r.getErrors().get(0).getDescriptor().getDescription().isPresent());
+         assertThat(r.getErrors().get(0).getDescriptor().getDescription().get(), is("<error2>"));
      }
 }
