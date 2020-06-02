@@ -39,12 +39,20 @@ public class BooleanExpressionTest {
         assertTrue(or.evaluate());
         assertThat(or.describeMismatch(), is("(<error1> or \n<error2>)"));
         assertTrue(or.isError());
+        or = new BooleanOr(b2, b1);
+        assertTrue(or.evaluate());
+        assertThat(or.describeMismatch(), is("(<error2> or \n<error1>)"));
+        assertTrue(or.isError());
     }
 
     @Test void canAndBetweenSimple() {
         BooleanExpression b1 = new BooleanSimple(() -> true, "error1");
         BooleanExpression b2 = new BooleanSimple(() -> false, "error2", false);
         BooleanExpression and = new BooleanAnd(b1, b2);
+        assertFalse(and.evaluate());
+        assertThat(and.describeMismatch(), is("<error2>"));
+        assertTrue(and.isError());
+        and = new BooleanAnd(b2, b1);
         assertFalse(and.evaluate());
         assertThat(and.describeMismatch(), is("<error2>"));
         assertTrue(and.isError());
