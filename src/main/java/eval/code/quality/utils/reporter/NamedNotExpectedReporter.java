@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Named reporter for unexpected properties.
+ *
+ * @param <T> the type of the properties
+ */
 public class NamedNotExpectedReporter<T> extends NotExpectedReporter<T> {
     private final String name;
 

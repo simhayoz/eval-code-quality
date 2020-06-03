@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Reporter for unexpected properties.
  *
- * @param <T> the type of the property
+ * @param <T> the type of the properties
  */
 public class NotExpectedReporter<T> {
 
@@ -25,7 +25,7 @@ public class NotExpectedReporter<T> {
      * @param notExpected the list of unexpected properties
      */
     public void doOnNotExpected(Map<T, List<Position>> map, List<T> expected, List<T> notExpected) {
-        // Empty default method
+        // default method do nothing
     }
 
     /**
@@ -34,7 +34,7 @@ public class NotExpectedReporter<T> {
      * @param map         the map from which was inferred the properties
      * @param expected    the list of expected properties
      * @param notExpected the list of unexpected properties
-     * @return the reported error description
+     * @return the list of reported error description
      */
     public List<Description> reportNotExpected(Map<T, List<Position>> map, List<T> expected, List<T> notExpected) {
         List<Description> descriptions = new ArrayList<>();
@@ -47,12 +47,10 @@ public class NotExpectedReporter<T> {
                     descriptions.add(new DescriptionBuilder()
                             .addPosition(positions, new Descriptor().setExpected(expectedString).setWas(element.toString()))
                             .build());
-//                    reports.add(ReportPosition.at(positions, expected.size() == 1 ? expected.get(0).toString() : expected.toString(), element.toString()));
                 } else {
                     descriptions.add(new DescriptionBuilder()
                             .addPosition(map.get(element).get(0), new Descriptor().setExpected(expectedString).setWas(element.toString()))
                             .build());
-//                    reports.add(ReportPosition.at(map.get(element).get(0), expected.size() == 1 ? expected.get(0).toString() : expected.toString(), element.toString()));
                 }
             }
         }
