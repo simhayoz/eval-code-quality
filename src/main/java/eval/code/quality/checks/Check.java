@@ -10,7 +10,7 @@ import org.w3c.dom.Element;
 /**
  * Base class for checks.
  */
-public abstract class Check implements XMLParsable<Report> {
+public abstract class Check implements XMLParsable {
     private Report report;
     private boolean verbose;
     protected InferMapProperty inferMapProperty = new InferMapProperty(this);

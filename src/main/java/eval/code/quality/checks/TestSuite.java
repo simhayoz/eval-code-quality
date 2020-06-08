@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 /**
  * Represents a test suite from multiple checks.
  */
-public class TestSuite implements XMLParsable<TestSuite> {
+public class TestSuite implements XMLParsable {
     private final List<Check> checks;
     private final Map<String, Report> checkResults;
     private final String name;

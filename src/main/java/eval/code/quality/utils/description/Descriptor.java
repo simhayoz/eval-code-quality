@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * Represent a descriptor with description, was and expected value.
  */
-public class Descriptor implements XMLParsable<Descriptor> {
+public class Descriptor implements XMLParsable {
     private final StringBuilder description;
     private String was;
     private String expected;

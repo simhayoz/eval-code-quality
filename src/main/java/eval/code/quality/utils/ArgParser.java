@@ -92,7 +92,14 @@ public class ArgParser {
         }
     }
 
-    private JSONObject getJSONParam(CommandLine cmd) throws FileNotFoundException {
+    /**
+     * Get the JSON object from a file name if defined in the command line argument.
+     *
+     * @param cmd the command line argument
+     * @return the JSON object from a file name if defined or an empty {@code JSONObject}
+     * @throws FileNotFoundException if no file was found at the place defined by the argument
+     */
+    protected JSONObject getJSONParam(CommandLine cmd) throws FileNotFoundException {
         JSONObject jsonObject = new JSONObject();
         if (cmd.hasOption("json")) {
             if (cmd.getOptionValue("json").substring(cmd.getOptionValue("json").lastIndexOf(".") + 1).trim().toLowerCase().equals("json")) {
@@ -112,6 +119,7 @@ public class ArgParser {
 
     /**
      * Exit system with the result code.
+     *
      * @param code the result code
      */
     protected void exitSystem(int code) {
@@ -120,6 +128,7 @@ public class ArgParser {
 
     /**
      * Get formatter for helper message pretty print.
+     *
      * @return formatter for helper message pretty print
      */
     protected HelpFormatter getFormatter() {

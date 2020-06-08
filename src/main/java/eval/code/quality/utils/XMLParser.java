@@ -33,7 +33,9 @@ public class XMLParser {
      * @throws ParserConfigurationException in case of parsing error
      * @throws TransformerException         in case of parsing error
      */
-    public void parse(XMLParsable<?> parsable, File file) throws ParserConfigurationException, TransformerException {
+    public void parse(XMLParsable parsable, File file) throws ParserConfigurationException, TransformerException {
+        Preconditions.checkArg(parsable != null, "Can not parse null element");
+        Preconditions.checkArg(file != null, "Can not parse to a null file");
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         document.appendChild(parsable.getXMLElement(document));
         Transformer tr = TransformerFactory.newInstance().newTransformer();

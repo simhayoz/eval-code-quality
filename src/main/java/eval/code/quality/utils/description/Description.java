@@ -13,7 +13,7 @@ import java.util.Optional;
 /**
  * Represents a description for an error or a warning.
  */
-public class Description implements XMLParsable<Description> {
+public class Description implements XMLParsable {
 
     private List<PositionDescription> positions;
     private Descriptor descriptor;

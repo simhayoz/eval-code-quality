@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * Report containing the different errors and warnings.
  */
-public class Report implements XMLParsable<Report> {
+public class Report implements XMLParsable {
 
     private final List<Description> errors = new ArrayList<>();
     private final List<Description> warnings = new ArrayList<>();

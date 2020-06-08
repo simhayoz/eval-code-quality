@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * Represents a position with description.
  */
-public class PositionDescription implements XMLParsable<PositionDescription> {
+public class PositionDescription implements XMLParsable {
 
     public final Position position;
     public final Descriptor descriptor;
