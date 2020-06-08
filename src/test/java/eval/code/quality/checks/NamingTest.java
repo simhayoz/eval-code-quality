@@ -192,4 +192,27 @@ public class NamingTest {
                 .addLn("}");
         TestUtils.checkIsEmptyReport(new Naming(new StringProvider("tests", builder.toString())).run());
     }
+
+    @Test void classVarFailsWhenMultipleStyle() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("public class Test {").
+                addLn("private final static String TEST_WITH_UND = 2;", 4).
+                addLn("private final static String TEST_EVEN_LONGER = 2;", 4).
+                addLn("private final static String testCamelCase;", 4).
+                addLn("private final static String testTwiceCamelCase;", 4).
+                addLn("private final static String test_should_be_error;", 4).
+                addLn("}");
+        MultiplePosition firstExpected = new MultiplePosition();
+        firstExpected.add(new NamePosition("tests", new SinglePosition(2, 5)));
+        firstExpected.add(new NamePosition("tests", new SinglePosition(3, 5)));
+        MultiplePosition secondExpected = new MultiplePosition();
+        secondExpected.add(new NamePosition("tests", new SinglePosition(4, 5)));
+        secondExpected.add(new NamePosition("tests", new SinglePosition(5, 5)));
+        Report r = new Naming(new StringProvider("tests", builder.toString())).run();
+        TestUtils.checkIsWarningEmpty(r);
+        TestUtils.reportContainsOnlyPositions(r.getErrors(),
+                firstExpected,
+                secondExpected,
+                new NamePosition("tests", new SinglePosition(6, 5)));
+    }
 }

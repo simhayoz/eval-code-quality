@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
  */
 public class DirectoryProvider extends MultipleContentProvider {
 
+    private final String path;
+
     /**
      * Create a new {@code DirectoryProvider} from the path to the directory.
      *
@@ -20,6 +22,7 @@ public class DirectoryProvider extends MultipleContentProvider {
      */
     public DirectoryProvider(String path) {
         super(getListOfFileProvider(path));
+        this.path = path;
     }
 
     private static List<ContentProvider> getListOfFileProvider(String path) {
@@ -46,6 +49,6 @@ public class DirectoryProvider extends MultipleContentProvider {
 
     @Override
     public String getName() {
-        return "folder provider";
+        return "directory provider: '" + path + "'";
     }
 }
