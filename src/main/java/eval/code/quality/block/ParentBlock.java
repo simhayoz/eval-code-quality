@@ -141,7 +141,7 @@ public class ParentBlock {
      * @return the index of the next matching string from line {@code fromLine} inside {@code content}
      */
     public static SinglePosition getIndexNext(String content, String match, SinglePosition position) {
-        try(Scanner scanner = new Scanner(content)) {
+        try (Scanner scanner = new Scanner(content)) {
             String lineContent;
             for (int i = 1; scanner.hasNextLine(); ++i) {
                 if (i < position.line) {
