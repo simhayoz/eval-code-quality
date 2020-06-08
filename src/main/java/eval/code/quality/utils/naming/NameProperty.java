@@ -23,7 +23,7 @@ public class NameProperty {
         this.startProperty = new CharacterProperty(var_name.charAt(0));
         this.endProperty = new CharacterProperty(var_name.charAt(var_name.length() - 1));
         int indexEnd = this.endProperty.isOther() ? var_name.length() : var_name.length() - 1;
-        if(var_name.length() > 1) {
+        if (var_name.length() > 1) {
             this.fullProperty = new VariableProperty(var_name.substring(1, indexEnd));
         } else {
             this.fullProperty = new VariableProperty("");
@@ -33,7 +33,7 @@ public class NameProperty {
     /**
      * Create a new {@code NameProperty} from properties.
      *
-     * @param fullProperty  the property of the name
+     * @param fullProperty the property of the name
      * @param nameProperty the property to get the start and end property
      */
     public NameProperty(VariableProperty fullProperty, NameProperty nameProperty) {
@@ -64,7 +64,7 @@ public class NameProperty {
     @Override
     public String toString() {
         String suffix = "";
-        if(!endProperty.isOther()) {
+        if (!endProperty.isOther()) {
             suffix = "end:" + endProperty + ",";
         }
         return "{start:" + startProperty + "," + suffix + "property:" + fullProperty + "}";

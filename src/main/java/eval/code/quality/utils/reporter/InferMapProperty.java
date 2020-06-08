@@ -1,7 +1,7 @@
 package eval.code.quality.utils.reporter;
 
-import eval.code.quality.position.Position;
 import eval.code.quality.checks.Check;
+import eval.code.quality.position.Position;
 import eval.code.quality.utils.description.Description;
 
 import java.util.ArrayList;

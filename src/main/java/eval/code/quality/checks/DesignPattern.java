@@ -1,10 +1,9 @@
 package eval.code.quality.checks;
 
-import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.checks.pattern.BuilderPattern;
 import eval.code.quality.checks.pattern.SingletonPattern;
 import eval.code.quality.checks.pattern.VisitorPattern;
-import eval.code.quality.utils.Context;
+import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.description.DescriptionBuilder;
 import eval.code.quality.utils.evaluator.BooleanEvaluator;
 
@@ -13,7 +12,6 @@ import java.util.List;
 public abstract class DesignPattern extends Check {
 
     private final ContentProvider contentProvider;
-    protected Context context;
 
     public DesignPattern(ContentProvider contentProvider) {
         this.contentProvider = contentProvider;

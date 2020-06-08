@@ -2,10 +2,10 @@ package eval.code.quality.checks;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
-
 import eval.code.quality.block.ChildBlock;
 import eval.code.quality.block.ParentBlock;
-import eval.code.quality.position.*;
+import eval.code.quality.position.Position;
+import eval.code.quality.position.SinglePosition;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.description.Description;
 import eval.code.quality.utils.description.DescriptionBuilder;
@@ -13,7 +13,10 @@ import eval.code.quality.utils.description.Descriptor;
 import eval.code.quality.utils.reporter.ExpectedReporter;
 import eval.code.quality.utils.reporter.NotExpectedReporter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Check Indentation for a {@code CompilationUnit}.

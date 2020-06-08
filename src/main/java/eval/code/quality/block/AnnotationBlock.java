@@ -4,10 +4,13 @@ import com.github.javaparser.ast.body.AnnotationDeclaration;
 
 import java.util.ArrayList;
 
+/**
+ * Represents a annotation block: @interface X { ... }.
+ */
 public class AnnotationBlock extends ParentBlock {
 
     public AnnotationBlock(AnnotationDeclaration annotationDeclaration) {
-        super(annotationDeclaration, annotationDeclaration.getMembers(), new ArrayList<>());
+        super(annotationDeclaration, getRangeFromBodyDeclaration(annotationDeclaration), annotationDeclaration.getMembers(), new ArrayList<>());
     }
 
 }

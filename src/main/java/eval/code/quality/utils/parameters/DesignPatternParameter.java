@@ -1,6 +1,6 @@
 package eval.code.quality.utils.parameters;
 
-import eval.code.quality.checks.*;
+import eval.code.quality.checks.Check;
 import eval.code.quality.checks.pattern.BuilderPattern;
 import eval.code.quality.checks.pattern.SingletonPattern;
 import eval.code.quality.checks.pattern.VisitorPattern;
@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Parse JSON "designPattern" parameter.
+ */
 public class DesignPatternParameter extends RunParameter<List<Check>> {
 
     private final MultipleContentProvider contentProviders;
@@ -23,13 +26,13 @@ public class DesignPatternParameter extends RunParameter<List<Check>> {
     @Override
     public List<Check> getValue(CommandLine cmd, JSONObject jsonObject) {
         List<Check> checks = new ArrayList<>();
-        if(jsonObject.has("designPattern")) {
+        if (jsonObject.has("designPattern")) {
             JSONObject designPattern = jsonObject.getJSONObject("designPattern");
-            if(designPattern.has("singleton")) {
+            if (designPattern.has("singleton")) {
                 checks.add(new SingletonPattern(contentProviders, designPattern.getString("singleton")));
             }
-            if(designPattern.has("builder")) {
-                if(designPattern.getJSONObject("builder").has("product") && designPattern.getJSONObject("builder").has("builder")) {
+            if (designPattern.has("builder")) {
+                if (designPattern.getJSONObject("builder").has("product") && designPattern.getJSONObject("builder").has("builder")) {
                     checks.add(new BuilderPattern(contentProviders,
                             designPattern.getJSONObject("builder").getString("product"),
                             designPattern.getJSONObject("builder").getString("builder")));
@@ -37,8 +40,8 @@ public class DesignPatternParameter extends RunParameter<List<Check>> {
                     throwErrorJSON("builder pattern config is not totally defined");
                 }
             }
-            if(designPattern.has("visitor")) {
-                if(designPattern.getJSONObject("visitor").has("visitor")
+            if (designPattern.has("visitor")) {
+                if (designPattern.getJSONObject("visitor").has("visitor")
                         && designPattern.getJSONObject("visitor").has("parent")
                         && designPattern.getJSONObject("visitor").has("children")) {
                     checks.add(new VisitorPattern(contentProviders,

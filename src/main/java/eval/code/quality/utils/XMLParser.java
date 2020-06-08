@@ -4,14 +4,41 @@ import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 
 public class XMLParser {
 
-    public static void parse(XMLParsable<?> parsable, File file) throws ParserConfigurationException, TransformerException {
+    private static final XMLParser INSTANCE = new XMLParser();
+
+    private XMLParser() {
+    }
+
+    /**
+     * Get {@code XMLParser} instance.
+     *
+     * @return {@code XMLParser} instance
+     */
+    public static XMLParser getInstance() {
+        return INSTANCE;
+    }
+
+    /**
+     * Parse the {@code XMLParsable} into an xml file.
+     *
+     * @param parsable the parsable to parse
+     * @param file     the xml file to parse into
+     * @throws ParserConfigurationException in case of parsing error
+     * @throws TransformerException         in case of parsing error
+     */
+    public void parse(XMLParsable parsable, File file) throws ParserConfigurationException, TransformerException {
+        Preconditions.checkArg(parsable != null, "Can not parse null element");
+        Preconditions.checkArg(file != null, "Can not parse to a null file");
         Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         document.appendChild(parsable.getXMLElement(document));
         Transformer tr = TransformerFactory.newInstance().newTransformer();

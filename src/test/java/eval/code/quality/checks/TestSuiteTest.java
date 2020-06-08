@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class TestSuiteTest {
 
     @Test void nullTestsThrowsIllegalArgument() {
-        assertThrows(IllegalArgumentException.class, () -> new TestSuite((List<Check>)null, "name"));
+        assertThrows(IllegalArgumentException.class, () -> new TestSuite(null, "name"));
         assertThrows(IllegalArgumentException.class, () -> new TestSuite(new ArrayList<>(), null));
         assertThrows(IllegalArgumentException.class, () -> new TestSuite(null));
     }

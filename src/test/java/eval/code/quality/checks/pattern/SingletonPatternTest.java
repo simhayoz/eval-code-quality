@@ -2,10 +2,10 @@ package eval.code.quality.checks.pattern;
 
 import eval.code.quality.MyStringBuilder;
 import eval.code.quality.TestUtils;
+import eval.code.quality.checks.Report;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.provider.FileProvider;
 import eval.code.quality.provider.StringProvider;
-import eval.code.quality.checks.Report;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -19,7 +19,7 @@ public class SingletonPatternTest {
 
     @Test void singletonPatternWithLazyEvalDoesNotFail() {
         ContentProvider singletonProvider = new FileProvider(new File("assets/tests/ExampleSingletonPatternWithLazyEval.java"));
-        TestUtils.checkIsEmptyReport(new SingletonPattern(singletonProvider, "IvoryTower").run());
+        TestUtils.checkIsEmptyReport(new SingletonPattern(singletonProvider, "IvoryTower2").run());
     }
 
     @Test void basicClassesFails() {

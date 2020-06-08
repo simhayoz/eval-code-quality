@@ -2,7 +2,11 @@ package eval.code.quality.position;
 
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -52,5 +56,20 @@ public class MultiplePositionTest {
         m.add(new SinglePosition(0, 0));
         m.add(new SinglePosition(2, 3));
         assertThat(m.toString(), equalTo("[(line 0,col 0), (line 2,col 3)]"));
+    }
+
+    @Test void canGetXmlElement() throws ParserConfigurationException {
+        MultiplePosition m = new MultiplePosition();
+        m.add(new SinglePosition(0));
+        m.add(new SinglePosition(2, 3));
+        Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+        Element element = m.getXMLElement(document);
+        assertThat(element.getTagName(), is("multiplePositions"));
+        assertThat(element.getElementsByTagName("position").getLength(), is(2));
+        assertThat(element.getElementsByTagName("position").item(0).getAttributes().getLength(), is(1));
+        assertThat(element.getElementsByTagName("position").item(0).getAttributes().item(0).getNodeValue(), is("0"));
+        assertThat(element.getElementsByTagName("position").item(1).getAttributes().getLength(), is(2));
+        assertThat(element.getElementsByTagName("position").item(1).getAttributes().getNamedItem("line").getNodeValue(), is("2"));
+        assertThat(element.getElementsByTagName("position").item(1).getAttributes().getNamedItem("col").getNodeValue(), is("3"));
     }
 }

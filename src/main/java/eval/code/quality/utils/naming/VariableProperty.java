@@ -50,7 +50,7 @@ public class VariableProperty {
                 return Empty;
             }
             Pattern pattern = Pattern.compile("\\d+");
-            if(pattern.matcher(s).matches()) {
+            if (pattern.matcher(s).matches()) {
                 return Digit;
             }
             for (Property property : Property.values()) {

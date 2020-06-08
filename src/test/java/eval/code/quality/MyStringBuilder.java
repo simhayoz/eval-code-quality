@@ -4,7 +4,7 @@ package eval.code.quality;
  * Helper class for creating string for test.
  */
 public class MyStringBuilder {
-    StringBuilder sb = new StringBuilder();
+    private final StringBuilder sb = new StringBuilder();
 
     public MyStringBuilder add(String s) {
         sb.append(s);

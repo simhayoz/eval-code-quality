@@ -5,6 +5,9 @@ import com.github.javaparser.ast.expr.LambdaExpr;
 
 import java.util.ArrayList;
 
+/**
+ * Represents a lambda block.
+ */
 public class LambdaBlock extends ParentBlock {
 
     private Position parentStart;
@@ -27,7 +30,7 @@ public class LambdaBlock extends ParentBlock {
     }
 
     private static int getIndexFirstElementLine(String content, int line) {
-        String lineContent = content.split(System.lineSeparator())[line-1];
+        String lineContent = content.split(System.lineSeparator())[line - 1];
         return lineContent.indexOf(lineContent.trim()) + 1;
     }
 }

@@ -11,8 +11,8 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.SimpleName;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
-import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.checks.DesignPattern;
+import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.evaluator.*;
 
 import java.util.List;

@@ -1,5 +1,6 @@
 package eval.code.quality.block;
 
+import com.github.javaparser.JavaToken;
 import com.github.javaparser.Position;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
@@ -15,6 +16,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * Represents a parent block.
+ */
 public class ParentBlock {
 
     public final Node parent;
@@ -33,10 +37,20 @@ public class ParentBlock {
         this.childBlocks = childBlocks;
     }
 
+    /**
+     * Get the parent start position.
+     *
+     * @return the parent start position
+     */
     public Position getParentStart() {
         return parent.getBegin().get();
     }
 
+    /**
+     * Get the parent end line (header end of line).
+     *
+     * @return the parent end line
+     */
     public int getParentLineEnd() {
         return parent.getBegin().get().line;
     }
@@ -64,7 +78,7 @@ public class ParentBlock {
                     && !(parentNode instanceof CallableDeclaration)) {
                 parentBlocks.add(new Block(parentNode, blockStmt));
             }
-            if(parentNode instanceof CallableDeclaration) {
+            if (parentNode instanceof CallableDeclaration) {
                 parentBlocks.add(new CallableBlock((CallableDeclaration<?>) parentNode, blockStmt, content));
             }
         }));
@@ -92,6 +106,12 @@ public class ParentBlock {
         }
     }
 
+    /**
+     * Get the range of the block or null, if the current statement is not a {@code BlockStmt}.
+     *
+     * @param statement the statement to get the range from
+     * @return the range of the block or null
+     */
     protected static Range getRangeOrNull(Statement statement) {
         if (statement.isBlockStmt()) {
             return Range.from(statement.asBlockStmt().getRange().get());
@@ -99,6 +119,12 @@ public class ParentBlock {
         return null;
     }
 
+    /**
+     * Get statements inside the block.
+     *
+     * @param statement the statement to extract the statements from
+     * @return statements inside the block
+     */
     protected static List<Statement> getStatements(Statement statement) {
         if (statement.isBlockStmt()) {
             return statement.asBlockStmt().getStatements();
@@ -106,6 +132,14 @@ public class ParentBlock {
         return Collections.singletonList(statement);
     }
 
+    /**
+     * Get the index of the next matching string from line {@code fromLine} inside {@code content}.
+     *
+     * @param content  the content to find the next matching string from
+     * @param match    the string to match with content
+     * @param fromLine starting line of the search
+     * @return the index of the next matching string from line {@code fromLine} inside {@code content}
+     */
     protected static SinglePosition getIndexNext(String content, String match, int fromLine) {
         Scanner scanner = new Scanner(content);
         int currentLine = 1;
@@ -125,11 +159,19 @@ public class ParentBlock {
         return null;
     }
 
+    /**
+     * Get the index of the next matching pattern from line {@code fromLine} inside {@code content}.
+     *
+     * @param content  the content to find the next matching pattern from
+     * @param pattern  the pattern to find
+     * @param fromLine starting line of the search
+     * @return the index of the next matching pattern from line {@code fromLine} inside {@code content}
+     */
     protected static SinglePosition getIndexNext(String content, Pattern pattern, int fromLine) {
         List<String> contents = Arrays.asList(content.split(System.lineSeparator()));
-        String smallerContent = contents.subList(fromLine-1, contents.size()).stream().collect(Collectors.joining(System.lineSeparator()));
+        String smallerContent = contents.subList(fromLine - 1, contents.size()).stream().collect(Collectors.joining(System.lineSeparator()));
         Matcher matcher = pattern.matcher(smallerContent);
-        if(matcher.find()) {
+        if (matcher.find()) {
             int after = matcher.end();
             Scanner scanner = new Scanner(content);
             int currentLine = 1;
@@ -137,10 +179,9 @@ public class ParentBlock {
                 scanner.nextLine();
                 currentLine++;
             }
-            while(scanner.hasNextLine()) {
+            while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
-                if(after - line.length() <= 0) {
-                    SinglePosition pos = new SinglePosition(currentLine, line.length() - after);
+                if (after - line.length() <= 0) {
                     scanner.close();
                     return new SinglePosition(currentLine, after);
                 } else {
@@ -149,6 +190,22 @@ public class ParentBlock {
                 currentLine++;
             }
             scanner.close();
+        }
+        return null;
+    }
+
+    /**
+     * Get braces range from body declaration.
+     *
+     * @param node the body declaration
+     * @return braces range from body declaration
+     */
+    protected static Range getRangeFromBodyDeclaration(BodyDeclaration<?> node) {
+        SinglePosition end = SinglePosition.from(node.getEnd().get());
+        for (JavaToken token : node.getTokenRange().get()) {
+            if (token.asString().equals("{")) {
+                return new Range(SinglePosition.from(token.getRange().get().begin), end);
+            }
         }
         return null;
     }

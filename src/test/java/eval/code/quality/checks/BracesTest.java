@@ -2,7 +2,9 @@ package eval.code.quality.checks;
 
 import eval.code.quality.MyStringBuilder;
 import eval.code.quality.TestUtils;
-import eval.code.quality.position.*;
+import eval.code.quality.position.MultiplePosition;
+import eval.code.quality.position.NamePosition;
+import eval.code.quality.position.SinglePosition;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.provider.StringProvider;
 import org.junit.jupiter.api.Test;

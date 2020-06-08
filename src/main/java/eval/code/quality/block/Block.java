@@ -6,6 +6,9 @@ import eval.code.quality.position.Range;
 
 import java.util.ArrayList;
 
+/**
+ * Represents any type of statement with a parent and a block in a java code.
+ */
 public class Block extends ParentBlock {
 
     public Block(Node parentNode, BlockStmt blockStmt) {

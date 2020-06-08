@@ -5,6 +5,9 @@ import com.github.javaparser.ast.stmt.DoStmt;
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Represents a do-while block.
+ */
 public class DoBlock extends ParentBlock {
 
     public DoBlock(DoStmt doStmt, String content) {

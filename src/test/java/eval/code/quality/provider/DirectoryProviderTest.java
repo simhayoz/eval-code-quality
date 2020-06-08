@@ -30,6 +30,10 @@ public class DirectoryProviderTest {
 
     @Test void canGetName() {
         ContentProvider contentProvider = new DirectoryProvider("assets/");
-        assertThat(contentProvider.getName(), is("folder provider"));
+        assertThat(contentProvider.getName(), is("directory provider: 'assets/'"));
+    }
+
+    @Test void tryingToListFileFails() {
+        assertThrows(IllegalArgumentException.class, () -> new DirectoryProvider("assets/tests/FileProvider.java"));
     }
 }
