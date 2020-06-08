@@ -129,6 +129,17 @@ public class BracesTest {
         TestUtils.reportContainsOnlyPositions(r.getErrors(), multiplePosition);
     }
 
+    @Test void oneLinerBlockSameDoesNotThrowsError() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("for(int i=0; i < 2; ++i) { return 2==2; }")
+                .addLn("if(true) { return true; }")
+                .addLn("else if(false) { return false; }")
+                .addLn("else if(0 == 0) { return 0 == 0; }")
+                .addLn("else { return 1 == 1; }");
+        String wrapper = wrap(builder.toString());
+        TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", wrapper)).run());
+    }
+
     @Test void bracketMoreThanOneLineAfterThrowsError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("public class Test")

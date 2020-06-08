@@ -137,25 +137,31 @@ public class ParentBlock {
      *
      * @param content  the content to find the next matching string from
      * @param match    the string to match with content
-     * @param fromLine starting line of the search
+     * @param position the starting position for the search
      * @return the index of the next matching string from line {@code fromLine} inside {@code content}
      */
-    protected static SinglePosition getIndexNext(String content, String match, int fromLine) {
-        Scanner scanner = new Scanner(content);
-        int currentLine = 1;
-        for (int i = 1; i < fromLine && scanner.hasNextLine(); ++i) {
-            scanner.nextLine();
-            currentLine++;
-        }
-        while (scanner.hasNextLine()) {
-            int result = scanner.nextLine().indexOf(match);
-            if (result != -1) {
-                scanner.close();
-                return new SinglePosition(currentLine, result + 1);
+    public static SinglePosition getIndexNext(String content, String match, SinglePosition position) {
+        try(Scanner scanner = new Scanner(content)) {
+            String lineContent;
+            for (int i = 1; scanner.hasNextLine(); ++i) {
+                if (i < position.line) {
+                    scanner.nextLine();
+                } else {
+                    int columnDiff = 0;
+                    if (i == position.line) {
+                        lineContent = scanner.nextLine().substring(position.column.orElse(0));
+                        columnDiff = position.column.orElse(0);
+                    } else {
+                        lineContent = scanner.nextLine();
+                    }
+                    int result = lineContent.indexOf(match);
+                    if (result != -1) {
+                        scanner.close();
+                        return new SinglePosition(i, columnDiff + result + 1);
+                    }
+                }
             }
-            currentLine++;
         }
-        scanner.close();
         return null;
     }
 

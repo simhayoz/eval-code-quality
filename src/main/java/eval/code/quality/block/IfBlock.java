@@ -1,6 +1,7 @@
 package eval.code.quality.block;
 
 import com.github.javaparser.ast.stmt.IfStmt;
+import eval.code.quality.position.SinglePosition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,17 +29,13 @@ public class IfBlock extends ParentBlock {
         IfStmt prev = ifStmt;
         while (temp.hasCascadingIfStmt()) {
             temp = temp.getElseStmt().get().asIfStmt();
-            childBlocks.add(new ChildBlock(getIndexNext(content, "else", getStartingLine(prev)),
+            childBlocks.add(new ChildBlock(getIndexNext(content, "else", SinglePosition.from(prev.getThenStmt().getEnd().get())),
                     getRangeOrNull(temp.getThenStmt()), getStatements(temp.getThenStmt())));
             prev = temp;
         }
-        final int tempLine = getStartingLine(temp);
-        temp.getElseStmt().ifPresent(elseBranch -> childBlocks.add(new ChildBlock(getIndexNext(content, "else", tempLine),
+        final IfStmt tempIf = temp;
+        temp.getElseStmt().ifPresent(elseBranch -> childBlocks.add(new ChildBlock(getIndexNext(content, "else", SinglePosition.from(tempIf.getThenStmt().getEnd().get())),
                 getRangeOrNull(elseBranch), getStatements(elseBranch))));
         return childBlocks;
-    }
-
-    private static int getStartingLine(IfStmt ifStmt) {
-        return ifStmt.getThenStmt().getEnd().get().line;
     }
 }

@@ -4,6 +4,7 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.stmt.*;
 import eval.code.quality.block.ChildBlock;
+import eval.code.quality.block.IfBlock;
 import eval.code.quality.block.ParentBlock;
 import eval.code.quality.position.Position;
 import eval.code.quality.position.Range;
@@ -16,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static eval.code.quality.block.ParentBlock.getIndexNext;
 
 public class Braces extends CompilationUnitCheck {
 
@@ -32,17 +35,25 @@ public class Braces extends CompilationUnitCheck {
         CompilationUnit compilationUnit = contentProvider.getCompilationUnit();
         ParentBlock.getFor(compilationUnit, contentProvider.getString()).forEach(this::checkCurrentBlocks);
         compilationUnit.findAll(IfStmt.class).forEach(ifStmt -> {
-            addIfOneLiner(ifStmt, ifStmt.getThenStmt());
-            ifStmt.getElseStmt().ifPresent(elseStmt -> {
-                if(!elseStmt.isIfStmt()) {
-                    addIfOneLiner(ifStmt, elseStmt);
+            if (ifStmt.getParentNode().isEmpty() || !(ifStmt.getParentNode().get() instanceof IfStmt)) {
+                addIfOneLiner(SinglePosition.from(ifStmt.getBegin().get()), ifStmt.getThenStmt());
+                if (ifStmt.getParentNode().isEmpty() || !(ifStmt.getParentNode().get() instanceof IfStmt)) {
+                    IfStmt temp = ifStmt;
+                    IfStmt prev = ifStmt;
+                    while (temp.hasCascadingIfStmt()) {
+                        temp = temp.getElseStmt().get().asIfStmt();
+                        addIfOneLiner(getIndexNext(contentProvider.getString(), "else", SinglePosition.from(prev.getThenStmt().getEnd().get())), temp.getThenStmt());
+                        prev = temp;
+                    }
+                    final IfStmt tempIf = temp;
+                    temp.getElseStmt().ifPresent(elseBranch -> addIfOneLiner(getIndexNext(contentProvider.getString(), "else", SinglePosition.from(tempIf.getThenStmt().getEnd().get())), elseBranch));
                 }
-            });
+            }
         });
-        compilationUnit.findAll(ForStmt.class).forEach(forStmt -> addIfOneLiner(forStmt, forStmt.getBody()));
-        compilationUnit.findAll(ForEachStmt.class).forEach(forEachStmt -> addIfOneLiner(forEachStmt, forEachStmt.getBody()));
-        compilationUnit.findAll(DoStmt.class).forEach(doStmt -> addIfOneLiner(doStmt, doStmt.getBody()));
-        compilationUnit.findAll(WhileStmt.class).forEach(whileStmt -> addIfOneLiner(whileStmt, whileStmt.getBody()));
+        compilationUnit.findAll(ForStmt.class).forEach(forStmt -> addIfOneLiner(SinglePosition.from(forStmt.getBegin().get()), forStmt.getBody()));
+        compilationUnit.findAll(ForEachStmt.class).forEach(forEachStmt -> addIfOneLiner(SinglePosition.from(forEachStmt.getBegin().get()), forEachStmt.getBody()));
+        compilationUnit.findAll(DoStmt.class).forEach(doStmt -> addIfOneLiner(SinglePosition.from(doStmt.getBegin().get()), doStmt.getBody()));
+        compilationUnit.findAll(WhileStmt.class).forEach(whileStmt -> addIfOneLiner(SinglePosition.from(whileStmt.getBegin().get()), whileStmt.getBody()));
     }
 
     @Override
@@ -155,20 +166,21 @@ public class Braces extends CompilationUnitCheck {
         }
     }
 
-    private void addIfOneLiner(Node parent, Statement statement) {
+    private void addIfOneLiner(SinglePosition parentStart, Statement statement) {
+        System.out.println(parentStart + "->"+statement);
         if(statement.isBlockStmt() && statement.asBlockStmt().getStatements().size() == 1) {
-            if(statement.getRange().isPresent() && parent.getBegin().get().line == statement.getEnd().get().line) {
-                add(oneLinerProperties, OneLinerBlock.BRACE_SAME_LINE, context.getPos(statement));
+            if(statement.getEnd().isPresent() && parentStart.line == statement.getEnd().get().line) {
+                add(oneLinerProperties, OneLinerBlock.BRACES_SAME_LINE, context.getPos(statement));
             } else {
-                add(oneLinerProperties, OneLinerBlock.BRACE_MULTI_LINE, context.getPos(statement));
+                add(oneLinerProperties, OneLinerBlock.BRACES_MULTI_LINE, context.getPos(statement));
             }
 
         }
         if(!statement.isBlockStmt()) {
-            if(statement.getRange().isPresent() && parent.getBegin().get().line == statement.getEnd().get().line) {
-                add(oneLinerProperties, OneLinerBlock.NO_BRACE_SAME_LINE, context.getPos(statement));
+            if(statement.getEnd().isPresent() && parentStart.line == statement.getEnd().get().line) {
+                add(oneLinerProperties, OneLinerBlock.NO_BRACES_SAME_LINE, context.getPos(statement));
             } else {
-                add(oneLinerProperties, OneLinerBlock.NO_BRACE_MULTI_LINE, context.getPos(statement));
+                add(oneLinerProperties, OneLinerBlock.NO_BRACES_MULTI_LINE, context.getPos(statement));
             }
         }
     }
@@ -183,7 +195,10 @@ public class Braces extends CompilationUnitCheck {
     }
 
     private enum OneLinerBlock {
-        BRACE_SAME_LINE, BRACE_MULTI_LINE, NO_BRACE_SAME_LINE, NO_BRACE_MULTI_LINE
+        BRACES_SAME_LINE,
+        BRACES_MULTI_LINE,
+        NO_BRACES_SAME_LINE,
+        NO_BRACES_MULTI_LINE
     }
 
     @Override

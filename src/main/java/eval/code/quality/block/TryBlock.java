@@ -23,7 +23,7 @@ public class TryBlock extends ParentBlock {
             childBlocks.add(new ChildBlock(SinglePosition.from(catchClause.getBegin().get()), Range.from(catchClause.getBody().getRange().get()), catchClause.getBody().getStatements()));
         }
         tryStmt.getFinallyBlock().ifPresent(finalElement ->
-                childBlocks.add(new ChildBlock(getIndexNext(content, "finally", tryStmt.getBegin().get().line),
+                childBlocks.add(new ChildBlock(getIndexNext(content, "finally", SinglePosition.from(tryStmt.getCatchClauses().get(tryStmt.getCatchClauses().size()-1).getEnd().get())),
                         Range.from(finalElement.getRange().get()),
                         finalElement.getStatements())));
         return childBlocks;
