@@ -15,8 +15,8 @@ import java.util.Optional;
  */
 public class Description implements XMLParsable {
 
-    private List<PositionDescription> positions;
-    private Descriptor descriptor;
+    private final List<PositionDescription> positions;
+    private final Descriptor descriptor;
 
     /**
      * Create a new {@code Description}.
@@ -46,7 +46,7 @@ public class Description implements XMLParsable {
     /**
      * Get positions with description.
      *
-     * @return
+     * @return positions with description
      */
     public Optional<List<PositionDescription>> getPositionsWithDescription() {
         return Optional.ofNullable(positions);

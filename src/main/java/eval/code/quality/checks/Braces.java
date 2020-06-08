@@ -11,13 +11,16 @@ import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.description.DescriptionBuilder;
 import eval.code.quality.utils.description.Descriptor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Braces extends CompilationUnitCheck {
 
-    private Map<BracesProperty, List<Position>> openingProperties = new HashMap<>();
-    private Map<BracesProperty, List<Position>> closingProperties = new HashMap<>();
-    private Map<Boolean, List<Position>> isOneLinerBlock = new HashMap<>();
+    private final Map<BracesProperty, List<Position>> openingProperties = new HashMap<>();
+    private final Map<BracesProperty, List<Position>> closingProperties = new HashMap<>();
+    private final Map<Boolean, List<Position>> isOneLinerBlock = new HashMap<>();
 
     public Braces(ContentProvider contentProvider) {
         super(contentProvider);

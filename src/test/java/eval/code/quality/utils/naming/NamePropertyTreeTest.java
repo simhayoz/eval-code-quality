@@ -1,9 +1,6 @@
 package eval.code.quality.utils.naming;
 
 import eval.code.quality.utils.Node;
-import eval.code.quality.utils.naming.NameProperty;
-import eval.code.quality.utils.naming.NamePropertyTree;
-import eval.code.quality.utils.naming.VariableProperty;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;

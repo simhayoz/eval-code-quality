@@ -4,7 +4,10 @@ import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
@@ -26,7 +29,7 @@ public class XMLParser {
     }
 
     /**
-     * Parse the {@code XMLParsable<?>} into an xml file.
+     * Parse the {@code XMLParsable} into an xml file.
      *
      * @param parsable the parsable to parse
      * @param file     the xml file to parse into

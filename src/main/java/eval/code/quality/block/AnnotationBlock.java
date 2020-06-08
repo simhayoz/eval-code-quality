@@ -1,7 +1,6 @@
 package eval.code.quality.block;
 
 import com.github.javaparser.ast.body.AnnotationDeclaration;
-import eval.code.quality.position.Range;
 
 import java.util.ArrayList;
 

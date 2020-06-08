@@ -2,14 +2,11 @@ package eval.code.quality.provider;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-
 import eval.code.quality.utils.FileToString;
 import eval.code.quality.utils.Lazy;
 import eval.code.quality.utils.Preconditions;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.List;
 
 import static eval.code.quality.utils.ThrowingSupplierWrapper.throwingSupplierWrapper;
@@ -19,8 +16,8 @@ import static eval.code.quality.utils.ThrowingSupplierWrapper.throwingSupplierWr
  */
 public class FileProvider extends ContentProvider {
     private final File file;
-    private Lazy<String> content;
-    private Lazy<CompilationUnit> compilationUnit;
+    private final Lazy<String> content;
+    private final Lazy<CompilationUnit> compilationUnit;
 
     /**
      * Create a new {@code FileProvider}.

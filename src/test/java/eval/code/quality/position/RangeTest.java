@@ -17,10 +17,10 @@ public class RangeTest {
     @Test
     void setRangeThrowsErrorForNull() {
         SinglePosition p = new SinglePosition(0, 0);
-        assertThrows(IllegalArgumentException.class, () -> {new Range(p, null);});
-        assertThrows(IllegalArgumentException.class, () -> {new Range(null, p);});
-        assertThrows(IllegalArgumentException.class, () -> {new Range(null, null);});
-        assertThrows(IllegalArgumentException.class, () -> {Range.from(null);});
+        assertThrows(IllegalArgumentException.class, () -> new Range(p, null));
+        assertThrows(IllegalArgumentException.class, () -> new Range(null, p));
+        assertThrows(IllegalArgumentException.class, () -> new Range(null, null));
+        assertThrows(IllegalArgumentException.class, () -> Range.from(null));
     }
 
     @Test void setRangeNegativeOrderDoesNotWork() {

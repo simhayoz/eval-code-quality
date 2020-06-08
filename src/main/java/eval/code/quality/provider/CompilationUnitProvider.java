@@ -11,7 +11,7 @@ import java.util.List;
  */
 public class CompilationUnitProvider extends ContentProvider {
     private final String name;
-    private Lazy<String> content;
+    private final Lazy<String> content;
     private final CompilationUnit compilationUnit;
 
     /**

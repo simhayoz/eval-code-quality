@@ -2,13 +2,12 @@ package eval.code.quality.utils;
 
 import eval.code.quality.checks.Check;
 import eval.code.quality.checks.TestSuite;
-import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.provider.MultipleContentProvider;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.File;
-import java.util.*;
+import java.util.List;
 
 public class TestRunner {
 

@@ -1,12 +1,10 @@
 package eval.code.quality.checks;
 
-import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.Preconditions;
 import eval.code.quality.utils.XMLParsable;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,22 +24,6 @@ public class TestSuite implements XMLParsable {
      */
     public TestSuite(String name) {
         this(new ArrayList<>(), name);
-    }
-
-    /**
-     * Create a new test suite from a list of check class.
-     *
-     * @param checks the list of class of check
-     */
-    public TestSuite(List<Class<? extends Check>> checks, String name, ContentProvider contentProvider) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        Preconditions.checkArg(checks != null, "The test suite can not be null");
-        Preconditions.checkArg(name != null, "The test suite name can not be null");
-        this.checks = new ArrayList<>();
-        for(Class<? extends Check> c : checks) {
-            this.checks.add(c.getConstructor(ContentProvider.class).newInstance(contentProvider));
-        }
-        this.checkResults = new HashMap<>();
-        this.name = name;
     }
 
     /**

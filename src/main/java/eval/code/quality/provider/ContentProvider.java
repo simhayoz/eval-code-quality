@@ -1,15 +1,13 @@
 package eval.code.quality.provider;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
-import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.nodeTypes.NodeWithName;
-import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
-import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Represents a content provider.
@@ -57,12 +55,12 @@ public abstract class ContentProvider implements Iterable<ContentProvider> {
             Optional<ClassOrInterfaceDeclaration> optClass = contentProvider.getCompilationUnit().findAll(ClassOrInterfaceDeclaration.class)
                     .stream().filter(n -> {
                         ClassOrInterfaceDeclaration tempClass = n;
-                        String finalName = tempClass.getNameAsString();
+                        StringBuilder finalName = new StringBuilder(tempClass.getNameAsString());
                         while(tempClass.isNestedType()) {
                             tempClass = (ClassOrInterfaceDeclaration) tempClass.getParentNode().get();
-                            finalName = tempClass.getNameAsString() + "$" + finalName;
+                            finalName.insert(0, tempClass.getNameAsString() + "$");
                         }
-                        return finalName.equals(name);
+                        return finalName.toString().equals(name);
                     }).findFirst();
             if (optClass.isPresent()) {
                 return optClass;
@@ -72,6 +70,7 @@ public abstract class ContentProvider implements Iterable<ContentProvider> {
     }
 
     @Override
+    @Nonnull
     public Iterator<ContentProvider> iterator() {
         List<ContentProvider> list = new ArrayList<>();
         addAll(list);

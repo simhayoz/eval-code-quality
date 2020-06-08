@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  */
 public class CallableBlock extends Block {
 
-    private int parentLineEnd;
+    private final int parentLineEnd;
 
     public CallableBlock(CallableDeclaration<?> callableDeclaration, BlockStmt blockStmt, String content) {
         super(callableDeclaration, blockStmt);

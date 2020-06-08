@@ -7,7 +7,8 @@ import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.provider.StringProvider;
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 class IndentationTest {

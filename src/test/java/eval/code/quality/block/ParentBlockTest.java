@@ -14,8 +14,8 @@ import org.junit.jupiter.api.Test;
 import java.util.function.Function;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 public class ParentBlockTest {
 
@@ -87,10 +87,6 @@ public class ParentBlockTest {
         String content = "class Test {\n" +
                 "}";
         checkWithBlock(content, ClassOrInterfaceDeclaration.class, ClassOrInterfaceBlock::new, Position.pos(1, 1), new SinglePosition(1, 12), new SinglePosition(2, 1), 1);
-    }
-
-    private <T extends Node> void checkWithBlock(String content, Class<T> clazz, Function<T, ParentBlock> func, Position parentStart, int parentLineEnd) {
-        checkWithBlock(content, clazz, func, false, parentStart, null, null, parentLineEnd);
     }
 
     private <T extends Node> void checkWithBlock(String content, Class<T> clazz, Function<T, ParentBlock> func, Position parentStart, SinglePosition bracesStart, SinglePosition bracesEnd, int parentLineEnd) {

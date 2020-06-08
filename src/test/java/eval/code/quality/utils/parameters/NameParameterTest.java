@@ -1,8 +1,6 @@
 package eval.code.quality.utils.parameters;
 
-import eval.code.quality.provider.ContentProvider;
 import org.apache.commons.cli.CommandLine;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

@@ -8,13 +8,9 @@ import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.provider.StringProvider;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileNotFoundException;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-
 public class BlankLinesTest {
     @Test
-    void fileOfOnlyBlankLineMatchFullLines() throws FileNotFoundException {
+    void fileOfOnlyBlankLineMatchFullLines() {
         MyStringBuilder s = new MyStringBuilder();
         for (int i = 0; i < 32; ++i) {
             s.addBlankLine();

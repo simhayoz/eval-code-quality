@@ -2,7 +2,6 @@ package eval.code.quality.provider;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
-
 import eval.code.quality.utils.Lazy;
 import eval.code.quality.utils.Preconditions;
 
@@ -14,7 +13,7 @@ import java.util.List;
 public class StringProvider extends ContentProvider {
     private final String name;
     private final String content;
-    private Lazy<CompilationUnit> compilationUnit;
+    private final Lazy<CompilationUnit> compilationUnit;
 
     /**
      * Create a new {@code StringProvider}.

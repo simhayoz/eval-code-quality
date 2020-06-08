@@ -1,7 +1,6 @@
 package eval.code.quality.utils.description;
 
 import eval.code.quality.position.SinglePosition;
-import eval.code.quality.position.SinglePositionTest;
 import org.junit.jupiter.api.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

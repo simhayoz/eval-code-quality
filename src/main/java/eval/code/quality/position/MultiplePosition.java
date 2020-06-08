@@ -4,7 +4,10 @@ import eval.code.quality.utils.Preconditions;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents multiple position that are not necessarily successive.

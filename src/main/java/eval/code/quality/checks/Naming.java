@@ -5,11 +5,10 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-
 import eval.code.quality.position.MultiplePosition;
 import eval.code.quality.position.Position;
 import eval.code.quality.provider.ContentProvider;
-import eval.code.quality.utils.*;
+import eval.code.quality.utils.Node;
 import eval.code.quality.utils.description.DescriptionBuilder;
 import eval.code.quality.utils.description.Descriptor;
 import eval.code.quality.utils.naming.NameProperty;

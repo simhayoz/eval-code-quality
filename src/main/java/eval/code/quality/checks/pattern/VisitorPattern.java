@@ -2,8 +2,8 @@ package eval.code.quality.checks.pattern;
 
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.checks.DesignPattern;
+import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.evaluator.BooleanEvaluator;
 import eval.code.quality.utils.evaluator.BooleanExpression;
 import eval.code.quality.utils.evaluator.BooleanOr;
@@ -64,7 +64,7 @@ public class VisitorPattern extends DesignPattern {
         return "visitor pattern for parent " + addChevrons(parentName) + ", children " + addChevrons(childrenName.toString()) + " and visitor " + addChevrons(visitorName);
     }
 
-    private boolean hasAcceptMethodWithVisitor(ClassOrInterfaceDeclaration classDecl) {
-        return classDecl.getMethodsByName("accept").stream().anyMatch(method -> method.getParameterByType(getSimpleName(visitorName)).isPresent());
+    private boolean hasAcceptMethodWithVisitor(ClassOrInterfaceDeclaration classDeclaration) {
+        return classDeclaration.getMethodsByName("accept").stream().anyMatch(method -> method.getParameterByType(getSimpleName(visitorName)).isPresent());
     }
 }

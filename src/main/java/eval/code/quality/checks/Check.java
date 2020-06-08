@@ -13,7 +13,7 @@ import org.w3c.dom.Element;
 public abstract class Check implements XMLParsable {
     private Report report;
     private boolean verbose;
-    protected InferMapProperty inferMapProperty = new InferMapProperty(this);
+    protected final InferMapProperty inferMapProperty = new InferMapProperty(this);
 
     /**
      * Run the current check and get the report of any errors and warnings found.

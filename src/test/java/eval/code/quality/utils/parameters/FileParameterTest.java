@@ -1,7 +1,6 @@
 package eval.code.quality.utils.parameters;
 
 import eval.code.quality.provider.ContentProvider;
-import eval.code.quality.provider.FileProvider;
 import org.apache.commons.cli.CommandLine;
 import org.json.JSONArray;
 import org.json.JSONObject;

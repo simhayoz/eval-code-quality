@@ -1,6 +1,6 @@
 package eval.code.quality.utils;
 
-import eval.code.quality.checks.*;
+import eval.code.quality.checks.Check;
 import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.provider.MultipleContentProvider;
 import eval.code.quality.utils.parameters.*;
@@ -10,7 +10,9 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 /**

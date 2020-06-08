@@ -13,7 +13,7 @@ import java.util.NoSuchElementException;
  * <p>It allows to iterate over the different {@code ContentProvider} to launch every checks and report position with the current context</p>
  */
 public class Context implements Iterator<ContentProvider> {
-    private Iterator<ContentProvider> itContentProvider;
+    private final Iterator<ContentProvider> itContentProvider;
     private final ContentProvider firstElement;
     private ContentProvider currentContentProvider;
 
@@ -51,7 +51,7 @@ public class Context implements Iterator<ContentProvider> {
     /**
      * Get the position inside the current content provider.
      *
-     * @param line
+     * @param line line position
      * @return the named position
      */
     public Position getPos(int line) {
@@ -61,8 +61,8 @@ public class Context implements Iterator<ContentProvider> {
     /**
      * Get the position inside the current content provider.
      *
-     * @param line
-     * @param column
+     * @param line line position
+     * @param column column position
      * @return the named position
      */
     public Position getPos(int line, int column) {
@@ -96,10 +96,10 @@ public class Context implements Iterator<ContentProvider> {
     /**
      * Get the position inside the current content provider.
      *
-     * @param lineBegin
-     * @param columnBegin
-     * @param lineEnd
-     * @param columnEnd
+     * @param lineBegin begin line
+     * @param columnBegin begin column
+     * @param lineEnd end line
+     * @param columnEnd end column
      * @return the named position
      */
     public Position getPos(int lineBegin, int columnBegin, int lineEnd, int columnEnd) {
@@ -112,8 +112,8 @@ public class Context implements Iterator<ContentProvider> {
     /**
      * Get the range inside the current content provider.
      *
-     * @param lineBegin
-     * @param lineEnd
+     * @param lineBegin begin line
+     * @param lineEnd end line
      * @return the named position
      */
     public Position getRange(int lineBegin, int lineEnd) {

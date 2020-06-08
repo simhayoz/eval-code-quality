@@ -1,6 +1,6 @@
 package eval.code.quality.utils.parameters;
 
-import eval.code.quality.checks.*;
+import eval.code.quality.checks.Check;
 import eval.code.quality.checks.pattern.BuilderPattern;
 import eval.code.quality.checks.pattern.SingletonPattern;
 import eval.code.quality.checks.pattern.VisitorPattern;

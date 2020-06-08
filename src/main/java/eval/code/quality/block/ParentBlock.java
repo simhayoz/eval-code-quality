@@ -2,7 +2,6 @@ package eval.code.quality.block;
 
 import com.github.javaparser.JavaToken;
 import com.github.javaparser.Position;
-import com.github.javaparser.TokenRange;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.*;
@@ -183,7 +182,6 @@ public class ParentBlock {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 if (after - line.length() <= 0) {
-                    SinglePosition pos = new SinglePosition(currentLine, line.length() - after);
                     scanner.close();
                     return new SinglePosition(currentLine, after);
                 } else {
@@ -203,7 +201,6 @@ public class ParentBlock {
      * @return braces range from body declaration
      */
     protected static Range getRangeFromBodyDeclaration(BodyDeclaration<?> node) {
-        SinglePosition start;
         SinglePosition end = SinglePosition.from(node.getEnd().get());
         for (JavaToken token : node.getTokenRange().get()) {
             if (token.asString().equals("{")) {

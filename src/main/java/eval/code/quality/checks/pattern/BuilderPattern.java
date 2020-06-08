@@ -4,8 +4,8 @@ import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.stmt.ReturnStmt;
-import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.checks.DesignPattern;
+import eval.code.quality.provider.ContentProvider;
 import eval.code.quality.utils.evaluator.BooleanEvaluator;
 import eval.code.quality.utils.evaluator.BooleanSimple;
 

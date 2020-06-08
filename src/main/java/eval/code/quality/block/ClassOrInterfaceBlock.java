@@ -7,14 +7,13 @@ import eval.code.quality.position.SinglePosition;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 /**
  * Represents a class or interface block.
  */
 public class ClassOrInterfaceBlock extends ParentBlock {
 
-    private int parentLineEnd;
+    private final int parentLineEnd;
 
     public ClassOrInterfaceBlock(ClassOrInterfaceDeclaration classOrInterfaceDeclaration) {
         super(classOrInterfaceDeclaration, getRangeFromBodyDeclaration(classOrInterfaceDeclaration), classOrInterfaceDeclaration.getMembers(), new ArrayList<>());
