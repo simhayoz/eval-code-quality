@@ -11,12 +11,14 @@ import org.junit.jupiter.api.Test;
 
 public class BracesTest {
 
-    @Test void emptyCUReportNoError() {
+    @Test
+    void emptyCUReportNoError() {
         ContentProvider contentProvider = new StringProvider("Empty String", "");
         TestUtils.checkIsEmptyReport(new Braces(contentProvider).run());
     }
 
-    @Test void simpleBlocksThrowsNoError() {
+    @Test
+    void simpleBlocksThrowsNoError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("for(int i=0; i < 2; ++i) {")
                 .addLn("return true;", 4)
@@ -52,7 +54,8 @@ public class BracesTest {
         TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", wrapper)).run());
     }
 
-    @Test void simpleTryForEachAndDoStmtThrowsNoError() {
+    @Test
+    void simpleTryForEachAndDoStmtThrowsNoError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("try {")
                 .addLn("System.out.println();", 4)
@@ -72,7 +75,8 @@ public class BracesTest {
         TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", wrapper)).run());
     }
 
-    @Test void elseIfNoBracketWillWork() {
+    @Test
+    void elseIfNoBracketWillWork() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("if(true)")
                 .addLn("return true;", 4)
@@ -84,7 +88,8 @@ public class BracesTest {
         TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", wrapper)).run());
     }
 
-    @Test void notAlignedChildThrowsError() {
+    @Test
+    void notAlignedChildThrowsError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("public class Test {")
                 .addLn("public static boolean test() {", 4)
@@ -104,7 +109,8 @@ public class BracesTest {
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(6, 10)));
     }
 
-    @Test void oneLinerBlockDifferentThrowsError() {
+    @Test
+    void oneLinerBlockDifferentThrowsError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("for(int i=0; i < 2; ++i) {")
                 .addLn("return true;", 4)
@@ -129,7 +135,20 @@ public class BracesTest {
         TestUtils.reportContainsOnlyPositions(r.getErrors(), multiplePosition);
     }
 
-    @Test void bracketMoreThanOneLineAfterThrowsError() {
+    @Test
+    void oneLinerBlockSameDoesNotThrowsError() {
+        MyStringBuilder builder = new MyStringBuilder();
+        builder.addLn("for(int i=0; i < 2; ++i) { return 2==2; }")
+                .addLn("if(true) { return true; }")
+                .addLn("else if(false) { return false; }")
+                .addLn("else if(0 == 0) { return 0 == 0; }")
+                .addLn("else { return 1 == 1; }");
+        String wrapper = wrap(builder.toString());
+        TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", wrapper)).run());
+    }
+
+    @Test
+    void bracketMoreThanOneLineAfterThrowsError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("public class Test")
                 .addLn("{")
@@ -157,7 +176,8 @@ public class BracesTest {
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(9, 9)));
     }
 
-    @Test void childMoreThanOneLineAfterThrowsError() {
+    @Test
+    void childMoreThanOneLineAfterThrowsError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("public class Test")
                 .addLn("{")
@@ -185,7 +205,8 @@ public class BracesTest {
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(12, 9)));
     }
 
-    @Test void oneLinerBlockDifferentThrowsMultipleError() {
+    @Test
+    void oneLinerBlockDifferentThrowsMultipleError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("for(int i=0; i < 2; ++i) {")
                 .addLn("return true;", 4)
@@ -214,7 +235,8 @@ public class BracesTest {
         TestUtils.reportContainsOnlyPositions(r.getErrors(), multiplePosition1, multiplePosition2);
     }
 
-    @Test void differentStartPropertyThrowsError() {
+    @Test
+    void differentStartPropertyThrowsError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("for(int i=0; i < 2; ++i) {")
                 .addLn("return true;", 4)
@@ -239,7 +261,8 @@ public class BracesTest {
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(6, 9)));
     }
 
-    @Test void notAlignedOpeningBracketThrowsError() {
+    @Test
+    void notAlignedOpeningBracketThrowsError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("public class Test")
                 .addLn("{")
@@ -260,7 +283,8 @@ public class BracesTest {
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(6, 10)));
     }
 
-    @Test void notAlignedClosingBracketThrowsError() {
+    @Test
+    void notAlignedClosingBracketThrowsError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("public class Test")
                 .addLn("{")
@@ -281,7 +305,8 @@ public class BracesTest {
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(8, 10)));
     }
 
-    @Test void differentPropertiesThrowsError() {
+    @Test
+    void differentPropertiesThrowsError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("if(true) {")
                 .addLn("return true;", 4)
@@ -311,7 +336,8 @@ public class BracesTest {
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(12, 11)));
     }
 
-    @Test void differentEndPropertyThrowsError() {
+    @Test
+    void differentEndPropertyThrowsError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("if(true)")
                 .addLn("return true;", 4)
@@ -339,7 +365,8 @@ public class BracesTest {
         TestUtils.reportContainsPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(7, 11)));
     }
 
-    @Test void annotationDoesNotCauseError() {
+    @Test
+    void annotationDoesNotCauseError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("public class Test {")
                 .addLn("@Override", 4)
@@ -350,7 +377,8 @@ public class BracesTest {
         TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", builder.toString())).run());
     }
 
-    @Test void simpleIfElseTestTriggerError() {
+    @Test
+    void simpleIfElseTestTriggerError() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("class Class {")
                 .addLn("void m() {", 4)
@@ -368,7 +396,8 @@ public class BracesTest {
         TestUtils.reportContainsOnlyPositions(r.getErrors(), new NamePosition("For tests", new SinglePosition(6, 9)));
     }
 
-    @Test void annotationBeforeParentDoesNotFail() {
+    @Test
+    void annotationBeforeParentDoesNotFail() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("public class Test")
                 .addLn("{")
@@ -381,7 +410,8 @@ public class BracesTest {
         TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", builder.toString())).run());
     }
 
-    @Test void multiLineParametersDoesNotFail() {
+    @Test
+    void multiLineParametersDoesNotFail() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("public class Test")
                 .addLn("{")
@@ -397,7 +427,8 @@ public class BracesTest {
         TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", builder.toString())).run());
     }
 
-    @Test void multiLineEndSameLineParametersDoesNotFail() {
+    @Test
+    void multiLineEndSameLineParametersDoesNotFail() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("public class Test")
                 .addLn("{")
@@ -413,7 +444,8 @@ public class BracesTest {
         TestUtils.checkIsEmptyReport(new Braces(new StringProvider("For tests", builder.toString())).run());
     }
 
-    @Test void annotationBeforeClassDoesNotFail() {
+    @Test
+    void annotationBeforeClassDoesNotFail() {
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("@TODO(\"Test\")")
                 .addLn("public class Test")
