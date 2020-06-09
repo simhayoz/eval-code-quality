@@ -168,18 +168,14 @@ public class Braces extends CompilationUnitCheck {
 
     private void addIfOneLiner(SinglePosition parentStart, Statement statement) {
         if (statement.isBlockStmt() && statement.asBlockStmt().getStatements().size() == 1) {
-            if (statement.getEnd().isPresent() && parentStart.line == statement.getEnd().get().line) {
-                add(oneLinerProperties, OneLinerBlock.BRACES_SAME_LINE, context.getPos(statement));
-            } else {
-                add(oneLinerProperties, OneLinerBlock.BRACES_MULTI_LINE, context.getPos(statement));
-            }
+            add(oneLinerProperties,
+                    statement.getEnd().isPresent() && parentStart.line == statement.getEnd().get().line ? OneLinerBlock.BRACES_SAME_LINE : OneLinerBlock.BRACES_MULTI_LINE,
+                    context.getPos(statement));
         }
         if (!statement.isBlockStmt()) {
-            if (statement.getEnd().isPresent() && parentStart.line == statement.getEnd().get().line) {
-                add(oneLinerProperties, OneLinerBlock.NO_BRACES_SAME_LINE, context.getPos(statement));
-            } else {
-                add(oneLinerProperties, OneLinerBlock.NO_BRACES_MULTI_LINE, context.getPos(statement));
-            }
+            add(oneLinerProperties,
+                    statement.getEnd().isPresent() && parentStart.line == statement.getEnd().get().line ? OneLinerBlock.NO_BRACES_SAME_LINE : OneLinerBlock.NO_BRACES_MULTI_LINE,
+                    context.getPos(statement));
         }
     }
 
