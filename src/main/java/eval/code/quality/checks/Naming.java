@@ -60,7 +60,9 @@ public class Naming extends CompilationUnitCheck {
 
     private void checkName(String type, Modifiers modifiers, Map<NameProperty, List<Position>> map) {
         if(map.size() > 1) {
-            inferMapProperty.checkAndReport(getRealProperty(new ArrayList<>(map.entrySet()).iterator()),
+            List<Map.Entry<NameProperty, List<Position>>> orderedList = new ArrayList<>(map.entrySet());
+            orderedList.sort(Comparator.comparingInt(e -> -e.getValue().size()));
+            inferMapProperty.checkAndReport(getRealProperty(orderedList.iterator()),
                     "naming convention for " + type + " with " + (modifiers.modifiers.isEmpty() ? "no modifiers" : "modifiers: " + modifiers),
                     true);
         }
