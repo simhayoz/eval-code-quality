@@ -60,56 +60,47 @@ public class Naming extends CompilationUnitCheck {
 
     private void checkName(String type, Modifiers modifiers, Map<NameProperty, List<Position>> map) {
         if(map.size() > 1) {
-            List<Map.Entry<NameProperty, List<Position>>> orderedList = new ArrayList<>(map.entrySet());
-            orderedList.sort(Comparator.comparingInt(e -> -e.getValue().size()));
-            List<Map.Entry<NameProperty, List<Position>>> sameSize = new ArrayList<>();
-            List<Map.Entry<NameProperty, List<Position>>> smallerSize = new ArrayList<>();
-            int maxSize = orderedList.get(0).getValue().size();
-            orderedList.forEach(e -> (e.getValue().size() == maxSize ? sameSize : smallerSize).add(e));
-            Node<NameProperty> root = NamePropertyTree.getCurrentNodeForTree(orderedList.get(0).getKey());
-            if(sameSize.size() > 1) {
-                Map<Position, NameProperty> accumulator = new HashMap<>();
-                checkIsInSameTreePath(sameSize.iterator(), root, accumulator);
-                if(!accumulator.isEmpty()) {
-                    accumulator.put(getSingleOrMultiplePosition(orderedList.get(0).getValue()), orderedList.get(0).getKey());
-                    DescriptionBuilder builder = new DescriptionBuilder();
-                    accumulator.forEach((pos, nameProperty) -> builder.addPosition(pos, new Descriptor().setWas(nameProperty.toString())));
-                    builder.setExpected(modifiers != null ? "same naming convention for the same modifiers: " + modifiers : "same naming convention");
-                    builder.setName(type);
-                    addError(builder);
-                }
-            }
-            if(!smallerSize.isEmpty()) {
-                Map<Position, NameProperty> accumulator = new HashMap<>();
-                NameProperty expected = checkIsInSameTreePath(smallerSize.iterator(), root, accumulator);
-                accumulator.forEach((k, v) -> addError(new DescriptionBuilder()
-                        .addPosition(k, new Descriptor()
-                                .addToDescription(type + (modifiers != null ? " with " + (modifiers.modifiers.isEmpty() ? "no modifiers" : "modifiers: " + modifiers) : ""))
-                                .setExpected(expected.toString())
-                                .setWas(v.toString()))));
-            }
+            inferMapProperty.checkAndReport(getRealProperty(new ArrayList<>(map.entrySet()).iterator()),
+                    "naming convention for " + type + " with " + (modifiers.modifiers.isEmpty() ? "no modifiers" : "modifiers: " + modifiers),
+                    true);
         }
     }
 
-    private NameProperty checkIsInSameTreePath(Iterator<Map.Entry<NameProperty, List<Position>>> iterator, Node<NameProperty> currentNode, Map<Position, NameProperty> errorAccumulator) {
+    private Map<NameProperty, List<Position>> getRealProperty(Iterator<Map.Entry<NameProperty, List<Position>>> iterator) {
+        List<Map.Entry<NameProperty, List<Position>>> acc = new ArrayList<>();
+        getRealProperty(iterator, acc);
+        Map<NameProperty, List<Position>> map = new HashMap<>();
+        acc.forEach(el -> map.put(el.getKey(), el.getValue()));
+        return map;
+    }
+
+    private void getRealProperty(Iterator<Map.Entry<NameProperty, List<Position>>> iterator, List<Map.Entry<NameProperty, List<Position>>> acc) {
         if(iterator.hasNext()) {
             Map.Entry<NameProperty, List<Position>> current = iterator.next();
-            if(!current.getKey().equals(currentNode.value)) {
-                if(currentNode.hasParent(current.getKey())) {
-                    checkIsInSameTreePath(iterator, currentNode, errorAccumulator);
+            boolean wasFound = false;
+            for(int i = 0; i < acc.size() && !wasFound; ++i) {
+                Node<NameProperty> node = NamePropertyTree.getCurrentNodeForTree(acc.get(i).getKey());
+                if(current.getKey().equals(node.value) || node.hasParent(current.getKey())) {
+                    acc.get(i).getValue().addAll(current.getValue());
+                    wasFound = true;
                 } else {
-                    Node<NameProperty> child = currentNode.getChildrenWithValueOrNull(current.getKey());
-                    if(child == null) {
-                        errorAccumulator.put(getSingleOrMultiplePosition(current.getValue()), current.getKey());
-                    } else {
-                        return checkIsInSameTreePath(iterator, child, errorAccumulator);
+                    Node<NameProperty> child = node.getChildrenWithValueOrNull(current.getKey());
+                    if(child != null) {
+                        List<Position> allPositions = new ArrayList<>();
+                        allPositions.addAll(acc.get(i).getValue());
+                        allPositions.addAll(current.getValue());
+                        acc.remove(i);
+                        acc.add(new AbstractMap.SimpleEntry<>(child.value, allPositions));
+                        wasFound = true;
                     }
                 }
-            } else {
-                return checkIsInSameTreePath(iterator, currentNode, errorAccumulator);
             }
+            if(!wasFound) {
+                acc.add(new AbstractMap.SimpleEntry<>(current.getKey(), current.getValue()));
+            }
+            acc.sort(Comparator.comparingInt(entry -> -entry.getValue().size()));
+            getRealProperty(iterator, acc);
         }
-        return currentNode.value;
     }
 
     private void addToMap(Map<Modifiers, Map<NameProperty, List<Position>>> map, NodeList<Modifier> modifierList, Position position, String name) {
@@ -135,10 +126,6 @@ public class Naming extends CompilationUnitCheck {
             map.put(nameProperty, list);
         }
         return map;
-    }
-
-    private Position getSingleOrMultiplePosition(List<Position> positions) {
-        return positions.size() == 1 ? positions.get(0) : new MultiplePosition(positions);
     }
 
     @Override

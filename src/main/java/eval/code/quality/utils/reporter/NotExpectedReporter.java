@@ -40,7 +40,7 @@ public class NotExpectedReporter<T> {
         List<Description> descriptions = new ArrayList<>();
         for (T element : notExpected) {
             if (!map.get(element).isEmpty()) {
-                String expectedString = expected.size() == 1 ? expected.get(0).toString() : expected.toString();
+                String expectedString = expected.size() == 1 ? expected.get(0).toString() : "one of: " + expected.toString();
                 if (map.get(element).size() > 1) {
                     MultiplePosition positions = new MultiplePosition();
                     map.get(element).forEach(positions::add);
