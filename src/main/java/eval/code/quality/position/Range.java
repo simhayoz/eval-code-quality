@@ -62,8 +62,12 @@ public class Range extends Position {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Range that = (Range) o;
         return this.begin.equals(that.begin) && this.end.equals(that.end);
     }

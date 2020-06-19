@@ -17,6 +17,7 @@ public class Description implements XMLParsable {
 
     private final List<PositionDescription> positions;
     private final Descriptor descriptor;
+    private final String name;
 
     /**
      * Create a new {@code Description}.
@@ -25,9 +26,14 @@ public class Description implements XMLParsable {
      * @param descriptor the descriptor representing different element of the description
      */
     public Description(List<PositionDescription> positions, Descriptor descriptor) {
+        this(positions, descriptor, null);
+    }
+
+    public Description(List<PositionDescription> positions, Descriptor descriptor, String name) {
         Preconditions.checkArg(descriptor != null, "Descriptor can not be null");
         this.positions = positions;
         this.descriptor = descriptor;
+        this.name = name;
     }
 
     /**
@@ -71,7 +77,7 @@ public class Description implements XMLParsable {
      * @return the pretty printed description
      */
     public String prettyPrintError() {
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = name != null ? new StringBuilder( name.substring(0, 1).toUpperCase() + name.substring(1) + ": ") : new StringBuilder();
         if (cannotInferError()) {
             builder.append("Cannot infer unique property from ")
                     .append(positions.size())

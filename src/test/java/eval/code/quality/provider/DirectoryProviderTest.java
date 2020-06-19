@@ -1,5 +1,6 @@
 package eval.code.quality.provider;
 
+import eval.code.quality.utils.DirectoryNotFoundError;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class DirectoryProviderTest {
     
     @Test void nullOrNonExistingPathThrowsIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new DirectoryProvider(null));
-        assertThrows(IllegalArgumentException.class, () -> new DirectoryProvider("non/existing/path"));
+        assertThrows(DirectoryNotFoundError.class, () -> new DirectoryProvider("non/existing/path"));
     }
 
     @Test void canCreateFromSimpleDirectory() {
@@ -34,6 +35,6 @@ public class DirectoryProviderTest {
     }
 
     @Test void tryingToListFileFails() {
-        assertThrows(IllegalArgumentException.class, () -> new DirectoryProvider("assets/tests/FileProvider.java"));
+        assertThrows(DirectoryNotFoundError.class, () -> new DirectoryProvider("assets/tests/FileProvider.java"));
     }
 }

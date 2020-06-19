@@ -73,8 +73,9 @@ public abstract class Check implements XMLParsable {
     public abstract String getName();
 
     private void printLine(String s) {
-        if (verbose)
+        if (verbose) {
             System.out.println(s);
+        }
     }
 
     private void printDebugError(Description e) {

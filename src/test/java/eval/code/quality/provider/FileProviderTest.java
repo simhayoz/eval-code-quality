@@ -1,6 +1,7 @@
 package eval.code.quality.provider;
 
 import com.github.javaparser.StaticJavaParser;
+import eval.code.quality.utils.FileNotFoundError;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +22,7 @@ public class FileProviderTest {
     @Test
     void nullInputThrowsIllegalArgument() {
         assertThrows(IllegalArgumentException.class, () -> new FileProvider(null));
-        assertThrows(IllegalArgumentException.class, () -> new FileProvider(new File("unknown_path")));
+        assertThrows(FileNotFoundError.class, () -> new FileProvider(new File("unknown_path")));
     }
 
     @Test void canGetStringFromProvider() {

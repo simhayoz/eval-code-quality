@@ -4,7 +4,6 @@ import eval.code.quality.checks.pattern.BuilderPattern;
 import eval.code.quality.checks.pattern.SingletonPattern;
 import eval.code.quality.checks.pattern.VisitorPattern;
 import eval.code.quality.provider.ContentProvider;
-import eval.code.quality.utils.description.DescriptionBuilder;
 import eval.code.quality.utils.evaluator.BooleanEvaluator;
 
 import java.util.List;
@@ -19,15 +18,11 @@ public abstract class DesignPattern extends Check {
 
     @Override
     protected void check() {
-        try {
-            BooleanEvaluator booleanEvaluator = getEvaluator(contentProvider);
-            booleanEvaluator.reportMismatches(this);
-        } catch (ClassNotFoundException e) {
-            addError(new DescriptionBuilder().addToDescription("Class not found: " + e.getMessage()).build());
-        }
+        BooleanEvaluator booleanEvaluator = getEvaluator(contentProvider);
+        booleanEvaluator.reportMismatches(this);
     }
 
-    protected abstract BooleanEvaluator getEvaluator(ContentProvider contentProvider) throws ClassNotFoundException;
+    protected abstract BooleanEvaluator getEvaluator(ContentProvider contentProvider);
 
     protected String addChevrons(String stringContent) {
         return "<" + stringContent + ">";

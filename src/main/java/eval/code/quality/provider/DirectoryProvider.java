@@ -1,5 +1,6 @@
 package eval.code.quality.provider;
 
+import eval.code.quality.utils.DirectoryNotFoundError;
 import eval.code.quality.utils.Preconditions;
 
 import java.io.File;
@@ -28,8 +29,9 @@ public class DirectoryProvider extends MultipleContentProvider {
     private static List<ContentProvider> getListOfFileProvider(String path) {
         Preconditions.checkArg(path != null, "Path to directory can not be null");
         File directory = new File(path);
-        Preconditions.checkArg(directory.exists(), "Path to directory does not exist");
-        Preconditions.checkArg(directory.isDirectory(), "Path does not lead to a directory");
+        if(!directory.exists() || !directory.isDirectory()) {
+            throw new DirectoryNotFoundError("Path to directory does not exist or does not lead to a directory");
+        }
         List<File> acc = new ArrayList<>();
         findFileWithExtension(directory, acc);
         return acc.stream().map(FileProvider::new).collect(Collectors.toList());

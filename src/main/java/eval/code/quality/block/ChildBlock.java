@@ -7,7 +7,7 @@ import eval.code.quality.position.SinglePosition;
 import java.util.List;
 
 /**
- * Represents a child block, i.e. if else(...), catch(...) or while(); part of a statement.
+ * Represents a child block, i.e. else if(...), catch(...) or while(); part of a statement.
  */
 public class ChildBlock {
 
@@ -26,6 +26,15 @@ public class ChildBlock {
         this.parent = parent;
         this.bracesPosition = bracesPosition;
         this.childStatements = childStatements;
+    }
+
+    /**
+     * Get the parent end line (header end of line).
+     *
+     * @return the parent end line
+     */
+    public int getParentLineEnd() {
+        return parent.line;
     }
 
     @Override

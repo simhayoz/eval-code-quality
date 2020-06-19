@@ -11,7 +11,7 @@ import eval.code.quality.utils.description.Description;
 import eval.code.quality.utils.description.DescriptionBuilder;
 import eval.code.quality.utils.description.Descriptor;
 import eval.code.quality.utils.reporter.ExpectedReporter;
-import eval.code.quality.utils.reporter.NotExpectedReporter;
+import eval.code.quality.utils.reporter.NamedNotExpectedReporter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -51,7 +51,7 @@ public class Indentation extends CompilationUnitCheck {
 
     @Override
     protected void afterChecks() {
-        inferMapProperty.checkAndReport(blockIndentations, true);
+        inferMapProperty.checkAndReport(blockIndentations, "indentation difference", true);
     }
 
     private void checkAlignLeft(Node node) {
@@ -82,7 +82,7 @@ public class Indentation extends CompilationUnitCheck {
                     }
                 } else {
                     addError(new DescriptionBuilder()
-                            .addPosition(context.getPos(child), new Descriptor().addToDescription("less indented or equally indented than parent")));
+                            .addPosition(context.getPos(child), new Descriptor().setWas((diff == 0 ? "equally" : "less") + " indented than parent").setExpected("more indented than parent")));
                 }
             });
         }
@@ -100,7 +100,7 @@ public class Indentation extends CompilationUnitCheck {
             public Description reportMultipleExpected(Map<Integer, List<Position>> map, List<Integer> properties) {
                 return new DescriptionBuilder().addPosition(blockRange, new Descriptor().setExpected("all indented at one of: " + properties.toString()).addToDescription("block misaligned")).build();
             }
-        }, new NotExpectedReporter<>(), false);
+        }, new NamedNotExpectedReporter<>("indentation difference"), false);
         if (indentationByDiff.size() == 1) {
             addToBlockIndentation(indentationByDiff.entrySet().iterator().next().getKey(), blockRange);
         }

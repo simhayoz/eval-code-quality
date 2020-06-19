@@ -28,7 +28,6 @@ public class Naming extends CompilationUnitCheck {
     private final Map<Modifiers, Map<NameProperty, List<Position>>> fieldDeclarations = new HashMap<>();
     private final Map<Modifiers, Map<NameProperty, List<Position>>> variableDeclarations = new HashMap<>();
 
-
     public Naming(ContentProvider contentProvider) {
         super(contentProvider);
     }
@@ -50,16 +49,16 @@ public class Naming extends CompilationUnitCheck {
 
     @Override
     protected void afterChecks() {
-        classDeclarations.forEach(this::checkName);
-        enumDeclarations.forEach(this::checkName);
-        enumValues.forEach(this::checkName);
-        annotationDeclarations.forEach(this::checkName);
-        methodDeclarations.forEach(this::checkName);
-        fieldDeclarations.forEach(this::checkName);
-        variableDeclarations.forEach(this::checkName);
+        classDeclarations.forEach((modifier, map) -> checkName("class declaration", modifier, map));
+        enumDeclarations.forEach((modifier, map) -> checkName("enum declaration", modifier, map));
+        enumValues.forEach((modifier, map) -> checkName("enum constant", modifier, map));
+        annotationDeclarations.forEach((modifier, map) -> checkName("annotation declaration", modifier, map));
+        methodDeclarations.forEach((modifier, map) -> checkName("method declaration", modifier, map));
+        fieldDeclarations.forEach((modifier, map) -> checkName("field declaration", modifier, map));
+        variableDeclarations.forEach((modifier, map) -> checkName("variable declaration", modifier, map));
     }
 
-    private void checkName(Modifiers modifiers, Map<NameProperty, List<Position>> map) {
+    private void checkName(String type, Modifiers modifiers, Map<NameProperty, List<Position>> map) {
         if(map.size() > 1) {
             List<Map.Entry<NameProperty, List<Position>>> orderedList = new ArrayList<>(map.entrySet());
             orderedList.sort(Comparator.comparingInt(e -> -e.getValue().size()));
@@ -76,6 +75,7 @@ public class Naming extends CompilationUnitCheck {
                     DescriptionBuilder builder = new DescriptionBuilder();
                     accumulator.forEach((pos, nameProperty) -> builder.addPosition(pos, new Descriptor().setWas(nameProperty.toString())));
                     builder.setExpected(modifiers != null ? "same naming convention for the same modifiers: " + modifiers : "same naming convention");
+                    builder.setName(type);
                     addError(builder);
                 }
             }
@@ -83,7 +83,10 @@ public class Naming extends CompilationUnitCheck {
                 Map<Position, NameProperty> accumulator = new HashMap<>();
                 NameProperty expected = checkIsInSameTreePath(smallerSize.iterator(), root, accumulator);
                 accumulator.forEach((k, v) -> addError(new DescriptionBuilder()
-                        .addPosition(k, new Descriptor().setExpected((modifiers != null ? "for the modifiers: " + modifiers + ": " : "") + expected).setWas(v.toString()))));
+                        .addPosition(k, new Descriptor()
+                                .addToDescription(type + (modifiers != null ? " with " + (modifiers.modifiers.isEmpty() ? "no modifiers" : "modifiers: " + modifiers) : ""))
+                                .setExpected(expected.toString())
+                                .setWas(v.toString()))));
             }
         }
     }
@@ -148,8 +151,12 @@ public class Naming extends CompilationUnitCheck {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Modifiers that = (Modifiers) o;
             return Objects.equals(this.modifiers, that.modifiers);
         }

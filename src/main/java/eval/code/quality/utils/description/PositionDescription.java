@@ -30,8 +30,12 @@ public class PositionDescription implements XMLParsable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         PositionDescription that = (PositionDescription) o;
         return Objects.equals(position, that.position);
     }

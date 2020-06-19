@@ -1,10 +1,8 @@
 package eval.code.quality.checks;
 
 import com.github.javaparser.ast.CompilationUnit;
-import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.stmt.*;
 import eval.code.quality.block.ChildBlock;
-import eval.code.quality.block.IfBlock;
 import eval.code.quality.block.ParentBlock;
 import eval.code.quality.position.Position;
 import eval.code.quality.position.Range;
@@ -59,7 +57,7 @@ public class Braces extends CompilationUnitCheck {
     @Override
     protected void afterChecks() {
         checkSameStyleBrace();
-        inferMapProperty.checkAndReport(oneLinerProperties, "one liner block with brace", true);
+        inferMapProperty.checkAndReport(oneLinerProperties, "one liner block", true);
     }
 
     private void checkSameStyleBrace() {
@@ -75,7 +73,7 @@ public class Braces extends CompilationUnitCheck {
                     && !parentBlock.childStatements.isEmpty()
                     && !sameLineBlock(parentBlock)) {
                 addError(new DescriptionBuilder()
-                        .addPosition(context.getPos(parentBlock.bracesPosition.end), new Descriptor().addToDescription("Closing brace is not aligned with parent")));
+                        .addPosition(context.getPos(parentBlock.bracesPosition.end), new Descriptor().addToDescription("closing brace is not aligned with parent")));
             }
         }
         Range prevBlock = parentBlock.bracesPosition;
@@ -85,22 +83,22 @@ public class Braces extends CompilationUnitCheck {
             if (prevBlock == null) {
                 if (child.column.get() != parentColumn) {
                     addError(new DescriptionBuilder()
-                            .addPosition(context.getPos(child), new Descriptor().addToDescription("Child is not aligned with parent")));
+                            .addPosition(context.getPos(child), new Descriptor().addToDescription("child is not aligned with parent")));
                 }
                 if (currBlock != null) {
-                    addToMap(getOpeningType(child.line, parentColumn, currBlock.begin), null, context.getPos(parentBlock.parent));
+                    addToMap(getOpeningType(childBlock.getParentLineEnd(), parentColumn, currBlock.begin), null, context.getPos(parentBlock.parent));
                     if (currBlock.end.column.get() != parentColumn
                             && !childBlock.childStatements.isEmpty()
                             && !sameLineBlock(childBlock)) {
                         addError(new DescriptionBuilder()
-                                .addPosition(context.getPos(currBlock.end), new Descriptor().addToDescription("Closing brace is not aligned with parent")));
+                                .addPosition(context.getPos(currBlock.end), new Descriptor().addToDescription("closing brace is not aligned with parent")));
                     }
                 }
             } else {
                 if (currBlock == null) {
                     addToMap(null, getClosingType(parentColumn, prevBlock.end, child), context.getPos(child));
                 } else {
-                    addToMap(getOpeningType(child.line, parentColumn, currBlock.begin),
+                    addToMap(getOpeningType(childBlock.getParentLineEnd(), parentColumn, currBlock.begin),
                             getClosingType(parentColumn, prevBlock.end, child), context.getPos(child));
                 }
             }
@@ -109,7 +107,7 @@ public class Braces extends CompilationUnitCheck {
     }
 
     private boolean sameLineBlock(ChildBlock childBlock) {
-        return childBlock.childStatements.size() == 1 && childBlock.bracesPosition.end.line == childBlock.parent.line;
+        return childBlock.childStatements.size() == 1 && childBlock.bracesPosition.end.line == childBlock.getParentLineEnd();
     }
 
     private boolean sameLineBlock(ParentBlock parentBlock) {
@@ -118,16 +116,16 @@ public class Braces extends CompilationUnitCheck {
 
     private BracesProperty getClosingType(int parentColumn, SinglePosition prevBracePos, SinglePosition childPos) {
         if (prevBracePos.line == childPos.line) {
-            return BracesProperty.SAME_LINE;
+            return BracesProperty.SameLine;
         } else if (prevBracePos.line + 1 == childPos.line) {
             if (childPos.column.get() != parentColumn) {
                 addError(new DescriptionBuilder()
-                        .addPosition(context.getPos(childPos), new Descriptor().addToDescription("Child is not aligned with parent")));
+                        .addPosition(context.getPos(childPos), new Descriptor().addToDescription("--child is not aligned with parent")));
             }
-            return BracesProperty.NEXT_LINE;
+            return BracesProperty.NextLine;
         } else {
             addError(new DescriptionBuilder()
-                    .addPosition(context.getPos(childPos), new Descriptor().addToDescription("Child was more than one line after closing brace of previous element")));
+                    .addPosition(context.getPos(childPos), new Descriptor().addToDescription("child was more than one line after closing brace of previous element")));
             return null;
         }
     }
@@ -135,16 +133,16 @@ public class Braces extends CompilationUnitCheck {
     private BracesProperty getOpeningType(int parentLine, int parentColumn, SinglePosition bracePos) {
         if (braceHasElementBefore(context.getContentProvider().getString(), bracePos) || bracePos.line == parentLine) {
             // Specific check for multiple line header (method declaration with @annotation, if on multiple line, etc)
-            return BracesProperty.SAME_LINE;
+            return BracesProperty.SameLine;
         } else if (bracePos.line == parentLine + 1) {
             if (bracePos.column.get() != parentColumn) {
                 addError(new DescriptionBuilder()
-                        .addPosition(context.getPos(bracePos), new Descriptor().addToDescription("Opening brace is not aligned with parent")));
+                        .addPosition(context.getPos(bracePos), new Descriptor().addToDescription("opening brace is not aligned with parent")));
             }
-            return BracesProperty.NEXT_LINE;
+            return BracesProperty.NextLine;
         } else {
             addError(new DescriptionBuilder()
-                    .addPosition(context.getPos(bracePos), new Descriptor().addToDescription("Opening brace was more than one line after parent")));
+                    .addPosition(context.getPos(bracePos), new Descriptor().addToDescription("opening brace was more than one line after parent")));
             return null;
         }
     }
@@ -169,12 +167,12 @@ public class Braces extends CompilationUnitCheck {
     private void addIfOneLiner(SinglePosition parentStart, Statement statement) {
         if (statement.isBlockStmt() && statement.asBlockStmt().getStatements().size() == 1) {
             add(oneLinerProperties,
-                    statement.getEnd().isPresent() && parentStart.line == statement.getEnd().get().line ? OneLinerBlock.BRACES_SAME_LINE : OneLinerBlock.BRACES_MULTI_LINE,
+                    statement.getEnd().isPresent() && parentStart.line == statement.getEnd().get().line ? OneLinerBlock.BracesSameLine : OneLinerBlock.BracesMultiLine,
                     context.getPos(statement));
         }
         if (!statement.isBlockStmt()) {
             add(oneLinerProperties,
-                    statement.getEnd().isPresent() && parentStart.line == statement.getEnd().get().line ? OneLinerBlock.NO_BRACES_SAME_LINE : OneLinerBlock.NO_BRACES_MULTI_LINE,
+                    statement.getEnd().isPresent() && parentStart.line == statement.getEnd().get().line ? OneLinerBlock.NoBracesSameLine : OneLinerBlock.NoBracesMultiLine,
                     context.getPos(statement));
         }
     }
@@ -184,15 +182,36 @@ public class Braces extends CompilationUnitCheck {
     }
 
     private enum BracesProperty {
-        SAME_LINE,
-        NEXT_LINE
+        SameLine("same line"),
+        NextLine("next line");
+        private final String name;
+
+        BracesProperty(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 
     private enum OneLinerBlock {
-        BRACES_SAME_LINE,
-        BRACES_MULTI_LINE,
-        NO_BRACES_SAME_LINE,
-        NO_BRACES_MULTI_LINE
+        BracesSameLine("has braces and on same line than parent"),
+        BracesMultiLine("has braces and on multiple line"),
+        NoBracesSameLine("no braces and same line than parent"),
+        NoBracesMultiLine("no braces and on multiple line");
+
+        private final String name;
+
+        OneLinerBlock(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 
     @Override

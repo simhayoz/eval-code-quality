@@ -12,9 +12,6 @@ import eval.code.quality.position.Range;
 import eval.code.quality.position.SinglePosition;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Represents a parent block.
@@ -35,24 +32,6 @@ public class ParentBlock {
         this.bracesPosition = bracesPosition;
         this.childStatements = childStatements;
         this.childBlocks = childBlocks;
-    }
-
-    /**
-     * Get the parent start position.
-     *
-     * @return the parent start position
-     */
-    public Position getParentStart() {
-        return parent.getBegin().get();
-    }
-
-    /**
-     * Get the parent end line (header end of line).
-     *
-     * @return the parent end line
-     */
-    public int getParentLineEnd() {
-        return parent.getBegin().get().line;
     }
 
     /**
@@ -133,6 +112,21 @@ public class ParentBlock {
     }
 
     /**
+     * Get position of the closing parenthesis.
+     *
+     * @param node the node to get the parenthesis from
+     * @return the position of the closing parenthesis
+     */
+    public static SinglePosition getPositionNextParenthesis(Node node) {
+        for (JavaToken token : node.getTokenRange().get()) {
+            if (token.asString().equals(")")) {
+                return SinglePosition.from(token.getRange().get().begin);
+            }
+        }
+        return null;
+    }
+
+    /**
      * Get the index of the next matching string from line {@code fromLine} inside {@code content}.
      *
      * @param content  the content to find the next matching string from
@@ -166,41 +160,6 @@ public class ParentBlock {
     }
 
     /**
-     * Get the index of the next matching pattern from line {@code fromLine} inside {@code content}.
-     *
-     * @param content  the content to find the next matching pattern from
-     * @param pattern  the pattern to find
-     * @param fromLine starting line of the search
-     * @return the index of the next matching pattern from line {@code fromLine} inside {@code content}
-     */
-    protected static SinglePosition getIndexNext(String content, Pattern pattern, int fromLine) {
-        List<String> contents = Arrays.asList(content.split(System.lineSeparator()));
-        String smallerContent = contents.subList(fromLine - 1, contents.size()).stream().collect(Collectors.joining(System.lineSeparator()));
-        Matcher matcher = pattern.matcher(smallerContent);
-        if (matcher.find()) {
-            int after = matcher.end();
-            Scanner scanner = new Scanner(content);
-            int currentLine = 1;
-            for (int i = 1; i < fromLine && scanner.hasNextLine(); ++i) {
-                scanner.nextLine();
-                currentLine++;
-            }
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                if (after - line.length() <= 0) {
-                    scanner.close();
-                    return new SinglePosition(currentLine, after);
-                } else {
-                    after -= line.length() + 1;
-                }
-                currentLine++;
-            }
-            scanner.close();
-        }
-        return null;
-    }
-
-    /**
      * Get braces range from body declaration.
      *
      * @param node the body declaration
@@ -214,6 +173,24 @@ public class ParentBlock {
             }
         }
         return null;
+    }
+
+    /**
+     * Get the parent start position.
+     *
+     * @return the parent start position
+     */
+    public Position getParentStart() {
+        return parent.getBegin().get();
+    }
+
+    /**
+     * Get the parent end line (header end of line).
+     *
+     * @return the parent end line
+     */
+    public int getParentLineEnd() {
+        return parent.getBegin().get().line;
     }
 
     @Override

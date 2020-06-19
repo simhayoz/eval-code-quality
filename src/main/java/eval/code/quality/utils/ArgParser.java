@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  */
 public class ArgParser {
 
-    private static final ArgParser instance = new ArgParser();
+    private static final ArgParser INSTANCE = new ArgParser();
     private final Options options = new Options();
     private final HelpFormatter formatter = new HelpFormatter();
 
@@ -34,7 +34,7 @@ public class ArgParser {
      * @return the instance of {@code ArgParser}
      */
     public static ArgParser getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     /**
