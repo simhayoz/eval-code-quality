@@ -34,7 +34,7 @@ public class OutputParameter extends RunParameter<File> {
                 }
                 return new File(cmd.getOptionValue("output"));
             } else {
-                System.out.println("Error: Can not parse to another format than xml");
+                System.out.println("Error: cannot parse to another format than xml");
                 ArgParser.getInstance().printCmdHelp();
                 System.exit(1);
             }
@@ -43,7 +43,7 @@ public class OutputParameter extends RunParameter<File> {
             if (jsonObject.getString("output").substring(jsonObject.getString("output").lastIndexOf(".") + 1).trim().toLowerCase().equals("xml")) {
                 return new File(jsonObject.getString("output"));
             } else {
-                throwErrorJSON("Can not parse to another format than xml");
+                throwErrorJSON("Cannot parse to another format than xml");
             }
         }
         return null;

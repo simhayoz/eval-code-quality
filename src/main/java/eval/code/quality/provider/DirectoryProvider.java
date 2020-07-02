@@ -27,7 +27,7 @@ public class DirectoryProvider extends MultipleContentProvider {
     }
 
     private static List<ContentProvider> getListOfFileProvider(String path) {
-        Preconditions.checkArg(path != null, "Path to directory can not be null");
+        Preconditions.checkArg(path != null, "Path to directory cannot be null");
         File directory = new File(path);
         if(!directory.exists() || !directory.isDirectory()) {
             throw new DirectoryNotFoundError("Path to directory does not exist or does not lead to a directory");

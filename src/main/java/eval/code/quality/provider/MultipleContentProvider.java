@@ -18,7 +18,7 @@ public class MultipleContentProvider extends ContentProvider {
      * @param contentProviders the list of content provider
      */
     public MultipleContentProvider(List<ContentProvider> contentProviders) {
-        Preconditions.checkArg(contentProviders != null, "The list of ContentProvider can not null");
+        Preconditions.checkArg(contentProviders != null, "The list of ContentProvider cannot null");
         this.contentProviders = contentProviders;
     }
 

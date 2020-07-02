@@ -21,7 +21,7 @@ public class Node<T> {
      * @param value  the value of this node
      */
     public Node(Node<T> parent, T value) {
-        Preconditions.checkArg(value != null, "Value of the node can not be null");
+        Preconditions.checkArg(value != null, "Value of the node cannot be null");
         this.parent = parent;
         this.value = value;
         this.children = null;

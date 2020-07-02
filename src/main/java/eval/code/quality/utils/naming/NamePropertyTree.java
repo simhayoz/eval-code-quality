@@ -65,7 +65,7 @@ public class NamePropertyTree {
      * @return the node corresponding to the {@code nameProperty}
      */
     public static Node<NameProperty> getCurrentNodeForTree(NameProperty nameProperty) {
-        Preconditions.checkArg(nameProperty != null, "The name property can not be null");
+        Preconditions.checkArg(nameProperty != null, "The name property cannot be null");
         Node<NameProperty> root = new NamePropertyTree(nameProperty).root;
         if(root.value.equals(nameProperty)) {
             return root;

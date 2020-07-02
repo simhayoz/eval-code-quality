@@ -20,8 +20,8 @@ public class CompilationUnitProvider extends ContentProvider {
      * @param compilationUnit the {@code CompilationUnit}
      */
     public CompilationUnitProvider(String name, CompilationUnit compilationUnit) {
-        Preconditions.checkArg(compilationUnit != null, "CompilationUnit can not be null");
-        Preconditions.checkArg(name != null, "CompilationUnit name can not be null");
+        Preconditions.checkArg(compilationUnit != null, "CompilationUnit cannot be null");
+        Preconditions.checkArg(name != null, "CompilationUnit name cannot be null");
         this.name = name;
         this.content = new Lazy<>(compilationUnit::toString);
         this.compilationUnit = compilationUnit;

@@ -32,8 +32,8 @@ public class TestSuite implements XMLParsable {
      * @param checks the list of test
      */
     public TestSuite(List<Check> checks, String name) {
-        Preconditions.checkArg(checks != null, "The test suite can not be null");
-        Preconditions.checkArg(name != null, "The test suite name can not be null");
+        Preconditions.checkArg(checks != null, "The test suite cannot be null");
+        Preconditions.checkArg(name != null, "The test suite name cannot be null");
         this.checks = checks;
         this.checkResults = new HashMap<>();
         this.name = name;

@@ -30,7 +30,7 @@ public class Description implements XMLParsable {
     }
 
     public Description(List<PositionDescription> positions, Descriptor descriptor, String name) {
-        Preconditions.checkArg(descriptor != null, "Descriptor can not be null");
+        Preconditions.checkArg(descriptor != null, "Descriptor cannot be null");
         this.positions = positions;
         this.descriptor = descriptor;
         this.name = name;

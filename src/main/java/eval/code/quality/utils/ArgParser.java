@@ -111,7 +111,7 @@ public class ArgParser {
                 }
                 jsonObject = new JSONObject(content);
             } else {
-                System.out.println("Can not parse input config to another format than json");
+                System.out.println("Cannot parse input config to another format than json");
                 getFormatter().printHelp("run", options);
                 exitSystem(1);
             }

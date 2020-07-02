@@ -23,7 +23,7 @@ public class Context implements Iterator<ContentProvider> {
      * @param contentProvider the content provider
      */
     public Context(ContentProvider contentProvider) {
-        Preconditions.checkArg(contentProvider != null, "The content provider can not be null");
+        Preconditions.checkArg(contentProvider != null, "The content provider cannot be null");
         this.firstElement = contentProvider;
         this.itContentProvider = contentProvider.iterator();
         this.currentContentProvider = null;
@@ -129,7 +129,7 @@ public class Context implements Iterator<ContentProvider> {
      * @return the named position
      */
     public Position getRange(List<? extends Node> nodes) {
-        Preconditions.checkArg(nodes != null && !nodes.isEmpty(), "Statements can not be null or empty");
+        Preconditions.checkArg(nodes != null && !nodes.isEmpty(), "Statements cannot be null or empty");
         if (nodes.size() == 1) {
             return getPos(nodes.get(0));
         }

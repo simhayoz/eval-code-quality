@@ -18,7 +18,7 @@ public class Lazy<T> {
      * @param sup the function to calculate only if needed
      */
     public Lazy(Supplier<T> sup) {
-        Preconditions.checkArg(sup != null, "The supplier can not be null");
+        Preconditions.checkArg(sup != null, "The supplier cannot be null");
         this.value = null;
         this.sup = sup;
         this.wasComputed = false;
