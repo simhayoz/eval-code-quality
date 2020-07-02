@@ -28,7 +28,7 @@ public class BooleanEvaluator {
      * @param booleanExpressions expressions to put in the evaluator
      */
     public BooleanEvaluator(List<BooleanExpression> booleanExpressions) {
-        Preconditions.checkArg(booleanExpressions != null, "Boolean expression can not be null");
+        Preconditions.checkArg(booleanExpressions != null, "Boolean expression cannot be null");
         this.booleanExpressions = booleanExpressions;
     }
 

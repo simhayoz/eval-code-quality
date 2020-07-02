@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<testSuite name="example">
+    <check name="indentation">
+        <report number_errors="1" number_warnings="0">
+            <errors>
+                <description>
+                    <positionDescription>
+                        <namedPosition name="assets/examples/CannotInferExample.java">
+                            <position col="13" line="9"/>
+                        </namedPosition>
+                        <descriptor>
+                            <description>indentation difference</description>
+                            <was>8</was>
+                            <expected>4</expected>
+                        </descriptor>
+                    </positionDescription>
+                </description>
+            </errors>
+            <warnings/>
+        </report>
+    </check>
+    <check name="blank lines">
+        <report number_errors="0" number_warnings="0">
+            <errors/>
+            <warnings/>
+        </report>
+    </check>
+    <check name="braces">
+        <report number_errors="1" number_warnings="0">
+            <errors>
+                <description>
+                    <positionDescription>
+                        <namedPosition name="assets/examples/ExampleSingletonPatternWithLazy.java">
+                            <position col="31" line="19"/>
+                        </namedPosition>
+                        <descriptor>
+                            <description>one liner block</description>
+                            <was>has braces and on multiple line</was>
+                            <expected>no braces and on multiple line</expected>
+                        </descriptor>
+                    </positionDescription>
+                </description>
+            </errors>
+            <warnings/>
+        </report>
+    </check>
+    <check name="naming">
+        <report number_errors="2" number_warnings="0">
+            <errors>
+                <description>
+                    <positionDescription>
+                        <namedPosition name="assets/examples/CannotInferExample.java">
+                            <position col="5" line="6"/>
+                        </namedPosition>
+                        <descriptor>
+                            <description>naming convention for field declaration with modifiers: [PRIVATE]</description>
+                            <was>{start:Upper,property:AllUpperUnderscore}</was>
+                            <expected>{start:Lower,property:CamelCase}</expected>
+                        </descriptor>
+                    </positionDescription>
+                </description>
+                <description>
+                    <positionDescription>
+                        <namedPosition name="assets/examples/CannotInferExample.java">
+                            <position col="5" line="5"/>
+                        </namedPosition>
+                        <descriptor>
+                            <description>naming convention for field declaration with modifiers: [PRIVATE]</description>
+                            <was>{start:Lower,property:AllLowerUnderscore}</was>
+                            <expected>{start:Lower,property:CamelCase}</expected>
+                        </descriptor>
+                    </positionDescription>
+                </description>
+            </errors>
+            <warnings/>
+        </report>
+    </check>
+    <check name="singleton pattern for class &lt;Connection&gt;">
+        <report number_errors="0" number_warnings="0">
+            <errors/>
+            <warnings/>
+        </report>
+    </check>
+    <check name="builder pattern for product &lt;Employee&gt; and builder &lt;Employee$Builder&gt;">
+        <report number_errors="0" number_warnings="0">
+            <errors/>
+            <warnings/>
+        </report>
+    </check>
+    <check name="visitor pattern for parent &lt;Item&gt;, children &lt;[Book, Fruit]&gt; and visitor &lt;Visitor&gt;">
+        <report number_errors="0" number_warnings="0">
+            <errors/>
+            <warnings/>
+        </report>
+    </check>
+</testSuite>

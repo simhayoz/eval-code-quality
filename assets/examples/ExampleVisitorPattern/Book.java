@@ -1,12 +1,4 @@
-/**
- * Chrissy Soulakian
- * VisitorPattern Project
- * Created on 4/25/2016
- *
- * Book is one of the two Concrete Elements.
- */
 public class Book implements Item {
-
     private String title;
     private double price;
 
@@ -24,7 +16,7 @@ public class Book implements Item {
     }
 
     @Override
-    public double accept(Visitor visitor) {
-        return visitor.visit(this);
+    public void accept(Visitor visitor) {
+        visitor.visit(this);
     }
 }

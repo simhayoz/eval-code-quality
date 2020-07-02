@@ -49,8 +49,12 @@ public class SinglePosition extends Position implements Comparable<SinglePositio
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         SinglePosition that = (SinglePosition) o;
         return this.line == that.line && this.column.equals(that.column);
     }

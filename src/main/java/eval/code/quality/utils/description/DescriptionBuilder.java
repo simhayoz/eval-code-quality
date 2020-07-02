@@ -12,6 +12,7 @@ public class DescriptionBuilder {
 
     private final List<PositionDescription> positions;
     private final Descriptor descriptor;
+    private String name;
 
     /**
      * Create a new {@code DescriptionBuilder}.
@@ -41,6 +42,16 @@ public class DescriptionBuilder {
      */
     public DescriptionBuilder addPosition(Position position, Descriptor descriptor) {
         positions.add(new PositionDescription(position, descriptor));
+        return this;
+    }
+
+    /**
+     * Set the name of the current description.
+     * @param name the name of the current description
+     * @return this
+     */
+    public DescriptionBuilder setName(String name) {
+        this.name = name;
         return this;
     }
 
@@ -83,6 +94,6 @@ public class DescriptionBuilder {
      * @return the constructed {@code Description}
      */
     public Description build() {
-        return new Description(positions.isEmpty() ? null : positions, descriptor);
+        return new Description(positions.isEmpty() ? null : positions, descriptor, name);
     }
 }

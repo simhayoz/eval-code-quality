@@ -61,8 +61,12 @@ public class Tuple<L, R> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Tuple<?, ?> tuple = (Tuple<?, ?>) o;
         return Objects.equals(_1, tuple._1) &&
                 Objects.equals(_2, tuple._2);

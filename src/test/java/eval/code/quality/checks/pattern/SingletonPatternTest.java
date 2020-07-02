@@ -12,14 +12,14 @@ import java.io.File;
 
 public class SingletonPatternTest {
 
-    @Test void singletonPatternDoesNotFail() {
-        ContentProvider singletonProvider = new FileProvider(new File("assets/tests/ExampleSingletonPattern.java"));
-        TestUtils.checkIsEmptyReport(new SingletonPattern(singletonProvider, "IvoryTower").run());
+    @Test void singletonPatternWithLazyDoesNotFail() {
+        ContentProvider singletonProvider = new FileProvider(new File("assets/examples/ExampleSingletonPatternWithLazy.java"));
+        TestUtils.checkIsEmptyReport(new SingletonPattern(singletonProvider, "Connection").run());
     }
 
-    @Test void singletonPatternWithLazyEvalDoesNotFail() {
-        ContentProvider singletonProvider = new FileProvider(new File("assets/tests/ExampleSingletonPatternWithLazyEval.java"));
-        TestUtils.checkIsEmptyReport(new SingletonPattern(singletonProvider, "IvoryTower2").run());
+    @Test void singletonPatternDoesNotFail() {
+        ContentProvider singletonProvider = new FileProvider(new File("assets/examples/ExampleSingletonPattern.java"));
+        TestUtils.checkIsEmptyReport(new SingletonPattern(singletonProvider, "Stack").run());
     }
 
     @Test void basicClassesFails() {

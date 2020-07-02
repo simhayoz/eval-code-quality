@@ -28,7 +28,6 @@ public class Naming extends CompilationUnitCheck {
     private final Map<Modifiers, Map<NameProperty, List<Position>>> fieldDeclarations = new HashMap<>();
     private final Map<Modifiers, Map<NameProperty, List<Position>>> variableDeclarations = new HashMap<>();
 
-
     public Naming(ContentProvider contentProvider) {
         super(contentProvider);
     }
@@ -50,63 +49,60 @@ public class Naming extends CompilationUnitCheck {
 
     @Override
     protected void afterChecks() {
-        classDeclarations.forEach(this::checkName);
-        enumDeclarations.forEach(this::checkName);
-        enumValues.forEach(this::checkName);
-        annotationDeclarations.forEach(this::checkName);
-        methodDeclarations.forEach(this::checkName);
-        fieldDeclarations.forEach(this::checkName);
-        variableDeclarations.forEach(this::checkName);
+        classDeclarations.forEach((modifier, map) -> checkName("class declaration", modifier, map));
+        enumDeclarations.forEach((modifier, map) -> checkName("enum declaration", modifier, map));
+        enumValues.forEach((modifier, map) -> checkName("enum constant", modifier, map));
+        annotationDeclarations.forEach((modifier, map) -> checkName("annotation declaration", modifier, map));
+        methodDeclarations.forEach((modifier, map) -> checkName("method declaration", modifier, map));
+        fieldDeclarations.forEach((modifier, map) -> checkName("field declaration", modifier, map));
+        variableDeclarations.forEach((modifier, map) -> checkName("variable declaration", modifier, map));
     }
 
-    private void checkName(Modifiers modifiers, Map<NameProperty, List<Position>> map) {
+    private void checkName(String type, Modifiers modifiers, Map<NameProperty, List<Position>> map) {
         if(map.size() > 1) {
             List<Map.Entry<NameProperty, List<Position>>> orderedList = new ArrayList<>(map.entrySet());
             orderedList.sort(Comparator.comparingInt(e -> -e.getValue().size()));
-            List<Map.Entry<NameProperty, List<Position>>> sameSize = new ArrayList<>();
-            List<Map.Entry<NameProperty, List<Position>>> smallerSize = new ArrayList<>();
-            int maxSize = orderedList.get(0).getValue().size();
-            orderedList.forEach(e -> (e.getValue().size() == maxSize ? sameSize : smallerSize).add(e));
-            Node<NameProperty> root = NamePropertyTree.getCurrentNodeForTree(orderedList.get(0).getKey());
-            if(sameSize.size() > 1) {
-                Map<Position, NameProperty> accumulator = new HashMap<>();
-                checkIsInSameTreePath(sameSize.iterator(), root, accumulator);
-                if(!accumulator.isEmpty()) {
-                    accumulator.put(getSingleOrMultiplePosition(orderedList.get(0).getValue()), orderedList.get(0).getKey());
-                    DescriptionBuilder builder = new DescriptionBuilder();
-                    accumulator.forEach((pos, nameProperty) -> builder.addPosition(pos, new Descriptor().setWas(nameProperty.toString())));
-                    builder.setExpected(modifiers != null ? "same naming convention for the same modifiers: " + modifiers : "same naming convention");
-                    addError(builder);
-                }
-            }
-            if(!smallerSize.isEmpty()) {
-                Map<Position, NameProperty> accumulator = new HashMap<>();
-                NameProperty expected = checkIsInSameTreePath(smallerSize.iterator(), root, accumulator);
-                accumulator.forEach((k, v) -> addError(new DescriptionBuilder()
-                        .addPosition(k, new Descriptor().setExpected((modifiers != null ? "for the modifiers: " + modifiers + ": " : "") + expected).setWas(v.toString()))));
-            }
+            inferMapProperty.checkAndReport(getRealProperty(orderedList.iterator()),
+                    "naming convention for " + type + " with " + (modifiers.modifiers.isEmpty() ? "no modifiers" : "modifiers: " + modifiers),
+                    true);
         }
     }
 
-    private NameProperty checkIsInSameTreePath(Iterator<Map.Entry<NameProperty, List<Position>>> iterator, Node<NameProperty> currentNode, Map<Position, NameProperty> errorAccumulator) {
+    private Map<NameProperty, List<Position>> getRealProperty(Iterator<Map.Entry<NameProperty, List<Position>>> iterator) {
+        List<Map.Entry<NameProperty, List<Position>>> acc = new ArrayList<>();
+        getRealProperty(iterator, acc);
+        Map<NameProperty, List<Position>> map = new HashMap<>();
+        acc.forEach(el -> map.put(el.getKey(), el.getValue()));
+        return map;
+    }
+
+    private void getRealProperty(Iterator<Map.Entry<NameProperty, List<Position>>> iterator, List<Map.Entry<NameProperty, List<Position>>> acc) {
         if(iterator.hasNext()) {
             Map.Entry<NameProperty, List<Position>> current = iterator.next();
-            if(!current.getKey().equals(currentNode.value)) {
-                if(currentNode.hasParent(current.getKey())) {
-                    checkIsInSameTreePath(iterator, currentNode, errorAccumulator);
+            boolean wasFound = false;
+            for(int i = 0; i < acc.size() && !wasFound; ++i) {
+                Node<NameProperty> node = NamePropertyTree.getCurrentNodeForTree(acc.get(i).getKey());
+                if(current.getKey().equals(node.value) || node.hasParent(current.getKey())) {
+                    acc.get(i).getValue().addAll(current.getValue());
+                    wasFound = true;
                 } else {
-                    Node<NameProperty> child = currentNode.getChildrenWithValueOrNull(current.getKey());
-                    if(child == null) {
-                        errorAccumulator.put(getSingleOrMultiplePosition(current.getValue()), current.getKey());
-                    } else {
-                        return checkIsInSameTreePath(iterator, child, errorAccumulator);
+                    Node<NameProperty> child = node.getChildrenWithValueOrNull(current.getKey());
+                    if(child != null) {
+                        List<Position> allPositions = new ArrayList<>();
+                        allPositions.addAll(acc.get(i).getValue());
+                        allPositions.addAll(current.getValue());
+                        acc.remove(i);
+                        acc.add(new AbstractMap.SimpleEntry<>(child.value, allPositions));
+                        wasFound = true;
                     }
                 }
-            } else {
-                return checkIsInSameTreePath(iterator, currentNode, errorAccumulator);
             }
+            if(!wasFound) {
+                acc.add(new AbstractMap.SimpleEntry<>(current.getKey(), current.getValue()));
+            }
+            acc.sort(Comparator.comparingInt(entry -> -entry.getValue().size()));
+            getRealProperty(iterator, acc);
         }
-        return currentNode.value;
     }
 
     private void addToMap(Map<Modifiers, Map<NameProperty, List<Position>>> map, NodeList<Modifier> modifierList, Position position, String name) {
@@ -134,10 +130,6 @@ public class Naming extends CompilationUnitCheck {
         return map;
     }
 
-    private Position getSingleOrMultiplePosition(List<Position> positions) {
-        return positions.size() == 1 ? positions.get(0) : new MultiplePosition(positions);
-    }
-
     @Override
     public String getName() {
         return "naming";
@@ -148,8 +140,12 @@ public class Naming extends CompilationUnitCheck {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             Modifiers that = (Modifiers) o;
             return Objects.equals(this.modifiers, that.modifiers);
         }

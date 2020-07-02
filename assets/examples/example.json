@@ -1,0 +1,18 @@
+{
+  "name": "example",
+  "check": ["all"],
+  "directory": ["assets/examples", "assets/tests"],
+  "output": "assets/examples/result.xml",
+  "designPattern": {
+    "singleton": "Connection",
+    "builder": {
+      "product": "Employee",
+      "builder": "Employee$Builder"
+    },
+    "visitor": {
+      "parent": "Item",
+      "children": ["Book", "Fruit"],
+      "visitor": "Visitor"
+    }
+  }
+}

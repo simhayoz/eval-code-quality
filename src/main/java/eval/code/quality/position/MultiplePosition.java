@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Represents multiple position that are not necessarily successive.
  */
-// TODO make a sorted set
 public class MultiplePosition extends Position {
     private final List<Position> positions;
 
@@ -51,8 +51,12 @@ public class MultiplePosition extends Position {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         MultiplePosition that = (MultiplePosition) o;
         return new ArrayList<>(this.positions).containsAll(new ArrayList<>(that.positions))
                 && new ArrayList<>(that.positions).containsAll(new ArrayList<>(this.positions));
@@ -65,7 +69,7 @@ public class MultiplePosition extends Position {
 
     @Override
     public String toString() {
-        return positions.toString();
+        return positions.size() > 1 ? "{" + System.lineSeparator() + positions.stream().map(position -> position.toString().indent(1)).collect(Collectors.joining()) + "}" : positions.toString();
     }
 
     @Override

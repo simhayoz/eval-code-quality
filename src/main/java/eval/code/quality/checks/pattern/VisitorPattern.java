@@ -4,6 +4,7 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import eval.code.quality.checks.DesignPattern;
 import eval.code.quality.provider.ContentProvider;
+import eval.code.quality.utils.ClassNotFoundError;
 import eval.code.quality.utils.evaluator.BooleanEvaluator;
 import eval.code.quality.utils.evaluator.BooleanExpression;
 import eval.code.quality.utils.evaluator.BooleanOr;
@@ -36,10 +37,10 @@ public class VisitorPattern extends DesignPattern {
     }
 
     @Override
-    protected BooleanEvaluator getEvaluator(ContentProvider contentProvider) throws ClassNotFoundException {
-        ClassOrInterfaceDeclaration parent = contentProvider.findClassBy(parentName).orElseThrow(() -> new ClassNotFoundException(parentName));
+    protected BooleanEvaluator getEvaluator(ContentProvider contentProvider) {
+        ClassOrInterfaceDeclaration parent = contentProvider.findClassBy(parentName).orElseThrow(() -> new ClassNotFoundError(parentName));
         List<ClassOrInterfaceDeclaration> children = childrenName.stream().map(cName -> contentProvider.findClassBy(cName).get()).collect(Collectors.toList());
-        ClassOrInterfaceDeclaration visitor = contentProvider.findClassBy(visitorName).orElseThrow(() -> new ClassNotFoundException(visitorName));
+        ClassOrInterfaceDeclaration visitor = contentProvider.findClassBy(visitorName).orElseThrow(() -> new ClassNotFoundError(visitorName));
         BooleanEvaluator evaluator = new BooleanEvaluator();
         List<String> childrenSimpleName = childrenName.stream().map(this::getSimpleName).collect(Collectors.toList());
         List<MethodDeclaration> visitorMethod = visitor.getMethods().stream()

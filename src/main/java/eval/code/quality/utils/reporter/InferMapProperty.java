@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * <p>
  * It report the following error:
  *     <ul>
- *         <li>If the map has multiple max number of element -> reports can not infer "good" property</li>
+ *         <li>If the map has multiple max number of element -> reports cannot infer "good" property</li>
  *         <li>If the map has element smaller than max number of element -> reports "wrong" property</li>
  *     </ul>
  * </p>
@@ -37,7 +37,7 @@ public class InferMapProperty {
      * Check and report the {@code map}.
      *
      * @param map          the map to report
-     * @param shouldReport whether it should report smaller property if it can not infer a unique property
+     * @param shouldReport whether it should report smaller property if it cannot infer a unique property
      * @param <T>          the type of the property
      */
     public <T> void checkAndReport(Map<T, List<Position>> map, boolean shouldReport) {
@@ -49,7 +49,7 @@ public class InferMapProperty {
      *
      * @param map          the map to report
      * @param name         the name of the checked property
-     * @param shouldReport whether it should report smaller property if it can not infer a unique property
+     * @param shouldReport whether it should report smaller property if it cannot infer a unique property
      * @param <T>          the type of the property
      */
     public <T> void checkAndReport(Map<T, List<Position>> map, String name, boolean shouldReport) {
@@ -62,7 +62,7 @@ public class InferMapProperty {
      * @param map                 the map to report
      * @param expectedReporter    the expected reporter
      * @param notExpectedReporter the not expected reporter
-     * @param shouldReport        whether it should report smaller property if it can not infer a unique property
+     * @param shouldReport        whether it should report smaller property if it cannot infer a unique property
      * @param <T>                 the type of the property
      */
     public <T> void checkAndReport(Map<T, List<Position>> map, ExpectedReporter<T> expectedReporter, NotExpectedReporter<T> notExpectedReporter, boolean shouldReport) {

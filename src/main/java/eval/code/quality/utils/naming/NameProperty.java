@@ -44,8 +44,12 @@ public class NameProperty {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         NameProperty that = (NameProperty) o;
         return Objects.equals(fullProperty, that.fullProperty) &&
                 Objects.equals(startProperty, that.startProperty) &&

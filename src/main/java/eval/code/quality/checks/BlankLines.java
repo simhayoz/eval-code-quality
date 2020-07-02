@@ -40,18 +40,18 @@ public class BlankLines extends Check {
     }
 
     private void iterateOverScanner(Scanner scanner) {
-        int count_empty_line = scanner.nextLine().trim().isEmpty() ? 1 : 0;
+        int countEmptyLine = scanner.nextLine().trim().isEmpty() ? 1 : 0;
         int line = 1;
         while (scanner.hasNextLine()) {
             if (scanner.nextLine().trim().isEmpty()) {
-                ++count_empty_line;
+                ++countEmptyLine;
             } else {
-                if (count_empty_line > 1) {
+                if (countEmptyLine > 1) {
                     addError(new DescriptionBuilder()
-                            .addPosition(context.getRange(line - count_empty_line + 1, line),
-                                    new Descriptor().addToDescription(count_empty_line + " empty lines in a row")));
+                            .addPosition(context.getRange(line - countEmptyLine + 1, line),
+                                    new Descriptor().addToDescription(countEmptyLine + " empty lines in a row")));
                 }
-                count_empty_line = 0;
+                countEmptyLine = 0;
             }
             ++line;
         }

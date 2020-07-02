@@ -28,8 +28,12 @@ public class NamePosition extends Position {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         NamePosition that = (NamePosition) o;
         return this.name.equals(that.name) && this.position.equals(that.position);
     }

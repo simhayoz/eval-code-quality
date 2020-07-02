@@ -15,10 +15,9 @@ import java.util.List;
 public class VisitorPatternTest {
 
     @Test void visitorPatternDoesNotFail() {
-        ContentProvider visitorProvider = new DirectoryProvider("assets/tests/ExampleVisitor");
+        ContentProvider visitorProvider = new DirectoryProvider("assets/examples/ExampleVisitorPattern");
         List<String> childrenName = List.of("Book", "Fruit");
-        Report r = new VisitorPattern(visitorProvider, "Item", childrenName, "Visitor").run();
-        TestUtils.checkIsEmptyReport(r);
+        TestUtils.checkIsEmptyReport(new VisitorPattern(visitorProvider, "Item", childrenName, "Visitor").run());
     }
 
     @Test void basicClassFails() {

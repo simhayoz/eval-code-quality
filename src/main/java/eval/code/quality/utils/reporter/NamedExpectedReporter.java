@@ -25,7 +25,8 @@ public class NamedExpectedReporter<T> extends ExpectedReporter<T> {
         if (builder.build().getPositions().isEmpty()) {
             return null;
         }
-        builder.setExpected(properties + " to be all the same for: " + name);
+        builder.setExpected(properties + " to be all the same");
+        builder.setName(name);
         return builder.build();
     }
 }

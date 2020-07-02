@@ -23,15 +23,19 @@ public class PositionDescription implements XMLParsable {
      * @param descriptor the descriptor associated with the position
      */
     public PositionDescription(Position position, Descriptor descriptor) {
-        Preconditions.checkArg(position != null, "Position can not be null");
+        Preconditions.checkArg(position != null, "Position cannot be null");
         this.position = position;
         this.descriptor = descriptor;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         PositionDescription that = (PositionDescription) o;
         return Objects.equals(position, that.position);
     }

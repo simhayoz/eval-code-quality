@@ -51,13 +51,6 @@ public class MultiplePositionTest {
         assertNotEquals(m, new Object());
     }
 
-    @Test void toStringWorks() {
-        MultiplePosition m = new MultiplePosition();
-        m.add(new SinglePosition(0, 0));
-        m.add(new SinglePosition(2, 3));
-        assertThat(m.toString(), equalTo("[(line 0,col 0), (line 2,col 3)]"));
-    }
-
     @Test void canGetXmlElement() throws ParserConfigurationException {
         MultiplePosition m = new MultiplePosition();
         m.add(new SinglePosition(0));

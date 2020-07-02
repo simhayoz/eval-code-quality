@@ -26,7 +26,7 @@ public class ClassOrInterfaceBlock extends ParentBlock {
             if(token.asString().equals("{")) {
                 return lastNonNull;
             } else if(!token.asString().trim().isEmpty()){
-                lastNonNull = SinglePosition.from(token.getRange().get().begin);
+                lastNonNull = SinglePosition.from(token.getRange().get().end);
             }
         }
         return null;

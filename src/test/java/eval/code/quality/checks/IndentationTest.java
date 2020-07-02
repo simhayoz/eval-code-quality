@@ -37,11 +37,11 @@ class IndentationTest {
     @Test
     void testForSimpleWhileForIfWorks() {
         MyStringBuilder builder = new MyStringBuilder();
-        String[] blocks_to_test = new String[5];
+        String[] blocksToTest = new String[5];
         builder.addLn("for(int i=0; i < 2; ++i) {")
                 .addLn("return true;", 4)
                 .addLn("}");
-        blocks_to_test[0] = builder.toString();
+        blocksToTest[0] = builder.toString();
         builder = new MyStringBuilder();
         builder.addLn("if(true) {")
                 .addLn("return true;", 4)
@@ -50,19 +50,19 @@ class IndentationTest {
                 .addLn("}")
                 .addLn("if(true)")
                 .addLn("return true;", 4);
-        blocks_to_test[1] = builder.toString();
+        blocksToTest[1] = builder.toString();
         builder = new MyStringBuilder();
         builder.addLn("while(true) {")
                 .addLn("System.out.println();", 4)
                 .addLn("return true;", 4)
                 .addLn("}");
-        blocks_to_test[2] = builder.toString();
+        blocksToTest[2] = builder.toString();
         builder = new MyStringBuilder();
         builder.addLn("{")
                 .addLn("System.out.println();", 4)
                 .addLn("return true;", 4)
                 .addLn("}");
-        blocks_to_test[3] = builder.toString();
+        blocksToTest[3] = builder.toString();
         builder = new MyStringBuilder();
         builder.addLn("int i = 0;")
                 .addLn("switch (i) {")
@@ -76,8 +76,8 @@ class IndentationTest {
                 .addLn("return false;", 8)
                 .addLn("break;", 8)
                 .addLn("}");
-        blocks_to_test[4] = builder.toString();
-        for (String s : blocks_to_test) {
+        blocksToTest[4] = builder.toString();
+        for (String s : blocksToTest) {
             String wrapper = wrap(s);
             TestUtils.checkIsEmptyReport(new Indentation(new StringProvider("For tests", wrapper)).run());
         }
@@ -85,37 +85,37 @@ class IndentationTest {
 
     @Test
     void testForSimpleWhileForIfFailsWhenMisaligned() {
-        Map<String, Position> blocks_to_test = new HashMap<>();
+        Map<String, Position> blocksToTest = new HashMap<>();
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("for(int i=0; i < 2; ++i) {")
                 .addLn("return true;", 2)
                 .addLn("}");
-        blocks_to_test.put(builder.toString(), new NamePosition("For tests", new SinglePosition(4, 11)));
+        blocksToTest.put(builder.toString(), new NamePosition("For tests", new SinglePosition(4, 11)));
         builder = new MyStringBuilder();
         builder.addLn("if(true) {")
                 .addLn("return true;", 4)
                 .addLn("} else {")
                 .addLn("return false;", 5)
                 .addLn("}");
-        blocks_to_test.put(builder.toString(), new NamePosition("For tests", new SinglePosition(6, 14)));
+        blocksToTest.put(builder.toString(), new NamePosition("For tests", new SinglePosition(6, 14)));
         builder = new MyStringBuilder();
         builder.addLn("if(true)")
                 .addLn("return true;", 5);
-        blocks_to_test.put(builder.toString(), new NamePosition("For tests", new SinglePosition(4, 14)));
+        blocksToTest.put(builder.toString(), new NamePosition("For tests", new SinglePosition(4, 14)));
         builder = new MyStringBuilder();
         builder.addLn("while(true) {")
                 .addLn("System.out.println();", 4)
                 .addLn("System.out.println();", 4)
                 .addLn("return true;", 6)
                 .addLn("}");
-        blocks_to_test.put(builder.toString(), new NamePosition("For tests", new SinglePosition(6, 15)));
+        blocksToTest.put(builder.toString(), new NamePosition("For tests", new SinglePosition(6, 15)));
         builder = new MyStringBuilder();
         builder.addLn("{")
                 .addLn("System.out.println();", 4)
                 .addLn("System.out.println();", 4)
                 .addLn("return true;", 5)
                 .addLn("}");
-        blocks_to_test.put(builder.toString(), new NamePosition("For tests", new SinglePosition(6, 14)));
+        blocksToTest.put(builder.toString(), new NamePosition("For tests", new SinglePosition(6, 14)));
         builder = new MyStringBuilder();
         builder.addLn("int i = 0;")
                 .addLn("switch (i) {")
@@ -130,8 +130,8 @@ class IndentationTest {
                 .addLn("return false;", 8)
                 .addLn("break;", 8)
                 .addLn("}");
-        blocks_to_test.put(builder.toString(), new NamePosition("For tests", new SinglePosition(6, 13)));
-        for (Entry<String, Position> s : blocks_to_test.entrySet()) {
+        blocksToTest.put(builder.toString(), new NamePosition("For tests", new SinglePosition(6, 13)));
+        for (Entry<String, Position> s : blocksToTest.entrySet()) {
             String wrapper = wrap(s.getKey());
             Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
             TestUtils.checkIsWarningEmpty(r);
@@ -141,7 +141,7 @@ class IndentationTest {
 
     @Test
     void testForTryCatchBlocksWorksForMultipleCatch() {
-        String[] blocks_to_test = new String[3];
+        String[] blocksToTest = new String[3];
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("try {")
                 .addLn("System.out.println();", 4)
@@ -149,7 +149,7 @@ class IndentationTest {
                 .addLn("} catch (Exception e) {")
                 .addLn("return false;", 4)
                 .addLn("}");
-        blocks_to_test[0] = builder.toString();
+        blocksToTest[0] = builder.toString();
         builder = new MyStringBuilder();
         builder.addLn("try {")
                 .addLn("System.out.println();", 4)
@@ -159,7 +159,7 @@ class IndentationTest {
                 .addLn("} catch (NullPointerException n) {")
                 .addLn("return false;", 4)
                 .addLn("}");
-        blocks_to_test[1] = builder.toString();
+        blocksToTest[1] = builder.toString();
         builder = new MyStringBuilder();
         builder.addLn("try {")
                 .addLn("System.out.println();", 4)
@@ -171,8 +171,8 @@ class IndentationTest {
                 .addLn("catch (NullPointerException n) {")
                 .addLn("return false;", 4)
                 .addLn("}");
-        blocks_to_test[2] = builder.toString();
-        for (String s : blocks_to_test) {
+        blocksToTest[2] = builder.toString();
+        for (String s : blocksToTest) {
             String wrapper = wrap(s);
             TestUtils.checkIsEmptyReport(new Indentation(new StringProvider("For tests", wrapper)).run());
         }
@@ -180,7 +180,7 @@ class IndentationTest {
 
     @Test
     void testForTryCatchBlocksNotAlignedFails() {
-        Map<String, Position> blocks_to_test = new HashMap<>();
+        Map<String, Position> blocksToTest = new HashMap<>();
         MyStringBuilder builder = new MyStringBuilder();
         builder.addLn("try {")
                 .addLn("System.out.println();", 5)
@@ -189,8 +189,8 @@ class IndentationTest {
                 .addLn("} catch (Exception e) {")
                 .addLn("return false;", 4)
                 .addLn("}");
-        blocks_to_test.put(builder.toString(), new NamePosition("For tests", new SinglePosition(4, 14)));
-        for (Entry<String, Position> s : blocks_to_test.entrySet()) {
+        blocksToTest.put(builder.toString(), new NamePosition("For tests", new SinglePosition(4, 14)));
+        for (Entry<String, Position> s : blocksToTest.entrySet()) {
             String wrapper = wrap(s.getKey());
             Report r = new Indentation(new StringProvider("For tests", wrapper)).run();
             TestUtils.checkIsWarningEmpty(r);

@@ -2,6 +2,7 @@ package eval.code.quality.provider;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import eval.code.quality.utils.FileNotFoundError;
 import eval.code.quality.utils.FileToString;
 import eval.code.quality.utils.Lazy;
 import eval.code.quality.utils.Preconditions;
@@ -26,7 +27,9 @@ public class FileProvider extends ContentProvider {
      */
     public FileProvider(File file) {
         Preconditions.checkArg(file != null, "File should not be null");
-        Preconditions.checkArg(file.exists(), "File does not exist");
+        if(!file.exists()) {
+            throw new FileNotFoundError("File does not exist");
+        }
         this.file = file;
         this.content = new Lazy<>(throwingSupplierWrapper(() -> FileToString.fromFile(file)));
         this.compilationUnit = new Lazy<>(throwingSupplierWrapper(() -> StaticJavaParser.parse(file)));

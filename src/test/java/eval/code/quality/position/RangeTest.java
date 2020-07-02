@@ -29,7 +29,6 @@ public class RangeTest {
         assertThrows(IllegalArgumentException.class, () -> new Range(p2, p));
     }
 
-
     @Test void setRangeForSimplePosWorks() {
         SinglePosition p = new SinglePosition(0, 0);
         SinglePosition p2 = new SinglePosition(4, 5);
