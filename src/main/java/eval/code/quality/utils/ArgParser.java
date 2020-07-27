@@ -145,7 +145,7 @@ public class ArgParser {
 
         optionList.add(new Option("s", "sysout", false, "If present will print report to the terminal"));
 
-        optionList.add(new Option("o", "output", true, "Specify output xml file"));
+        optionList.add(new Option("o", "output", true, "Specify output XML file"));
 
         Option directory = new Option("d", "directory", true, "Path to directory containing Java file to analyze");
         directory.setArgs(Option.UNLIMITED_VALUES);
@@ -167,7 +167,7 @@ public class ArgParser {
         checkOption.setValueSeparator(',');
         optionList.add(checkOption);
 
-        optionList.add(new Option("j", "json", true, "Set the json config file (warning terminal arguments will override config file if defined in both)"));
+        optionList.add(new Option("j", "json", true, "Set the JSON config file (warning terminal arguments will override config file if defined in both)"));
 
         optionList.forEach(options::addOption);
     }
