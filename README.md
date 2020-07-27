@@ -7,7 +7,7 @@
 
 The goal of this project was to create an automatic tool for checking code quality. 
 
-The report PDF can be found [here](https://github.com/simhayoz/eval-code-quality/tree/master/report/Bachelor_project_report.pdf).
+The report PDF can be found [here](https://simhayoz.github.io/Bachelor_project_report.pdf).
 
 Bachelor project at [Dependable Systems Lab](https://dslab.epfl.ch/) at EPFL.
 
